@@ -110,8 +110,12 @@ public:
    */
   hi_return_e
   is_last_second_big(bool *is_big){
-    // get percentage
     FLOAT five_percent;
+
+    if (is_big == NULL){
+      return HI_RETURN_BAD_PARAM;
+    }
+    
     five_percent = this->mean * 0.05;
     if (this->mean+five_percent<this->last_mean){
       *is_big = (this->current_valid_values >= MAX_SAMPLES);
