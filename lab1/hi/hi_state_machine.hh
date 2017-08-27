@@ -16,51 +16,43 @@ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **/
-#include <cstdint>
-#include "hi_def.hh"
-#include "hi_utils.hpp"
-#include "gtest/gtest.h"
+
+#ifdef TESTING
 #include <iostream>
+// FIXME: check if this can be included in microcontroller
+#include <cstdint>
+#endif
+#include "hi_def.hh"
 
-namespace{
-  TEST(Hi_Dual_Mean_Fifo, Constants){
-    ASSERT_EQ(MAX_SAMPLES, 30);
-    ASSERT_EQ(MEAN_SAMPLES, 25);
-  }
+#ifndef HI_ST
+#define HI_ST
 
-  TEST(Hi_Dual_Mean_Fifo, Invalid_During_Init){
-    Hi_dual_mean_fifo<int, float> *dual_fifo = new Hi_dual_mean_fifo<int, float>();
-    bool comp_condition;
-    (void) dual_fifo->is_last_second_big(&comp_condition);
-    EXPECT_FALSE(comp_condition);
-  }
+//FIXME: Change this value depending on timer frequency
+#define TIMEOUT_30 300
 
-  TEST(Hi_Dual_Mean_Fifo, Add__Values){
-    Hi_dual_mean_fifo<int, float> *dual_fifo = new Hi_dual_mean_fifo<int, float>();
-    bool comp_condition;
-    for (int i=0; i<MAX_SAMPLES*2; i++){
-      dual_fifo->add_sample(4);
-    }
-    
-    EXPECT_FLOAT_EQ(4, dual_fifo->get_mean());
+#ifdef TESTING
+hi_return_e lamp_off();
+hi_return_e lamp_on();
+bool is_lamp_on();
+bool is_lamp_off();
+#endif
 
-    (void) dual_fifo->is_last_second_big(&comp_condition);
-    EXPECT_FALSE(comp_condition);
+class Hi_state_machine{
+private:
+  hi_state_e state;
+  hi_state_e stored_state;
+  
+public:
+  Hi_state_machine();
+  ~Hi_state_machine();
 
-    
-    for (int i=0; i<=SAMPLES_PER_SECOND; i++){
-      dual_fifo->add_sample(20);
-    }
-    
-    (void) dual_fifo->is_last_second_big(&comp_condition);
-    EXPECT_TRUE(comp_condition);
-    
-  }
-}
+  hi_return_e
+  handle_sensors(hi_sensor_t* input_sensor_data);
 
+  #ifdef TESTING
+  hi_state_e get_state(void);
+  #endif
+  
+};
 
-
-int main(int argc, char **argv){
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+#endif

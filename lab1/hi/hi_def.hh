@@ -60,4 +60,11 @@ typedef enum hi_ext_event_e{
   HI_NO_EXT_EVENT_LAST      // For range validation
 } hi_ext_event_e;
 
+typedef struct hi_sensor_t{
+  uint16_t time;
+  bool     control_button;
+  bool     light_sensor;
+  bool     microphone;
+} hi_sensor_t;
+
 #endif
