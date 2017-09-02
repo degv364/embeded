@@ -66,8 +66,7 @@ volatile uint8_t micPos;
 periph::OutputGPIO led(GPIO_PORT_P1, GPIO_PIN0);
 periph::MicrophoneADC mic(ADC_SAMPLES_PER_SECOND, ADC_MEM0);
 
-
-int main(void)
+return_e hardware_init(void)
 {
     //Stop Watchdog timer
     MAP_WDT_A_holdTimer();
@@ -84,9 +83,23 @@ int main(void)
     //Enable interrupts
     MAP_Interrupt_enableMaster();
 
-    while(1)
+    // FIXME: change this to contemplate possible
+    // errors during initialization
+    return RETURN_OK;
+}
+
+int main(void)
+{
+    return_e rt;
+    rt = hardware_init();
+    if (rt != RETURN_OK)
     {
-        if (micBuffer[micPos-1] > 8300)
+        return 1;
+    }
+
+    while (1)
+    {
+        if (micBuffer[micPos - 1] > 8300)
             led.set();
         else
             led.reset();
