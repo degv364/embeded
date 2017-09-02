@@ -33,6 +33,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifdef TESTING
 hi_return_e lamp_off();
 hi_return_e lamp_on();
+hi_return_e lamp_toogle();
 bool is_lamp_on();
 bool is_lamp_off();
 #endif

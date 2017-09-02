@@ -17,6 +17,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **/
 
+// FIXME: convert to singleton
+
+
 #include "hi_state_machine.hh"
 
 Hi_state_machine::Hi_state_machine(){
@@ -47,7 +50,7 @@ Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data){
     this->state = HI_STATE_MANUAL_CONTROL;
     // reset time
     input_sensor_data->time = 0;
-    rt = lamp_on();
+    rt = lamp_toogle();
     goto handle_fail;
   }
 
@@ -69,6 +72,10 @@ Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data){
       this->state = HI_STATE_OFF;
       break;
     }
+    if (microphone){
+      //reset timer
+      input_sensor_data->time = 0;
+    }
     break;
   case HI_STATE_OFF:
     rt = lamp_off();
@@ -84,7 +91,7 @@ Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data){
     break;
   case HI_STATE_MANUAL_CONTROL:
     if(time>TIMEOUT_30){
-      rt = lamp_off();
+      rt = lamp_toogle();
       this->state = this->stored_state;
     }
     break;
@@ -118,6 +125,12 @@ lamp_off(){
 hi_return_e
 lamp_on(){
   is_on = true;
+  return HI_RETURN_OK;
+}
+
+hi_return_e
+lamp_toogle(){
+  is_on = !is_on;
   return HI_RETURN_OK;
 }
 
