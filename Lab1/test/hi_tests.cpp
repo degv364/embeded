@@ -16,10 +16,11 @@ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **/
+#ifdef TESTING
 #include <cstdint>
-#include "hi_def.hh"
-#include "hi_utils.hpp"
-#include "hi_state_machine.hh"
+#include "../include/hi/hi_def.hh"
+#include "../include/hi/hi_utils.hpp"
+#include "../include/hi/hi_state_machine.hh"
 #include "gtest/gtest.h"
 #include <iostream>
 
@@ -127,3 +128,4 @@ int main(int argc, char **argv){
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
+#endif

@@ -19,8 +19,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // FIXME: convert to singleton
 
-
-#include "hi_state_machine.hh"
+#ifdef TESTING
+#include "../../include/hi/hi_state_machine.hh"
 
 Hi_state_machine::Hi_state_machine(){
   this->state        = HI_STATE_INIT;
@@ -142,4 +142,5 @@ bool
 is_lamp_off(){
   return !is_on;
 }
+#endif
 #endif

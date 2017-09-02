@@ -28,6 +28,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // We must know the size during compilation time, to avoid using dynamic
 // allocation
+#ifdef TESTING
 #define SAMPLES_PER_SECOND 5
 #define MEAN_SECONDS 5
 #define MAX_SAMPLES (SAMPLES_PER_SECOND * (MEAN_SECONDS + 1))
@@ -76,4 +77,5 @@ typedef struct hi_sensor_t {
   bool microphone;
 } hi_sensor_t;
 
+#endif
 #endif

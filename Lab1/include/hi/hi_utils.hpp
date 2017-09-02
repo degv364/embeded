@@ -24,7 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <iostream>
 // FIXME: check if this can be included in microcontroller
 #include <cstdint>
-#endif
+//#endif
 #include "hi_def.hh"
 
 #ifndef HI_UTILS_TEMP
@@ -139,3 +139,4 @@ public:
 };
 
 #endif //HI_UTILS_TEMP
+#endif
