@@ -19,7 +19,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // FIXME: convert to singleton
 
-#ifdef TESTING
 #include "../../include/hi/hi_state_machine.hh"
 
 Hi_state_machine::Hi_state_machine()
@@ -34,10 +33,9 @@ Hi_state_machine::~Hi_state_machine()
     this->stored_state = HI_STATE_NONE;
 }
 
-hi_return_e
-Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
+hi_return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
 {
-    if (input_sensor_data == NULL)
+    if (input_sensor_data == 0)
     {
         return HI_RETURN_BAD_PARAM;
     }
@@ -59,22 +57,22 @@ Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         goto handle_fail;
     }
 
-    switch(this->state)
+    switch (this->state)
     {
-        case HI_STATE_INIT:
+    case HI_STATE_INIT:
         this->state = HI_STATE_ALIVE_SEQ;
         // reset time
         input_sensor_data->time = 0;
         rt = HI_RETURN_OK;
         break;
-        case HI_STATE_ALIVE_SEQ:
+    case HI_STATE_ALIVE_SEQ:
         //FIXME: implement this
         this->state = HI_STATE_OFF;
         rt = HI_RETURN_OK;
         break;
-        case HI_STATE_ON:
+    case HI_STATE_ON:
         rt = lamp_on();
-        if (time>TIMEOUT_30 || light_sensor)
+        if (time > TIMEOUT_30 || light_sensor)
         {
             this->state = HI_STATE_OFF;
             break;
@@ -85,7 +83,7 @@ Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
             input_sensor_data->time = 0;
         }
         break;
-        case HI_STATE_OFF:
+    case HI_STATE_OFF:
         rt = lamp_off();
         if (light_sensor)
         {
@@ -99,20 +97,19 @@ Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         input_sensor_data->time = 0;
         this->state = HI_STATE_ON;
         break;
-        case HI_STATE_MANUAL_CONTROL:
-        if(time>TIMEOUT_30)
+    case HI_STATE_MANUAL_CONTROL:
+        if (time > TIMEOUT_30)
         {
             rt = lamp_toogle();
             this->state = this->stored_state;
         }
         break;
-        default:
+    default:
         //FIXME: implement other states
         break;
     }
 
-    handle_fail:
-    if (rt!=HI_RETURN_OK)
+    handle_fail: if (rt != HI_RETURN_OK)
     {
         this->state = HI_STATE_FAIL;
     }
@@ -160,4 +157,4 @@ is_lamp_off()
     return !is_on;
 }
 #endif
-#endif
+

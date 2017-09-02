@@ -10,5 +10,4 @@
 
 #define ADC_SAMPLES_PER_SECOND 20
 
-
 #endif /* DEFINITIONS_H_ */

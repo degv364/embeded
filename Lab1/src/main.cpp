@@ -41,11 +41,22 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "msp.h"
+#include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
 /* Project Includes*/
+/* Hardware independent */
+#include "../include/hi/hi_def.hh"
+#include "../include/hi/hi_state_machine.hh"
+#include "../include/hi/hi_utils.hh"
+
+
+/* Hardware dependent */
 #include "../include/hd/definitions.h"
 #include "../include/hd/periph.h"
-#include <ti/devices/msp432p4xx/driverlib/driverlib.h>
+// FIXME: remove once this functions are implemented
+#include "../include/hd/stubs.hh"
+
+
 
 
 volatile uint_fast16_t micBuffer[UINT8_MAX];

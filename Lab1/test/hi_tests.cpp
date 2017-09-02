@@ -19,7 +19,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifdef TESTING
 #include <cstdint>
 #include "../include/hi/hi_def.hh"
-#include "../include/hi/hi_utils.hpp"
+#include "../include/hi/hi_utils.hh"
 #include "../include/hi/hi_state_machine.hh"
 #include "gtest/gtest.h"
 #include <iostream>
@@ -34,7 +34,7 @@ namespace
 
     TEST(Hi_Dual_Mean_Fifo, Invalid_During_Init)
     {
-        Hi_dual_mean_fifo<int, float> *dual_fifo = new Hi_dual_mean_fifo<int, float>();
+        Hi_dual_mean_fifo *dual_fifo = new Hi_dual_mean_fifo();
         bool comp_condition;
         (void) dual_fifo->is_last_second_big(&comp_condition);
         EXPECT_FALSE(comp_condition);
@@ -42,7 +42,7 @@ namespace
 
     TEST(Hi_Dual_Mean_Fifo, Add__Values)
     {
-        Hi_dual_mean_fifo<int, float> *dual_fifo = new Hi_dual_mean_fifo<int, float>();
+        Hi_dual_mean_fifo *dual_fifo = new Hi_dual_mean_fifo();
         bool comp_condition;
         for (int i=0; i<MAX_SAMPLES*2; i++)
         {

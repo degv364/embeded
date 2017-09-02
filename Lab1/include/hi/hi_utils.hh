@@ -17,48 +17,66 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **/
 
+
+
 #ifdef TESTING
 #include <iostream>
 // FIXME: check if this can be included in microcontroller
 #include <cstdint>
 #endif
 #ifndef TESTING
-#include "../hd/stubs.hh"
+#include <stdint.h>
 #endif
 #include "hi_def.hh"
 
-#ifndef HI_ST
-#define HI_ST
+#ifndef HI_UTILS_TEMP
+#define HI_UTILS_TEMP
 
-//FIXME: Change this value depending on timer frequency
-#define TIMEOUT_30 300
-
-#ifdef TESTING
-hi_return_e lamp_off();
-hi_return_e lamp_on();
-hi_return_e lamp_toogle();
-bool is_lamp_on();
-bool is_lamp_off();
-#endif
-
-class Hi_state_machine
+class Hi_dual_mean_fifo
 {
 private:
-    hi_state_e state;
-    hi_state_e stored_state;
+    // count to know if one have enough values to have valid results
+    uint16_t current_valid_values;
+    //array to store values
+    uint16_t data[MAX_SAMPLES];
+    //limit of the fifo
+    uint16_t subs_index;
+    // get mean until this member
+    uint16_t comp_index;
+
+    // 5 seconds mean
+    float mean;
+    // last second mean
+    float last_mean;
+
+    /*
+     * Reset data to a value
+     */
+    hi_return_e reset_to_value(uint16_t value);
+    /*
+     * MOve pointer to next sample
+     */
+    hi_return_e move_next_sample();
 
 public:
-    Hi_state_machine();
-    ~Hi_state_machine();
+    Hi_dual_mean_fifo(void);
+    ~Hi_dual_mean_fifo(void);
+    /*
+     * Adds a new sample
+     */
+    hi_return_e add_sample(uint16_t sample);
 
-    hi_return_e
-    handle_sensors(hi_sensor_t* input_sensor_data);
+    /*
+     * Returns true if the last second mean is more than 5% of the last 5 second mean and,
+     * there are enough valid values
+     */
+    hi_return_e is_last_second_big(bool *is_big);
 
 #ifdef TESTING
-    hi_state_e get_state(void);
+    float get_mean();
+    float get_last_mean();
 #endif
-
 };
 
-#endif
+#endif //HI_UTILS_TEMP
 
