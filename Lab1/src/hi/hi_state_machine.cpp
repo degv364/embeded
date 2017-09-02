@@ -33,15 +33,15 @@ Hi_state_machine::~Hi_state_machine()
     this->stored_state = HI_STATE_NONE;
 }
 
-hi_return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
+return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
 {
     if (input_sensor_data == 0)
     {
-        return HI_RETURN_BAD_PARAM;
+        return RETURN_BAD_PARAM;
     }
 
     // create intenal_copy
-    hi_return_e rt = HI_RETURN_OK;
+    return_e rt = RETURN_OK;
     uint16_t time = input_sensor_data->time;
     bool control_button = input_sensor_data->control_button;
     bool light_sensor = input_sensor_data->light_sensor;
@@ -63,12 +63,12 @@ hi_return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         this->state = HI_STATE_ALIVE_SEQ;
         // reset time
         input_sensor_data->time = 0;
-        rt = HI_RETURN_OK;
+        rt = RETURN_OK;
         break;
     case HI_STATE_ALIVE_SEQ:
         //FIXME: implement this
         this->state = HI_STATE_OFF;
-        rt = HI_RETURN_OK;
+        rt = RETURN_OK;
         break;
     case HI_STATE_ON:
         rt = lamp_on();
@@ -109,7 +109,7 @@ hi_return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         break;
     }
 
-    handle_fail: if (rt != HI_RETURN_OK)
+    handle_fail: if (rt != RETURN_OK)
     {
         this->state = HI_STATE_FAIL;
     }
@@ -126,24 +126,24 @@ Hi_state_machine::get_state(void)
     return this->state;
 }
 
-hi_return_e
+return_e
 lamp_off()
 {
     is_on = false;
-    return HI_RETURN_OK;
+    return RETURN_OK;
 }
-hi_return_e
+return_e
 lamp_on()
 {
     is_on = true;
-    return HI_RETURN_OK;
+    return RETURN_OK;
 }
 
-hi_return_e
+return_e
 lamp_toogle()
 {
     is_on = !is_on;
-    return HI_RETURN_OK;
+    return RETURN_OK;
 }
 
 bool

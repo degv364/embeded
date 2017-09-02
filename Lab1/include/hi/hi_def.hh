@@ -26,29 +26,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **/
 
-// We must know the size during compilation time, to avoid using dynamic
-// allocation
-
 #ifndef TESTING
 #include <stdint.h>
 #endif
 
-#define SAMPLES_PER_SECOND 5
-#define MEAN_SECONDS 5
-#define MAX_SAMPLES (SAMPLES_PER_SECOND * (MEAN_SECONDS + 1))
-#define MEAN_SAMPLES (SAMPLES_PER_SECOND * MEAN_SECONDS)
 
 #ifndef HI_DEF
 #define HI_DEF
-
-// Return values
-typedef enum hi_return_e
-{
-    HI_RETURN_OK = 0,   // Execution succesful
-    HI_RETURN_FAIL,   // Execution failed
-    HI_RETURN_CRITICAL,   // Critical fail
-    HI_RETURN_BAD_PARAM   // Execution failed due to invalid parameters
-} hi_return_e;
 
 // States
 typedef enum hi_state_e
@@ -63,19 +47,6 @@ typedef enum hi_state_e
     HI_STATE_MANUAL_CONTROL,       // Manual button state
     HI_NOSTATE_LAST       // For range validation
 } hi_state_e;
-
-// External events, triggers for state transition
-typedef enum hi_ext_event_e
-{
-    HI_EXT_EVENT_NONE = 0,    // NO event
-    HI_EXT_EVENT_BOOT,    // Boot
-    HI_EXT_EVENT_LIGHTS_ON,    // External lights on
-    HI_EXT_EVENT_LIGHTS_OFF,    // External lights off
-    HI_EXT_EVENT_SOUND_LOW,    // External sound is below treshhold
-    HI_EXT_EVENT_SOUND_HIGH,    // External sound increased
-    HI_EXT_EVENT_CONTROL_REQ,    // User pusehd button, manual control request
-    HI_NO_EXT_EVENT_LAST    // For range validation
-} hi_ext_event_e;
 
 typedef struct hi_sensor_t
 {

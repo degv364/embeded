@@ -19,24 +19,22 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifdef TESTING
 #include <iostream>
-// FIXME: check if this can be included in microcontroller
 #include <cstdint>
 #endif
 #ifndef TESTING
 #include "../hd/stubs.hh"
 #endif
+
+#include "../common_def.hh"
 #include "hi_def.hh"
 
 #ifndef HI_ST
 #define HI_ST
 
-//FIXME: Change this value depending on timer frequency
-#define TIMEOUT_30 300
-
 #ifdef TESTING
-hi_return_e lamp_off();
-hi_return_e lamp_on();
-hi_return_e lamp_toogle();
+return_e lamp_off();
+return_e lamp_on();
+return_e lamp_toogle();
 bool is_lamp_on();
 bool is_lamp_off();
 #endif
@@ -51,7 +49,7 @@ public:
     Hi_state_machine();
     ~Hi_state_machine();
 
-    hi_return_e
+    return_e
     handle_sensors(hi_sensor_t* input_sensor_data);
 
 #ifdef TESTING

@@ -29,19 +29,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef TESTING
 #include "../../include/hd/stubs.hh"
 
-hi_return_e lamp_off()
+return_e lamp_off()
 {
-    return HI_RETURN_OK;
+    return RETURN_OK;
 }
 
-hi_return_e lamp_on()
+return_e lamp_on()
 {
-    return HI_RETURN_OK;
+    return RETURN_OK;
 }
 
-hi_return_e lamp_toogle()
+return_e lamp_toogle()
 {
-    return HI_RETURN_OK;
+    return RETURN_OK;
 }
 
 bool is_lamp_on()

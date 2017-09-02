@@ -26,17 +26,29 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **/
 
-#include "../common_def.hh"
+#ifndef COMMON_DEF_H_
+#define COMMON_DEF_H_
 
-#ifndef TESTING
-#ifndef HD_STUBS
-#define HD_STUBS
+// FIXME: Change this value depending on timer frequency
+#define TIMEOUT_30 300
 
-return_e lamp_off();
-return_e lamp_on();
-return_e lamp_toogle();
-bool is_lamp_on();
-bool is_lamp_off();
+#define ADC_SAMPLES_PER_SECOND 20
 
-#endif
+// FIXME: this is a hack for hi/hd compatibility..
+#define SAMPLES_PER_SECOND (ADC_SAMPLES_PER_SECOND)
+
+#define MEAN_SECONDS 5
+#define MAX_SAMPLES (SAMPLES_PER_SECOND * (MEAN_SECONDS + 1))
+#define MEAN_SAMPLES (SAMPLES_PER_SECOND * MEAN_SECONDS)
+
+// Return values
+typedef enum return_e
+{
+    RETURN_OK = 0,   // Execution succesful
+    RETURN_FAIL,   // Execution failed
+    RETURN_CRITICAL,   // Critical fail
+    RETURN_BAD_PARAM   // Execution failed due to invalid parameters
+} return_e;
+
+
 #endif

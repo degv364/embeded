@@ -44,6 +44,8 @@
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
 /* Project Includes*/
+#include "../include/common_def.hh"
+
 /* Hardware independent */
 #include "../include/hi/hi_def.hh"
 #include "../include/hi/hi_state_machine.hh"
@@ -51,7 +53,6 @@
 
 
 /* Hardware dependent */
-#include "../include/hd/definitions.h"
 #include "../include/hd/periph.h"
 // FIXME: remove once this functions are implemented
 #include "../include/hd/stubs.hh"

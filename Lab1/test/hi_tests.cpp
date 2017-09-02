@@ -18,6 +18,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **/
 #ifdef TESTING
 #include <cstdint>
+#include "../include/common_def.hh"
 #include "../include/hi/hi_def.hh"
 #include "../include/hi/hi_utils.hh"
 #include "../include/hi/hi_state_machine.hh"
@@ -26,11 +27,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace
 {
-    TEST(Hi_Dual_Mean_Fifo, Constants)
-    {
-        ASSERT_EQ(MAX_SAMPLES, 30);
-        ASSERT_EQ(MEAN_SAMPLES, 25);
-    }
 
     TEST(Hi_Dual_Mean_Fifo, Invalid_During_Init)
     {
@@ -49,7 +45,7 @@ namespace
             dual_fifo->add_sample(4);
         }
 
-        EXPECT_FLOAT_EQ(4, dual_fifo->get_mean());
+        EXPECT_NEAR(4, dual_fifo->get_mean(), 0.01);
 
         (void) dual_fifo->is_last_second_big(&comp_condition);
         EXPECT_FALSE(comp_condition);

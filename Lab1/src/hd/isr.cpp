@@ -11,7 +11,7 @@
 #include "msp.h"
 
 /* Project Includes*/
-#include "../../include/hd/definitions.h"
+#include "../../include/common_def.hh"
 #include "../../include/hd/periph.h"
 
 

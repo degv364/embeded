@@ -21,16 +21,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifdef TESTING
 #include <iostream>
-// FIXME: check if this can be included in microcontroller
 #include <cstdint>
 #endif
 #ifndef TESTING
 #include <stdint.h>
 #endif
+
+#include "../common_def.hh"
 #include "hi_def.hh"
 
-#ifndef HI_UTILS_TEMP
-#define HI_UTILS_TEMP
+#ifndef HI_UTILS
+#define HI_UTILS
 
 class Hi_dual_mean_fifo
 {
@@ -52,11 +53,11 @@ private:
     /*
      * Reset data to a value
      */
-    hi_return_e reset_to_value(uint16_t value);
+    return_e reset_to_value(uint16_t value);
     /*
      * MOve pointer to next sample
      */
-    hi_return_e move_next_sample();
+    return_e move_next_sample();
 
 public:
     Hi_dual_mean_fifo(void);
@@ -64,13 +65,13 @@ public:
     /*
      * Adds a new sample
      */
-    hi_return_e add_sample(uint16_t sample);
+    return_e add_sample(uint16_t sample);
 
     /*
      * Returns true if the last second mean is more than 5% of the last 5 second mean and,
      * there are enough valid values
      */
-    hi_return_e is_last_second_big(bool *is_big);
+    return_e is_last_second_big(bool *is_big);
 
 #ifdef TESTING
     float get_mean();
@@ -78,5 +79,5 @@ public:
 #endif
 };
 
-#endif //HI_UTILS_TEMP
+#endif //HI_UTILS
 

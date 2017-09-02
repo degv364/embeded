@@ -17,19 +17,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **/
 
-
-
-
-#ifdef TESTING
-#include <iostream>
-// FIXME: check if this can be included in microcontroller
-#include <cstdint>
-#endif
-
-#include "../../include/hi/hi_def.hh"
 #include "../../include/hi/hi_utils.hh"
 
-hi_return_e Hi_dual_mean_fifo::reset_to_value(uint16_t value)
+return_e Hi_dual_mean_fifo::reset_to_value(uint16_t value)
 {
     //reset count of valid values
     this->current_valid_values = 0;
@@ -39,14 +29,14 @@ hi_return_e Hi_dual_mean_fifo::reset_to_value(uint16_t value)
     }
     this->mean = (float) value;
     this->last_mean = (float) value;
-    return HI_RETURN_OK;
+    return RETURN_OK;
 }
 
-hi_return_e Hi_dual_mean_fifo::move_next_sample()
+return_e Hi_dual_mean_fifo::move_next_sample()
 {
     this->subs_index = (this->subs_index + MAX_SAMPLES - 1) % MAX_SAMPLES;
     this->comp_index = (this->comp_index + MAX_SAMPLES - 1) % MAX_SAMPLES;
-    return HI_RETURN_OK;
+    return RETURN_OK;
 }
 
 Hi_dual_mean_fifo::Hi_dual_mean_fifo(void)
@@ -61,7 +51,7 @@ Hi_dual_mean_fifo::~Hi_dual_mean_fifo(void)
     reset_to_value(0);
 }
 
-hi_return_e Hi_dual_mean_fifo::add_sample(uint16_t sample)
+return_e Hi_dual_mean_fifo::add_sample(uint16_t sample)
 {
     //update 5 second mean
     this->mean += (float) this->data[this->comp_index] / MEAN_SAMPLES;
@@ -79,16 +69,16 @@ hi_return_e Hi_dual_mean_fifo::add_sample(uint16_t sample)
     this->current_valid_values =
             (this->current_valid_values >= MAX_SAMPLES) ?
                     MAX_SAMPLES : this->current_valid_values + 1;
-    return HI_RETURN_OK;
+    return RETURN_OK;
 }
 
-hi_return_e Hi_dual_mean_fifo::is_last_second_big(bool *is_big)
+return_e Hi_dual_mean_fifo::is_last_second_big(bool *is_big)
 {
     float five_percent;
 
     if (is_big == 0)
     {
-        return HI_RETURN_BAD_PARAM;
+        return RETURN_BAD_PARAM;
     }
 
     five_percent = this->mean * 0.05;
@@ -100,7 +90,7 @@ hi_return_e Hi_dual_mean_fifo::is_last_second_big(bool *is_big)
     {
         *is_big = false;
     }
-    return HI_RETURN_OK;
+    return RETURN_OK;
 }
 
 #ifdef TESTING

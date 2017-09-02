@@ -7,7 +7,8 @@
 
 #ifndef DEFINITIONS_H_
 #define DEFINITIONS_H_
-
-#define ADC_SAMPLES_PER_SECOND 20
+/* FIXME: use this for very hardware dependent definitions
+ * that hardware independent software does not need
+ */
 
 #endif /* DEFINITIONS_H_ */
