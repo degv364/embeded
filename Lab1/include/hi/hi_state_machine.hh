@@ -38,22 +38,23 @@ bool is_lamp_on();
 bool is_lamp_off();
 #endif
 
-class Hi_state_machine{
+class Hi_state_machine
+{
 private:
-  hi_state_e state;
-  hi_state_e stored_state;
-  
+    hi_state_e state;
+    hi_state_e stored_state;
+
 public:
-  Hi_state_machine();
-  ~Hi_state_machine();
+    Hi_state_machine();
+    ~Hi_state_machine();
 
-  hi_return_e
-  handle_sensors(hi_sensor_t* input_sensor_data);
+    hi_return_e
+    handle_sensors(hi_sensor_t* input_sensor_data);
 
-  #ifdef TESTING
-  hi_state_e get_state(void);
-  #endif
-  
+#ifdef TESTING
+    hi_state_e get_state(void);
+#endif
+
 };
 
 #endif

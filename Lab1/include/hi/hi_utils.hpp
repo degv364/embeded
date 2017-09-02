@@ -32,109 +32,122 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 //Templated, to increase generality
 template<typename INT, typename FLOAT>
-class Hi_dual_mean_fifo{
+class Hi_dual_mean_fifo
+{
 private:
-  // count to know if one have enough values to have valid results
-  uint16_t current_valid_values;
-  //array to store values
-  INT data[MAX_SAMPLES];
-  //limit of the fifo 
-  uint16_t subs_index;
-  // get mean until this member
-  uint16_t comp_index;
-  
-  // 5 seconds mean
-  FLOAT mean;
-  // last second mean
-  FLOAT last_mean;
+    // count to know if one have enough values to have valid results
+    uint16_t current_valid_values;
+    //array to store values
+    INT data[MAX_SAMPLES];
+    //limit of the fifo
+    uint16_t subs_index;
+    // get mean until this member
+    uint16_t comp_index;
 
-  /*
-   * Reset data to a value
-   */
-  hi_return_e
-  reset_to_value(INT value){
-    //reset count of valid values
-    this->current_valid_values = 0;
-    for (uint16_t index; index< MAX_SAMPLES; index++){
-      this->data[index] = value;
+    // 5 seconds mean
+    FLOAT mean;
+    // last second mean
+    FLOAT last_mean;
+
+    /*
+     * Reset data to a value
+     */
+    hi_return_e
+    reset_to_value(INT value)
+    {
+        //reset count of valid values
+        this->current_valid_values = 0;
+        for (uint16_t index; index< MAX_SAMPLES; index++)
+        {
+            this->data[index] = value;
+        }
+        this->mean = (FLOAT)value;
+        this->last_mean = (FLOAT)value;
+        return HI_RETURN_OK;
     }
-    this->mean = (FLOAT)value;
-    this->last_mean = (FLOAT)value;
-    return HI_RETURN_OK;
-  }
-  /*
-   * MOve pointer to next sample
-   */
-  hi_return_e
-  move_next_sample(){
-    this->subs_index=(this->subs_index+MAX_SAMPLES-1)%MAX_SAMPLES;
-    this->comp_index=(this->comp_index+MAX_SAMPLES-1)%MAX_SAMPLES;
-    return HI_RETURN_OK;
-  }
+    /*
+     * MOve pointer to next sample
+     */
+    hi_return_e
+    move_next_sample()
+    {
+        this->subs_index=(this->subs_index+MAX_SAMPLES-1)%MAX_SAMPLES;
+        this->comp_index=(this->comp_index+MAX_SAMPLES-1)%MAX_SAMPLES;
+        return HI_RETURN_OK;
+    }
 
 public:
-  Hi_dual_mean_fifo(void){
-    this->subs_index = 0;
-    this->comp_index = SAMPLES_PER_SECOND;
-    this->reset_to_value(0);
-  }
-  ~Hi_dual_mean_fifo(void){
-    // FIXME:add destructor
-    reset_to_value(0);
-  }
-  /*
-   * Adds a new sample
-   */
-  hi_return_e
-  add_sample(INT sample){
-    //update 5 second mean
-    this->mean+=(FLOAT)this->data[this->comp_index]/MEAN_SAMPLES;
-    this->mean-=(FLOAT)this->data[this->subs_index]/MEAN_SAMPLES;
-    
-    //update last second mean
-    this->last_mean+=(FLOAT)sample/SAMPLES_PER_SECOND;
-    this->last_mean-=(FLOAT)this->data[this->comp_index]/SAMPLES_PER_SECOND;
-    
-    //update data
-    this->data[this->subs_index] = sample;
-    this->move_next_sample();
-    //update valid data count
-    this->current_valid_values =
-      (this->current_valid_values>=MAX_SAMPLES) ? MAX_SAMPLES : this->current_valid_values+1;
-    return HI_RETURN_OK;
-  }
+    Hi_dual_mean_fifo(void)
+    {
+        this->subs_index = 0;
+        this->comp_index = SAMPLES_PER_SECOND;
+        this->reset_to_value(0);
+    }
+    ~Hi_dual_mean_fifo(void)
+    {
+        // FIXME:add destructor
+        reset_to_value(0);
+    }
+    /*
+     * Adds a new sample
+     */
+    hi_return_e
+    add_sample(INT sample)
+    {
+        //update 5 second mean
+        this->mean+=(FLOAT)this->data[this->comp_index]/MEAN_SAMPLES;
+        this->mean-=(FLOAT)this->data[this->subs_index]/MEAN_SAMPLES;
 
-  /* 
-   * Returns true if the last second mean is more than 5% of the last 5 second mean and,
-   * there are enough valid values
-   */
-  hi_return_e
-  is_last_second_big(bool *is_big){
-    FLOAT five_percent;
+        //update last second mean
+        this->last_mean+=(FLOAT)sample/SAMPLES_PER_SECOND;
+        this->last_mean-=(FLOAT)this->data[this->comp_index]/SAMPLES_PER_SECOND;
 
-    if (is_big == NULL){
-      return HI_RETURN_BAD_PARAM;
+        //update data
+        this->data[this->subs_index] = sample;
+        this->move_next_sample();
+        //update valid data count
+        this->current_valid_values =
+        (this->current_valid_values>=MAX_SAMPLES) ? MAX_SAMPLES : this->current_valid_values+1;
+        return HI_RETURN_OK;
     }
-    
-    five_percent = this->mean * 0.05;
-    if (this->mean+five_percent<this->last_mean){
-      *is_big = (this->current_valid_values >= MAX_SAMPLES);
+
+    /*
+     * Returns true if the last second mean is more than 5% of the last 5 second mean and,
+     * there are enough valid values
+     */
+    hi_return_e
+    is_last_second_big(bool *is_big)
+    {
+        FLOAT five_percent;
+
+        if (is_big == NULL)
+        {
+            return HI_RETURN_BAD_PARAM;
+        }
+
+        five_percent = this->mean * 0.05;
+        if (this->mean+five_percent<this->last_mean)
+        {
+            *is_big = (this->current_valid_values >= MAX_SAMPLES);
+        }
+        else
+        {
+            *is_big = false;
+        }
+        return HI_RETURN_OK;
     }
-    else{
-      *is_big = false;
-    }
-    return HI_RETURN_OK;
-  }
 
 #ifdef TESTING
-  FLOAT
-  get_mean(){
-    return this->mean;
-  }
-  FLOAT
-  get_last_mean(){
-    return this->last_mean;
-  }
+    FLOAT
+    get_mean()
+    {
+        return this->mean;
+    }
+    FLOAT
+    get_last_mean()
+    {
+        return this->last_mean;
+    }
 #endif
 };
 
