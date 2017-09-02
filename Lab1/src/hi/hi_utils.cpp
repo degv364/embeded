@@ -81,6 +81,13 @@ return_e Hi_dual_mean_fifo::is_last_second_big(bool *is_big)
         return RETURN_BAD_PARAM;
     }
 
+    // Too loud
+    if (this->last_mean > SOUND_TRESHOLD)
+    {
+        *is_big = true;
+    }
+
+    // Fast increase of volume
     five_percent = this->mean * 0.05;
     if (this->mean + five_percent < this->last_mean)
     {

@@ -32,6 +32,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // FIXME: Change this value depending on timer frequency
 #define TIMEOUT_30 300
 
+// FIXME: Change to a more apropiate value
+#define SOUND_TRESHOLD 8300
+
 #define ADC_SAMPLES_PER_SECOND 20
 
 // FIXME: this is a hack for hi/hd compatibility..

@@ -99,7 +99,7 @@ int main(void)
 
     while (1)
     {
-        if (micBuffer[micPos - 1] > 8300)
+        if (micBuffer[micPos - 1] > SOUND_TRESHOLD)
             led.set();
         else
             led.reset();
