@@ -58,13 +58,22 @@
 #include "../include/hd/stubs.hh"
 
 
-
-
-volatile uint_fast16_t micBuffer[UINT8_MAX];
-volatile uint8_t micPos;
-
 periph::LampHandler lamp_handler(1);
 periph::MicrophoneADC mic(ADC_SAMPLES_PER_SECOND, ADC_MEM0);
+Hi_dual_mean_fifo mic_fifo;
+
+
+/*
+ * Initialize sensor struct at time 0
+ * Button not pressed
+ * Light sensor detecting darkness
+ * microphone detecting silence
+ */
+
+// FIXME: check if volatile is needed here
+hi_sensor_t sensors={0, false, false, false};
+//FIXME: remove once it is a singleton
+Hi_state_machine st;
 
 return_e hardware_init(void)
 {
@@ -77,7 +86,7 @@ return_e hardware_init(void)
     button.enableInterrupt(GPIO_HIGH_TO_LOW_TRANSITION);
 
     //Start Microphone ADC sampling
-    micPos = 0;
+    //micPos = 0;
     mic.start();
 
     //Enable interrupts
@@ -90,6 +99,7 @@ return_e hardware_init(void)
 
 int main(void)
 {
+    uint16_t wait_time = 0;
     return_e rt;
     rt = hardware_init();
     if (rt != RETURN_OK)
@@ -99,10 +109,38 @@ int main(void)
 
     while (1)
     {
-        if (micBuffer[micPos - 1] > SOUND_TRESHOLD)
-	  lamp_handler.lamps_on();
-        else
-	  lamp_handler.lamps_off();
+        // store microphone condition
+        rt = mic_fifo.is_last_second_big(&sensors.microphone);
+        if (rt != RETURN_OK)
+        {
+            break;
+        }
+
+        //FIXME: store light sensor condition
+
+        // state_machine handle sensors
+        rt = st.handle_sensors(&sensors);
+        if (rt != RETURN_OK)
+        {
+
+            break;
+        }
+
+        // Restore previous state of button
+        if (sensors.control_button)
+        {
+            sensors.control_button = false;
+        }
+
+        // FIXME: hack to wait some time
+        while (wait_time < HACK_WAIT)
+        {
+            wait_time++;
+        }
+        wait_time = 0;
+        // update time
+        sensors.time++;
+
     }
 
     return 0;

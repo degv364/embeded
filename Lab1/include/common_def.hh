@@ -29,6 +29,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef COMMON_DEF_H_
 #define COMMON_DEF_H_
 
+// FIXME: hack for waiting some time in main loop
+#define HACK_WAIT 5000000
+
 // FIXME: Change this value depending on timer frequency
 #define TIMEOUT_30 300
 
