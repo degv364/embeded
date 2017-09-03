@@ -25,6 +25,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "gtest/gtest.h"
 #include <iostream>
 
+// FIXME: use google mock for this
+
+periph::LampHandler lamp_handler(1);
+
 namespace
 {
 
@@ -73,7 +77,7 @@ namespace
         EXPECT_EQ(HI_STATE_OFF, st->get_state());
 
         // Init done, Push button
-        EXPECT_FALSE(is_lamp_on());
+        EXPECT_FALSE(lamp_handler.is_lamp_on());
 
         sensor.control_button = true;
         sensor.time = 50;
@@ -86,33 +90,33 @@ namespace
         sensor.time = TIMEOUT_30-1;
         st->handle_sensors(&sensor);
         EXPECT_EQ(HI_STATE_MANUAL_CONTROL, st->get_state());
-        EXPECT_TRUE(is_lamp_on());
+        EXPECT_TRUE(lamp_handler.is_lamp_on());
 
         // timeout
         sensor.time = TIMEOUT_30+1;
         st->handle_sensors(&sensor);
         EXPECT_EQ(HI_STATE_OFF, st->get_state());
-        EXPECT_FALSE(is_lamp_on());
+        EXPECT_FALSE(lamp_handler.is_lamp_on());
 
         // lights on, sound on
         sensor.light_sensor = true;
         sensor.microphone = true;
         st->handle_sensors(&sensor);
         EXPECT_EQ(HI_STATE_OFF, st->get_state());
-        EXPECT_FALSE(is_lamp_on());
+        EXPECT_FALSE(lamp_handler.is_lamp_on());
 
         // light off, sound on
         sensor.light_sensor = false;
         st->handle_sensors(&sensor);
         EXPECT_EQ(HI_STATE_ON, st->get_state());
-        EXPECT_FALSE(is_lamp_on());// Changes next tick
+        EXPECT_FALSE(lamp_handler.is_lamp_on());// Changes next tick
         EXPECT_EQ(0, sensor.time);
 
         // quiet, no timeout
         sensor.microphone = false;
         st->handle_sensors(&sensor);
         EXPECT_EQ(HI_STATE_ON, st->get_state());
-        EXPECT_TRUE(is_lamp_on());
+        EXPECT_TRUE(lamp_handler.is_lamp_on());
 
         // timeout
         sensor.time = TIMEOUT_30+1;

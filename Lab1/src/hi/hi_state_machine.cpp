@@ -21,6 +21,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "../../include/hi/hi_state_machine.hh"
 
+// FIXME: change this once lamp_handler is a singleton
+extern periph::LampHandler lamp_handler;
+
 Hi_state_machine::Hi_state_machine()
 {
     this->state = HI_STATE_INIT;
@@ -53,7 +56,7 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         this->state = HI_STATE_MANUAL_CONTROL;
         // reset time
         input_sensor_data->time = 0;
-        rt = lamp_toogle();
+        rt = lamp_handler.lamps_toggle();
         goto handle_fail;
     }
 
@@ -71,7 +74,7 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         rt = RETURN_OK;
         break;
     case HI_STATE_ON:
-        rt = lamp_on();
+        rt = lamp_handler.lamps_on();
         if (time > TIMEOUT_30 || light_sensor)
         {
             this->state = HI_STATE_OFF;
@@ -84,7 +87,7 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         }
         break;
     case HI_STATE_OFF:
-        rt = lamp_off();
+        rt = lamp_handler.lamps_off();
         if (light_sensor)
         {
             break;
@@ -100,7 +103,7 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
     case HI_STATE_MANUAL_CONTROL:
         if (time > TIMEOUT_30)
         {
-            rt = lamp_toogle();
+            rt = lamp_handler.lamps_toggle();
             this->state = this->stored_state;
         }
         break;
@@ -118,43 +121,10 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
 }
 
 #ifdef TESTING
-static bool is_on = false;
-
 hi_state_e
 Hi_state_machine::get_state(void)
 {
     return this->state;
-}
-
-return_e
-lamp_off()
-{
-    is_on = false;
-    return RETURN_OK;
-}
-return_e
-lamp_on()
-{
-    is_on = true;
-    return RETURN_OK;
-}
-
-return_e
-lamp_toogle()
-{
-    is_on = !is_on;
-    return RETURN_OK;
-}
-
-bool
-is_lamp_on()
-{
-    return is_on;
-}
-bool
-is_lamp_off()
-{
-    return !is_on;
 }
 #endif
 

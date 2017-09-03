@@ -16,41 +16,39 @@ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **/
-
 #ifdef TESTING
-#include <iostream>
-#include <cstdint>
-#include "../../test/periph.hh"
+
+#include "periph.hh"
+
+periph::LampHandler::LampHandler(uint16_t consistency){
+  (void) consistency;
+}
+
+return_e
+periph::LampHandler::lamps_on(void){
+  this->lamp_state = true;
+  return RETURN_OK;
+}
+
+return_e
+periph::LampHandler::lamps_off(void){
+  this->lamp_state = false;
+  return RETURN_OK;
+}
+
+return_e
+periph::LampHandler::lamps_toggle(void){
+  this->lamp_state = !this->lamp_state;
+  return RETURN_OK;
+}
+
+bool
+periph::LampHandler::is_lamp_on(void){
+  return this->lamp_state;
+}
+bool
+periph::LampHandler::is_lamp_off(void){
+  return !this->lamp_state;
+}
+
 #endif
-
-#ifndef TESTING
-#include "../hd/periph.h"
-#endif
-
-#include "../common_def.hh"
-#include "hi_def.hh"
-
-#ifndef HI_ST
-#define HI_ST
-
-class Hi_state_machine
-{
-private:
-    hi_state_e state;
-    hi_state_e stored_state;
-
-public:
-    Hi_state_machine();
-    ~Hi_state_machine();
-
-    return_e
-    handle_sensors(hi_sensor_t* input_sensor_data);
-
-#ifdef TESTING
-    hi_state_e get_state(void);
-#endif
-
-};
-
-#endif
-

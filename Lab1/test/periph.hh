@@ -18,39 +18,38 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **/
 
 #ifdef TESTING
-#include <iostream>
+#include "../include/common_def.hh"
 #include <cstdint>
-#include "../../test/periph.hh"
-#endif
 
-#ifndef TESTING
-#include "../hd/periph.h"
-#endif
+#ifndef DUMMY
+#define DUMMY
 
-#include "../common_def.hh"
-#include "hi_def.hh"
-
-#ifndef HI_ST
-#define HI_ST
-
-class Hi_state_machine
+namespace periph
+{
+  /*
+   * Dummy class for testing
+   */
+class LampHandler
 {
 private:
-    hi_state_e state;
-    hi_state_e stored_state;
+    bool lamp_state;
 
 public:
-    Hi_state_machine();
-    ~Hi_state_machine();
+    LampHandler(uint16_t consistency);
 
-    return_e
-    handle_sensors(hi_sensor_t* input_sensor_data);
+    // Turn ON the number of enabled lamps
+    return_e lamps_on(void);
+    // Turn OFF all lamps
+    return_e lamps_off(void);
+    // Toggle the number of enabled lamps
+    return_e lamps_toggle(void);
 
-#ifdef TESTING
-    hi_state_e get_state(void);
-#endif
+  bool is_lamp_on(void);
+  bool is_lamp_off(void);
 
 };
 
-#endif
+}
 
+#endif
+#endif
