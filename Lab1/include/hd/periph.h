@@ -13,6 +13,8 @@
 
 /* Standard Includes */
 #include <assert.h>
+/*Internal Includes*/
+#include "../common_def.hh"
 
 namespace periph
 {
@@ -65,6 +67,33 @@ public:
     bool read(void);
     static bool checkAndCleanIRQ(uint8_t GPIO_Port, uint16_t GPIO_Pin);
 };
+
+/*
+ * Class to hide the number of lamps enabled complexity
+ */
+class LampHandler
+{
+private:
+    periph::OutputGPIO *lamp0;
+    periph::OutputGPIO *lamp1;
+    periph::OutputGPIO *lamp2;
+
+    uint16_t enabled_lamps;
+
+public:
+    LampHandler(uint16_t initial_enabled_lamps);
+
+    void set_enabled_lamps(uint16_t new_enabled_lamps);
+
+    // Turn ON the number of enabled lamps
+    return_e lamps_on(void);
+    // Turn OFF all lamps
+    return_e lamps_off(void);
+    // Toggle the number of enabled lamps
+    return_e lamps_toggle(void);
+
+};
+
 }
 
 #endif /* INCLUDE_PERIPH_H_ */

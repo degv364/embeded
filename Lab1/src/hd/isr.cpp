@@ -20,8 +20,7 @@ extern periph::MicrophoneADC mic;
 extern volatile uint_fast16_t micBuffer[UINT8_MAX];
 extern volatile uint8_t micPos;
 
-extern periph::OutputGPIO led;
-
+extern periph::LampHandler lamp_handler;
 
 /*Interrupt Service Routines (ISR) Definition*/
 extern "C" {
@@ -45,7 +44,7 @@ extern "C" {
 
         if(periph::InputGPIO::checkAndCleanIRQ(GPIO_PORT_P5, GPIO_PIN1))
         {
-            led.toggle();
+            (void)lamp_handler.lamps_toggle();
             for(int j=0; j<100000; j++);
         }
 

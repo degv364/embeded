@@ -63,7 +63,7 @@
 volatile uint_fast16_t micBuffer[UINT8_MAX];
 volatile uint8_t micPos;
 
-periph::OutputGPIO led(GPIO_PORT_P1, GPIO_PIN0);
+periph::LampHandler lamp_handler(1);
 periph::MicrophoneADC mic(ADC_SAMPLES_PER_SECOND, ADC_MEM0);
 
 return_e hardware_init(void)
@@ -100,9 +100,9 @@ int main(void)
     while (1)
     {
         if (micBuffer[micPos - 1] > SOUND_TRESHOLD)
-            led.set();
+	  lamp_handler.lamps_on();
         else
-            led.reset();
+	  lamp_handler.lamps_off();
     }
 
     return 0;
