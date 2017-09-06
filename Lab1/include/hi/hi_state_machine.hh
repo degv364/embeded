@@ -17,6 +17,9 @@
 
  **/
 
+#ifndef HI_ST_H_
+#define HI_ST_H_
+
 #ifdef TESTING
 #include <iostream>
 #include <cstdint>
@@ -30,21 +33,18 @@
 #include "common_def.hh"
 #include "hi/hi_def.hh"
 
-#ifndef HI_ST_H_
-#define HI_ST_H_
 
 class Hi_state_machine
 {
 private:
-    hi_state_e state;
-    hi_state_e stored_state;
+    hi_state_e state_;
+    hi_state_e stored_state_;
 
 public:
     Hi_state_machine();
     ~Hi_state_machine();
 
-    return_e
-    handle_sensors(hi_sensor_t* input_sensor_data);
+    return_e handle_sensors(hi_sensor_t* input_sensor_data);
 
 #ifdef TESTING
     hi_state_e get_state(void);

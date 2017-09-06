@@ -25,12 +25,11 @@ static periph::OutputGPIO internal_lamp0(GPIO_PORT_P1, GPIO_PIN0);
 static periph::OutputGPIO internal_lamp1(GPIO_PORT_P2, GPIO_PIN1);
 static periph::OutputGPIO internal_lamp2(GPIO_PORT_P3, GPIO_PIN2);
 
-periph::LampHandler::LampHandler(uint16_t initial_enabled_lamps)
+periph::LampHandler::LampHandler(uint16_t initial_enabled_lamps) :
+        lamp0_(&internal_lamp0), lamp1_(&internal_lamp1), lamp2_(
+                &internal_lamp2)
 {
-    this->lamp0 = &internal_lamp0;
-    this->lamp1 = &internal_lamp1;
-    this->lamp2 = &internal_lamp2;
-    this->set_enabled_lamps(initial_enabled_lamps);
+    set_enabled_lamps(initial_enabled_lamps);
 }
 
 void periph::LampHandler::set_enabled_lamps(uint16_t new_enabled_lamps)
@@ -38,38 +37,38 @@ void periph::LampHandler::set_enabled_lamps(uint16_t new_enabled_lamps)
     // Check for valid inputs
     if (new_enabled_lamps == 0 || new_enabled_lamps > 3)
     {
-        this->enabled_lamps = 1;
+        enabled_lamps_ = 1;
     }
     // set enabled lamps value
-    this->enabled_lamps = new_enabled_lamps;
+    enabled_lamps_ = new_enabled_lamps;
 
     // FIXME: remove this part once the correct pins are used
-    this->enabled_lamps = 1;
+    enabled_lamps_ = 1;
 }
 
 return_e periph::LampHandler::lamps_on()
 {
-    switch (this->enabled_lamps)
+    switch (enabled_lamps_)
     {
     case 1:
-        this->lamp0->set();
-        this->lamp1->reset();
-        this->lamp2->reset();
+        lamp0_->set();
+        lamp1_->reset();
+        lamp2_->reset();
         break;
     case 2:
-        this->lamp0->set();
-        this->lamp1->set();
-        this->lamp2->reset();
+        lamp0_->set();
+        lamp1_->set();
+        lamp2_->reset();
         break;
     case 3:
-        this->lamp0->set();
-        this->lamp1->set();
-        this->lamp2->set();
+        lamp0_->set();
+        lamp1_->set();
+        lamp2_->set();
         break;
     default:
-        this->lamp0->reset();
-        this->lamp1->reset();
-        this->lamp2->reset();
+        lamp0_->reset();
+        lamp1_->reset();
+        lamp2_->reset();
 
     }
     return RETURN_OK;
@@ -77,35 +76,35 @@ return_e periph::LampHandler::lamps_on()
 
 return_e periph::LampHandler::lamps_off()
 {
-    this->lamp0->reset();
-    this->lamp1->reset();
-    this->lamp2->reset();
+    lamp0_->reset();
+    lamp1_->reset();
+    lamp2_->reset();
     return RETURN_OK;
 }
 
 return_e periph::LampHandler::lamps_toggle()
 {
-    switch (this->enabled_lamps)
+    switch (enabled_lamps_)
     {
     case 1:
-        this->lamp0->toggle();
-        this->lamp1->reset();
-        this->lamp2->reset();
+        lamp0_->toggle();
+        lamp1_->reset();
+        lamp2_->reset();
         break;
     case 2:
-        this->lamp0->toggle();
-        this->lamp1->toggle();
-        this->lamp2->reset();
+        lamp0_->toggle();
+        lamp1_->toggle();
+        lamp2_->reset();
         break;
     case 3:
-        this->lamp0->toggle();
-        this->lamp1->toggle();
-        this->lamp2->toggle();
+        lamp0_->toggle();
+        lamp1_->toggle();
+        lamp2_->toggle();
         break;
     default:
-        this->lamp0->reset();
-        this->lamp1->reset();
-        this->lamp2->reset();
+        lamp0_->reset();
+        lamp1_->reset();
+        lamp2_->reset();
     }
     return RETURN_OK;
 }

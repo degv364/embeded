@@ -35,18 +35,18 @@ class Hi_dual_mean_fifo
 {
 private:
     // count to know if one have enough values to have valid results
-    uint16_t current_valid_values;
+    uint16_t current_valid_values_;
     //array to store values
-    uint16_t data[MAX_SAMPLES];
+    uint16_t data_[MAX_SAMPLES];
     //limit of the fifo
-    uint16_t subs_index;
+    uint16_t subs_index_;
     // get mean until this member
-    uint16_t comp_index;
+    uint16_t comp_index_;
 
     // 5 seconds mean
-    float mean;
+    float mean_;
     // last second mean
-    float last_mean;
+    float last_mean_;
 
     /*
      * Reset data to a value
@@ -69,7 +69,7 @@ public:
      * Returns true if the last second mean is more than 5% of the last 5 second mean and,
      * there are enough valid values
      */
-    return_e is_last_second_big(bool *is_big);
+    return_e is_last_second_loud(bool *is_loud);
 
 #ifdef TESTING
     float get_mean();

@@ -31,11 +31,11 @@ namespace periph
 class LampHandler
 {
 private:
-    periph::OutputGPIO *lamp0;
-    periph::OutputGPIO *lamp1;
-    periph::OutputGPIO *lamp2;
+    periph::OutputGPIO *lamp0_;
+    periph::OutputGPIO *lamp1_;
+    periph::OutputGPIO *lamp2_;
 
-    uint16_t enabled_lamps;
+    uint16_t enabled_lamps_;
 
 public:
     LampHandler(uint16_t initial_enabled_lamps);

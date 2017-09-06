@@ -23,16 +23,15 @@
 // FIXME: change this once lamp_handler is a singleton
 extern periph::LampHandler lamp_handler;
 
-Hi_state_machine::Hi_state_machine()
+Hi_state_machine::Hi_state_machine() :
+        state_(HI_STATE_INIT), stored_state_(HI_STATE_NONE)
 {
-    this->state = HI_STATE_INIT;
-    this->stored_state = HI_STATE_NONE;
 }
 
 Hi_state_machine::~Hi_state_machine()
 {
-    this->state = HI_STATE_DEINIT;
-    this->stored_state = HI_STATE_NONE;
+    state_ = HI_STATE_DEINIT;
+    stored_state_ = HI_STATE_NONE;
 }
 
 return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
@@ -42,7 +41,7 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         return RETURN_BAD_PARAM;
     }
 
-    // create intenal_copy
+    // create internal_copy
     return_e rt = RETURN_OK;
     uint16_t time = input_sensor_data->time;
     bool control_button = input_sensor_data->control_button;
@@ -51,32 +50,32 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
 
     if (control_button)
     {
-        this->stored_state = this->state;
-        this->state = HI_STATE_MANUAL_CONTROL;
+        stored_state_ = state_;
+        state_ = HI_STATE_MANUAL_CONTROL;
         // reset time
         input_sensor_data->time = 0;
         rt = lamp_handler.lamps_toggle();
         goto handle_fail;
     }
 
-    switch (this->state)
+    switch (state_)
     {
     case HI_STATE_INIT:
-        this->state = HI_STATE_ALIVE_SEQ;
+        state_ = HI_STATE_ALIVE_SEQ;
         // reset time
         input_sensor_data->time = 0;
         rt = RETURN_OK;
         break;
     case HI_STATE_ALIVE_SEQ:
         //FIXME: implement this
-        this->state = HI_STATE_OFF;
+        state_ = HI_STATE_OFF;
         rt = RETURN_OK;
         break;
     case HI_STATE_ON:
         rt = lamp_handler.lamps_on();
         if (time > TIMEOUT_30 || light_sensor)
         {
-            this->state = HI_STATE_OFF;
+            state_ = HI_STATE_OFF;
             break;
         }
         if (microphone)
@@ -97,13 +96,13 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         }
         //reset time
         input_sensor_data->time = 0;
-        this->state = HI_STATE_ON;
+        state_ = HI_STATE_ON;
         break;
     case HI_STATE_MANUAL_CONTROL:
         if (time > TIMEOUT_30)
         {
             rt = lamp_handler.lamps_toggle();
-            this->state = this->stored_state;
+            state_ = stored_state_;
         }
         break;
     default:
@@ -113,7 +112,7 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
 
     handle_fail: if (rt != RETURN_OK)
     {
-        this->state = HI_STATE_FAIL;
+        state_ = HI_STATE_FAIL;
     }
     return rt;
 
@@ -123,7 +122,7 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
 hi_state_e
 Hi_state_machine::get_state(void)
 {
-    return this->state;
+    return state_;
 }
 #endif
 

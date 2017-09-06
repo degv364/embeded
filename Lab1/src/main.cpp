@@ -82,10 +82,8 @@ Hi_dual_mean_fifo mic_fifo;
  * microphone detecting silence
  */
 
-// FIXME: check if volatile is needed here
+//FIXME: Add volatile and fix volatile function parameter errors
 hi_sensor_t sensors = { 0, false, false, false };
-//FIXME: remove once it is a singleton
-Hi_state_machine st;
 
 return_e hardware_init(void)
 {
@@ -109,43 +107,39 @@ return_e hardware_init(void)
 
 int main(void)
 {
+    Hi_state_machine fsm;
     return_e rt;
     rt = hardware_init();
     if (rt != RETURN_OK)
-    {
         return 1;
-    }
 
-    uint64_t lightVal; //FIXME: Only for testing light sensor read
+    uint64_t lightVal; //FIXME: Only for testing light sensor threshold
 
     while (1)
     {
         // store microphone condition
-        rt = mic_fifo.is_last_second_big(&sensors.microphone);
+        rt = mic_fifo.is_last_second_loud(&sensors.microphone);
         if (rt != RETURN_OK)
-        {
             break;
-        }
 
-        sensors.light_sensor = (light.read() >= LIGHT_THRESHOLD);
+        // read light sensor condition
+        lightVal = light.read();
+        sensors.light_sensor = (lightVal >= LIGHT_THRESHOLD);
 
         // state_machine handle sensors
-        rt = st.handle_sensors(&sensors);
+        rt = fsm.handle_sensors(&sensors);
         if (rt != RETURN_OK)
-        {
             break;
-        }
 
         // Restore previous state of button
         if (sensors.control_button)
-        {
             sensors.control_button = false;
-        }
 
-        // FIXME: hack to wait some time
-        for(uint64_t wait_time=0; wait_time < HACK_WAIT; wait_time++);
+        // FIXME: Hack to wait some time
+        for (uint64_t wait_time = 0; wait_time < HACK_WAIT; wait_time++)
+            ;
 
-        // update time
+        // Update time
         sensors.time++;
 
     }
