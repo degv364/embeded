@@ -67,7 +67,6 @@
 
 /* Hardware dependent (hd) */
 #include "hd/periph.hh"
-#include "hd/stubs.hh"
 
 periph::LampHandler lamp_handler(1);
 periph::MicrophoneADC mic(ADC_SAMPLES_PER_SECOND, ADC_MEM0);
