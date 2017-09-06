@@ -135,7 +135,6 @@ int main(void)
         rt = st.handle_sensors(&sensors);
         if (rt != RETURN_OK)
         {
-
             break;
         }
 
@@ -146,7 +145,7 @@ int main(void)
         }
 
         // FIXME: hack to wait some time
-        for(uint64_t wait_time; wait_time < HACK_WAIT; wait_time++);
+        for(uint64_t wait_time=0; wait_time < HACK_WAIT; wait_time++);
 
         // update time
         sensors.time++;
