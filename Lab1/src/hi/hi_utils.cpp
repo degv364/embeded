@@ -82,7 +82,7 @@ return_e Hi_dual_mean_fifo::is_last_second_big(bool *is_big)
     }
 
     // Too loud
-    if (this->last_mean > SOUND_TRESHOLD)
+    if (this->last_mean > SOUND_THRESHOLD)
     {
         *is_big = true;
     }

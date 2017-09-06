@@ -26,10 +26,13 @@
 // FIXME: Change this value depending on timer frequency
 #define TIMEOUT_30 300
 
-// FIXME: Change to a more apropiate value
-#define SOUND_TRESHOLD 8300
+// FIXME: Change to a more appropriate value
+#define SOUND_THRESHOLD 8300
 
 #define ADC_SAMPLES_PER_SECOND 20
+
+// FIXME: Change to a more appropriate value
+#define LIGHT_THRESHOLD 30
 
 // FIXME: this is a hack for hi/hd compatibility..
 #define SAMPLES_PER_SECOND (ADC_SAMPLES_PER_SECOND)

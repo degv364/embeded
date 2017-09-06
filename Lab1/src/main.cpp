@@ -127,8 +127,7 @@ int main(void)
             break;
         }
 
-        //FIXME: store light sensor condition
-        lightVal = light.read();
+        sensors.light_sensor = (light.read() >= LIGHT_THRESHOLD);
 
         // state_machine handle sensors
         rt = st.handle_sensors(&sensors);
