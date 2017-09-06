@@ -17,40 +17,40 @@
 
  **/
 
-#ifdef TESTING
-#include <iostream>
-#include <cstdint>
-#include "../../test/periph.hh"
-#endif
+#ifndef INCLUDE_HD_LAMP_HANDLER_HH_
+#define INCLUDE_HD_LAMP_HANDLER_HH_
 
-#ifndef TESTING
 #include "hd/periph.hh"
-#endif
 
-#include "common_def.hh"
-#include "hi/hi_def.hh"
+namespace periph
+{
 
-#ifndef HI_ST_H_
-#define HI_ST_H_
-
-class Hi_state_machine
+/*
+ * Class to hide the number of lamps enabled complexity
+ */
+class LampHandler
 {
 private:
-    hi_state_e state;
-    hi_state_e stored_state;
+    periph::OutputGPIO *lamp0;
+    periph::OutputGPIO *lamp1;
+    periph::OutputGPIO *lamp2;
+
+    uint16_t enabled_lamps;
 
 public:
-    Hi_state_machine();
-    ~Hi_state_machine();
+    LampHandler(uint16_t initial_enabled_lamps);
 
-    return_e
-    handle_sensors(hi_sensor_t* input_sensor_data);
+    void set_enabled_lamps(uint16_t new_enabled_lamps);
 
-#ifdef TESTING
-    hi_state_e get_state(void);
-#endif
+    // Turn ON the number of enabled lamps
+    return_e lamps_on(void);
+    // Turn OFF all lamps
+    return_e lamps_off(void);
+    // Toggle the number of enabled lamps
+    return_e lamps_toggle(void);
 
 };
 
-#endif
+}
 
+#endif /* INCLUDE_HD_LAMP_HANDLER_HH_ */

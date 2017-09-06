@@ -17,40 +17,30 @@
 
  **/
 
-#ifdef TESTING
-#include <iostream>
-#include <cstdint>
-#include "../../test/periph.hh"
-#endif
+#ifndef INCLUDE_HD_MICROPHONE_ADC_HH_
+#define INCLUDE_HD_MICROPHONE_ADC_HH_
 
-#ifndef TESTING
 #include "hd/periph.hh"
-#endif
 
-#include "common_def.hh"
-#include "hi/hi_def.hh"
-
-#ifndef HI_ST_H_
-#define HI_ST_H_
-
-class Hi_state_machine
+namespace periph
 {
-private:
-    hi_state_e state;
-    hi_state_e stored_state;
 
+class MicrophoneADC
+{
 public:
-    Hi_state_machine();
-    ~Hi_state_machine();
+    MicrophoneADC(uint16_t samplesPerSecond, uint32_t ADC_MEM_Pos = ADC_MEM0);
+    void config(uint16_t samplesPerSecond, uint32_t ADC_MEM_Pos = ADC_MEM0);
+    void start(void);
+    void stop(void);
+    uint16_t read(void);
+    static uint16_t read(uint32_t ADC_MEM_Pos);
+    static bool checkAndCleanIRQ(uint32_t ADC_MEM_Interrupt);
 
-    return_e
-    handle_sensors(hi_sensor_t* input_sensor_data);
-
-#ifdef TESTING
-    hi_state_e get_state(void);
-#endif
-
+private:
+    uint16_t samplesPerSecond_;
+    uint32_t ADC_MEM_Pos_;
 };
 
-#endif
+}
 
+#endif /* INCLUDE_HD_MICROPHONE_ADC_HH_ */

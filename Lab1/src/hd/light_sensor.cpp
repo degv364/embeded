@@ -17,40 +17,45 @@
 
  **/
 
-#ifdef TESTING
-#include <iostream>
-#include <cstdint>
-#include "../../test/periph.hh"
-#endif
-
-#ifndef TESTING
 #include "hd/periph.hh"
-#endif
 
-#include "common_def.hh"
-#include "hi/hi_def.hh"
+/*************** Class LightSensor Definition ***************/
 
-#ifndef HI_ST_H_
-#define HI_ST_H_
-
-class Hi_state_machine
+periph::LightSensor::LightSensor(uint16_t config_value)
 {
-private:
-    hi_state_e state;
-    hi_state_e stored_state;
+    comm::i2c::init();
+    comm::i2c::setSlave(LIGHT_SENSOR_I2C_ADDR);
+    comm::i2c::write16(CONFIG_REG, config_value);
+}
 
-public:
-    Hi_state_machine();
-    ~Hi_state_machine();
+uint16_t periph::LightSensor::readRegister(uint8_t regAddr)
+{
+    comm::i2c::setSlave(LIGHT_SENSOR_I2C_ADDR);
+    return comm::i2c::read16(regAddr);
+}
 
-    return_e
-    handle_sensors(hi_sensor_t* input_sensor_data);
+uint64_t periph::LightSensor::read(void)
+{
+    uint16_t sensorVal = readRegister(RESULT_REG);
 
-#ifdef TESTING
-    hi_state_e get_state(void);
-#endif
+    uint8_t exponent = (sensorVal >> 12) & 0x0F;
+    assert(exponent >= 0 && exponent <= 11);
 
-};
+    uint16_t fraction = sensorVal & 0x0FFF;
 
-#endif
+    uint64_t result;
+
+    int shiftedExp = exponent - 6;
+
+    if (shiftedExp < 0)
+    {
+        result = fraction >> -shiftedExp;
+    }
+    else
+    {
+        result = fraction << shiftedExp;
+    }
+
+    return result;
+}
 

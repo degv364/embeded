@@ -17,40 +17,28 @@
 
  **/
 
-#ifdef TESTING
-#include <iostream>
-#include <cstdint>
-#include "../../test/periph.hh"
-#endif
+#ifndef INCLUDE_HD_LIGHT_SENSOR_HH_
+#define INCLUDE_HD_LIGHT_SENSOR_HH_
 
-#ifndef TESTING
 #include "hd/periph.hh"
-#endif
 
-#include "common_def.hh"
-#include "hi/hi_def.hh"
-
-#ifndef HI_ST_H_
-#define HI_ST_H_
-
-class Hi_state_machine
+namespace periph
 {
-private:
-    hi_state_e state;
-    hi_state_e stored_state;
 
+class LightSensor
+{
 public:
-    Hi_state_machine();
-    ~Hi_state_machine();
+    LightSensor(uint16_t config_value = CONFIG_DEFAULT_800MS);
+    uint64_t read(void);
+    uint16_t readRegister(uint8_t regAddr);
 
-    return_e
-    handle_sensors(hi_sensor_t* input_sensor_data);
-
-#ifdef TESTING
-    hi_state_e get_state(void);
-#endif
-
+    static constexpr uint8_t LIGHT_SENSOR_I2C_ADDR = 0x44;
+    static constexpr uint8_t RESULT_REG = 0x00;
+    static constexpr uint8_t CONFIG_REG = 0x01;
+    static constexpr uint16_t CONFIG_DEFAULT_800MS = 0xCC10; // 800ms
+    static constexpr uint16_t CONFIG_DEFAULT_100MS = 0xC410; // 100ms
 };
 
-#endif
+}
 
+#endif /* INCLUDE_HD_LIGHT_SENSOR_HH_ */

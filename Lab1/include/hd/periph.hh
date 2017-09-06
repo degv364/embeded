@@ -17,40 +17,24 @@
 
  **/
 
-#ifdef TESTING
-#include <iostream>
-#include <cstdint>
-#include "../../test/periph.hh"
-#endif
+#ifndef INCLUDE_PERIPH_H_
+#define INCLUDE_PERIPH_H_
 
-#ifndef TESTING
-#include "hd/periph.hh"
-#endif
+/* DriverLib Includes */
+#include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
+/* Standard Includes */
+#include <assert.h>
+
+/* Internal Includes */
 #include "common_def.hh"
-#include "hi/hi_def.hh"
+#include "hd/hd_def.hh"
+#include "hd/comm.hh"
 
-#ifndef HI_ST_H_
-#define HI_ST_H_
+/* Periph Includes */
+#include "hd/gpio.hh"
+#include "hd/lamp_handler.hh"
+#include "hd/microphone_adc.hh"
+#include "hd/light_sensor.hh"
 
-class Hi_state_machine
-{
-private:
-    hi_state_e state;
-    hi_state_e stored_state;
-
-public:
-    Hi_state_machine();
-    ~Hi_state_machine();
-
-    return_e
-    handle_sensors(hi_sensor_t* input_sensor_data);
-
-#ifdef TESTING
-    hi_state_e get_state(void);
-#endif
-
-};
-
-#endif
-
+#endif /* INCLUDE_PERIPH_H_ */

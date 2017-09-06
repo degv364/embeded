@@ -17,40 +17,27 @@
 
  **/
 
-#ifdef TESTING
-#include <iostream>
-#include <cstdint>
-#include "../../test/periph.hh"
-#endif
+#ifndef INCLUDE_COMM_H_
+#define INCLUDE_COMM_H_
 
-#ifndef TESTING
-#include "hd/periph.hh"
-#endif
+/* DriverLib Includes */
+#include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
+/* Internal Includes */
 #include "common_def.hh"
-#include "hi/hi_def.hh"
+#include "hd/hd_def.hh"
 
-#ifndef HI_ST_H_
-#define HI_ST_H_
-
-class Hi_state_machine
+namespace comm
 {
-private:
-    hi_state_e state;
-    hi_state_e stored_state;
+namespace i2c
+{
+void init(void);
+void setSlave(uint16_t slaveAddr);
+void write8(uint8_t regAddr, uint8_t writeValue);
+void write16(uint8_t regAddr, uint16_t writeValue);
+uint8_t read8(uint8_t regAddr);
+uint16_t read16(uint16_t regAddr);
+}
+}
 
-public:
-    Hi_state_machine();
-    ~Hi_state_machine();
-
-    return_e
-    handle_sensors(hi_sensor_t* input_sensor_data);
-
-#ifdef TESTING
-    hi_state_e get_state(void);
-#endif
-
-};
-
-#endif
-
+#endif /* INCLUDE_COMM_H_ */

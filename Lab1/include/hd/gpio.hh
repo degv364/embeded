@@ -17,40 +17,49 @@
 
  **/
 
-#ifdef TESTING
-#include <iostream>
-#include <cstdint>
-#include "../../test/periph.hh"
-#endif
+#ifndef INCLUDE_HD_GPIO_HH_
+#define INCLUDE_HD_GPIO_HH_
 
-#ifndef TESTING
 #include "hd/periph.hh"
-#endif
 
-#include "common_def.hh"
-#include "hi/hi_def.hh"
-
-#ifndef HI_ST_H_
-#define HI_ST_H_
-
-class Hi_state_machine
+namespace periph
 {
-private:
-    hi_state_e state;
-    hi_state_e stored_state;
 
+class GPIO
+{
 public:
-    Hi_state_machine();
-    ~Hi_state_machine();
+    GPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins);
+    GPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins, uint8_t mode);
 
-    return_e
-    handle_sensors(hi_sensor_t* input_sensor_data);
-
-#ifdef TESTING
-    hi_state_e get_state(void);
-#endif
-
+protected:
+    uint8_t GPIO_Port_;
+    uint8_t GPIO_Pins_;
+    uint8_t mode_;
 };
 
-#endif
+class OutputGPIO: GPIO
+{
+public:
+    OutputGPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins);
+    OutputGPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins, uint8_t mode);
+    void set(void);
+    void reset(void);
+    void toggle(void);
+};
 
+class InputGPIO: GPIO
+{
+public:
+    InputGPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins);
+    InputGPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins, uint8_t mode);
+    void configPullUp(void);
+    void configPullDown(void);
+    void enableInterrupt(uint8_t edgeSelect);
+    void disableInterrupt(void);
+    bool read(void);
+    static bool checkAndCleanIRQ(uint8_t GPIO_Port, uint16_t GPIO_Pin);
+};
+
+}
+
+#endif /* INCLUDE_HD_GPIO_HH_ */

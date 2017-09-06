@@ -17,40 +17,11 @@
 
  **/
 
-#ifdef TESTING
-#include <iostream>
-#include <cstdint>
-#include "../../test/periph.hh"
-#endif
+#ifndef HD_DEF_H_
+#define HD_DEF_H_
+/* Use this for very hardware dependent definitions
+ * that hardware independent software does not need
+ */
+#define MCLOCK_FREQ 3000000
 
-#ifndef TESTING
-#include "hd/periph.hh"
-#endif
-
-#include "common_def.hh"
-#include "hi/hi_def.hh"
-
-#ifndef HI_ST_H_
-#define HI_ST_H_
-
-class Hi_state_machine
-{
-private:
-    hi_state_e state;
-    hi_state_e stored_state;
-
-public:
-    Hi_state_machine();
-    ~Hi_state_machine();
-
-    return_e
-    handle_sensors(hi_sensor_t* input_sensor_data);
-
-#ifdef TESTING
-    hi_state_e get_state(void);
-#endif
-
-};
-
-#endif
-
+#endif /* DEFINITIONS_H_ */
