@@ -18,10 +18,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **/
 #ifdef TESTING
 #include <cstdint>
-#include "../include/common_def.hh"
-#include "../include/hi/hi_def.hh"
-#include "../include/hi/hi_utils.hh"
-#include "../include/hi/hi_state_machine.hh"
+#include "common_def.hh"
+#include "hi/hi_def.hh"
+#include "hi/hi_utils.hh"
+#include "hi/hi_state_machine.hh"
 #include "gtest/gtest.h"
 #include <iostream>
 
