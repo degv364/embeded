@@ -27,6 +27,7 @@
 
 #include "common_def.hh"
 #include "hi/hi_def.hh"
+#include <cmath>
 
 #ifndef HI_UTILS_H_
 #define HI_UTILS_H_

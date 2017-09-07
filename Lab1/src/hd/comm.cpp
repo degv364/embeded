@@ -53,6 +53,8 @@ void comm::i2c::setSlave(uint16_t slaveAddr)
 
 void comm::i2c::write8(uint8_t regAddr, uint8_t writeValue)
 {
+    __disable_irq();
+
     //Set Master to TX mode
     MAP_I2C_setMode(EUSCI_B1_BASE, EUSCI_B_I2C_TRANSMIT_MODE);
 
@@ -71,10 +73,14 @@ void comm::i2c::write8(uint8_t regAddr, uint8_t writeValue)
     //------ Send Data ------
 
     MAP_I2C_masterSendMultiByteFinish(EUSCI_B1_BASE, writeValue);
+
+    __enable_irq();
 }
 
 void comm::i2c::write16(uint8_t regAddr, uint16_t writeValue)
 {
+    __disable_irq();
+
     //Set Master to TX mode
     MAP_I2C_setMode(EUSCI_B1_BASE, EUSCI_B_I2C_TRANSMIT_MODE);
 
@@ -83,8 +89,11 @@ void comm::i2c::write16(uint8_t regAddr, uint16_t writeValue)
     EUSCI_B_I2C_TRANSMIT_INTERRUPT0);
 
     //Wait until I2C Bus is Free
-    while (I2C_isBusBusy (EUSCI_B1_BASE))
+    while (MAP_I2C_isBusBusy (EUSCI_B1_BASE))
         ;
+
+    uint8_t firstByte = writeValue >> 8;
+    uint8_t secondByte = writeValue & 0xFF;
 
     //------ Send Register Address ------
 
@@ -92,18 +101,19 @@ void comm::i2c::write16(uint8_t regAddr, uint16_t writeValue)
 
     //------ Send Data ------
 
-    uint8_t firstByte = writeValue >> 8;
-    uint8_t secondByte = writeValue & 0xFF;
-
     //Send first byte
     MAP_I2C_masterSendMultiByteNext(EUSCI_B1_BASE, firstByte);
 
     //Send second byte
     MAP_I2C_masterSendMultiByteFinish(EUSCI_B1_BASE, secondByte);
+
+    __enable_irq();
 }
 
 uint8_t comm::i2c::read8(uint8_t regAddr)
 {
+    __disable_irq();
+
     uint8_t rxData;
 
     //Set Master to RX mode
@@ -129,11 +139,15 @@ uint8_t comm::i2c::read8(uint8_t regAddr)
 
     rxData = I2C_masterReceiveSingleByte(EUSCI_B1_BASE);
 
+    __enable_irq();
+
     return rxData;
 }
 
 uint16_t comm::i2c::read16(uint16_t regAddr)
 {
+    __disable_irq();
+
     uint8_t rxData[2];
 
     //Set Master to RX mode
@@ -164,6 +178,8 @@ uint16_t comm::i2c::read16(uint16_t regAddr)
 
     // Read second byte
     rxData[1] = MAP_I2C_masterReceiveMultiByteFinish(EUSCI_B1_BASE);
+
+    __enable_irq();
 
     return (rxData[0] << 8) | rxData[1];
 }

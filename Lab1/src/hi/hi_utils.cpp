@@ -57,12 +57,15 @@ return_e Hi_dual_mean_fifo::add_sample(uint16_t sample)
     mean_ += (float) data_[comp_index_] / MEAN_SAMPLES;
     mean_ -= (float) data_[subs_index_] / MEAN_SAMPLES;
 
+    //update data
+    data_[subs_index_] = std::abs(sample-SOUND_SIGNAL_OFFSET);
+
     //update last second mean
-    last_mean_ += (float) sample / SAMPLES_PER_SECOND;
+    //last_mean_ += (float) sample / SAMPLES_PER_SECOND;
+    last_mean_ += (float) data_[subs_index_] / SAMPLES_PER_SECOND;
     last_mean_ -= (float) data_[comp_index_] / SAMPLES_PER_SECOND;
 
-    //update data
-    data_[subs_index_] = sample;
+
     move_next_sample();
     //update valid data count
     current_valid_values_ =
@@ -73,7 +76,7 @@ return_e Hi_dual_mean_fifo::add_sample(uint16_t sample)
 
 return_e Hi_dual_mean_fifo::is_last_second_loud(bool *is_loud)
 {
-    float five_percent;
+    float percent;
 
     if (is_loud == 0)
     {
@@ -87,8 +90,8 @@ return_e Hi_dual_mean_fifo::is_last_second_loud(bool *is_loud)
     }
 
     // Fast increase of volume
-    five_percent = mean_ * 0.05;
-    if (mean_ + five_percent < last_mean_)
+    percent = mean_ * SOUND_THRESHOLD_PERCENT/100.0;
+    if (mean_ + percent < last_mean_)
     {
         *is_loud = (current_valid_values_ >= MAX_SAMPLES);
     }

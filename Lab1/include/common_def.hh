@@ -21,15 +21,21 @@
 #define COMMON_DEF_H_
 
 // FIXME: hack for waiting some time in main loop
-#define HACK_WAIT 50000 //5000000
+#define HACK_WAIT 10 //5000000
 
 // FIXME: Change this value depending on timer frequency
-#define TIMEOUT_30 300
+#define TIMEOUT_30 10000
 
 // FIXME: Change to a more appropriate value
 #define SOUND_THRESHOLD 8300
 
-#define ADC_SAMPLES_PER_SECOND 20
+#define SOUND_THRESHOLD_PERCENT 10.0
+
+// FIXME: Change to a more appropriate value
+#define SOUND_SIGNAL_OFFSET 8175
+
+
+#define ADC_SAMPLES_PER_SECOND 50 //20
 
 // FIXME: Change to a more appropriate value
 #define LIGHT_THRESHOLD 30

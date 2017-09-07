@@ -38,7 +38,6 @@ class Hi_state_machine
 {
 private:
     hi_state_e state_;
-    hi_state_e stored_state_;
 
 public:
     Hi_state_machine();

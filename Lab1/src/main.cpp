@@ -82,7 +82,7 @@ Hi_dual_mean_fifo mic_fifo;
  * microphone detecting silence
  */
 
-//FIXME: Add volatile and fix volatile function parameter errors
+//FIXME: Add volatile
 hi_sensor_t sensors = { 0, false, false, false };
 
 return_e hardware_init(void)
@@ -93,6 +93,13 @@ return_e hardware_init(void)
     //User Button configuration
     button.configPullUp();
     button.enableInterrupt(GPIO_HIGH_TO_LOW_TRANSITION);
+
+    //MAP_Timer32_initModule(TIMER32_0_MODULE, TIMER32_PRESCALER_256,
+   //                        TIMER32_32BIT, TIMER32_FREE_RUN_MODE);
+
+   // MAP_Timer32_enableInterrupt(TIMER32_0_MODULE)
+    /* Starting the timer */
+   // MAP_Timer32_startTimer(TIMER32_0_MODULE, true);
 
     //Start Microphone ADC sampling
     mic.start();
@@ -109,6 +116,7 @@ int main(void)
 {
     Hi_state_machine fsm;
     return_e rt;
+
     rt = hardware_init();
     if (rt != RETURN_OK)
         return 1;
@@ -131,9 +139,10 @@ int main(void)
         if (rt != RETURN_OK)
             break;
 
+        //FIXME: Currently testing if control_button can be reset in fsm.handle_sensors()
         // Restore previous state of button
-        if (sensors.control_button)
-            sensors.control_button = false;
+        //if (sensors.control_button)
+        //    sensors.control_button = false;
 
         // FIXME: Hack to wait some time
         for (uint64_t wait_time = 0; wait_time < HACK_WAIT; wait_time++)

@@ -24,14 +24,13 @@
 extern periph::LampHandler lamp_handler;
 
 Hi_state_machine::Hi_state_machine() :
-        state_(HI_STATE_INIT), stored_state_(HI_STATE_NONE)
+        state_(HI_STATE_INIT)
 {
 }
 
 Hi_state_machine::~Hi_state_machine()
 {
     state_ = HI_STATE_DEINIT;
-    stored_state_ = HI_STATE_NONE;
 }
 
 return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
@@ -50,11 +49,14 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
 
     if (control_button)
     {
-        stored_state_ = state_;
         state_ = HI_STATE_MANUAL_CONTROL;
         // reset time
         input_sensor_data->time = 0;
         rt = lamp_handler.lamps_toggle();
+
+        // reset control_button flag
+        input_sensor_data->control_button = false;
+
         goto handle_fail;
     }
 
@@ -102,7 +104,7 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         if (time > TIMEOUT_30)
         {
             rt = lamp_handler.lamps_toggle();
-            state_ = stored_state_;
+            state_ = HI_STATE_OFF;
         }
         break;
     default:
