@@ -46,7 +46,7 @@ void periph::LampHandler::set_enabled_lamps(uint16_t new_enabled_lamps)
     enabled_lamps_ = 1;
 }
 
-return_e periph::LampHandler::lamps_on()
+return_e periph::LampHandler::lamps_on(void)
 {
     switch (enabled_lamps_)
     {
@@ -74,7 +74,7 @@ return_e periph::LampHandler::lamps_on()
     return RETURN_OK;
 }
 
-return_e periph::LampHandler::lamps_off()
+return_e periph::LampHandler::lamps_off(void)
 {
     lamp0_->reset();
     lamp1_->reset();
@@ -82,7 +82,7 @@ return_e periph::LampHandler::lamps_off()
     return RETURN_OK;
 }
 
-return_e periph::LampHandler::lamps_toggle()
+return_e periph::LampHandler::lamps_toggle(void)
 {
     switch (enabled_lamps_)
     {
@@ -105,6 +105,20 @@ return_e periph::LampHandler::lamps_toggle()
         lamp0_->reset();
         lamp1_->reset();
         lamp2_->reset();
+    }
+    return RETURN_OK;
+}
+
+return_e periph::LampHandler::lamps_alive_sequence(uint32_t wait_cycles)
+{
+    lamps_off();
+
+    for (int j = 0; j < 3; j++)
+    {
+        lamps_toggle(); //Lamps On
+        for (uint32_t i = 0; i < wait_cycles; i++);
+        lamps_toggle(); //Lamps Off
+        for (uint32_t i = 0; i < wait_cycles; i++);
     }
     return RETURN_OK;
 }

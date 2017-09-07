@@ -42,12 +42,14 @@ public:
 
     void set_enabled_lamps(uint16_t new_enabled_lamps);
 
-    // Turn ON the number of enabled lamps
+    //Turn ON the number of enabled lamps
     return_e lamps_on(void);
-    // Turn OFF all lamps
+    //Turn OFF all lamps
     return_e lamps_off(void);
-    // Toggle the number of enabled lamps
+    //Toggle the number of enabled lamps
     return_e lamps_toggle(void);
+    //Perform lamps alive toggle sequence
+    return_e lamps_alive_sequence(uint32_t);
 
 };
 

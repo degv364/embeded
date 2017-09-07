@@ -53,9 +53,7 @@ return_e Hi_dual_mean_fifo::move_next_sample()
 {
     subs_index_ = (subs_index_ + MAX_SAMPLES - 1) % MAX_SAMPLES;
     comp_index_ = (comp_index_ + MAX_SAMPLES - 1) % MAX_SAMPLES;
-
-    loud_index_ = (loud_index_ + ADC_SAMPLES_PER_SECOND - 1)
-            % ADC_SAMPLES_PER_SECOND;
+    loud_index_ = (loud_index_ + ADC_SAMPLES_PER_SECOND - 1) % ADC_SAMPLES_PER_SECOND;
 
     return RETURN_OK;
 }
@@ -70,22 +68,19 @@ return_e Hi_dual_mean_fifo::add_sample(uint16_t sample)
     // Update data
     data_[subs_index_] = std::abs(sample - SOUND_SIGNAL_OFFSET);
 
-    //Update loud conditions counter
+    //Update loud threshold conditions counter
     loud_count_ -= loud_conditions_[loud_index_];
 
-    // Update last second threshold conditions
     loud_conditions_[loud_index_] = (uint8_t) (data_[subs_index_]
-            > mean_ * (1 + (SOUND_THRESHOLD_PERCENT / 100.0)));
+                                    > mean_ * (1 + (SOUND_THRESHOLD_PERCENT / 100.0)));
 
-    //Update loud conditions counter
     loud_count_ += loud_conditions_[loud_index_];
 
     move_next_sample();
 
     //update valid data count
-    current_valid_values_ =
-            (current_valid_values_ >= MAX_SAMPLES) ?
-            MAX_SAMPLES : current_valid_values_ + 1;
+    current_valid_values_ = (current_valid_values_ >= MAX_SAMPLES) ?
+                            MAX_SAMPLES : current_valid_values_ + 1;
     return RETURN_OK;
 }
 

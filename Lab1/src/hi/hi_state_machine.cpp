@@ -17,10 +17,8 @@
 
  **/
 
-// FIXME: convert to singleton
 #include "hi/hi_state_machine.hh"
 
-// FIXME: change this once lamp_handler is a singleton
 extern periph::LampHandler lamp_handler;
 
 Hi_state_machine::Hi_state_machine() :
@@ -40,21 +38,23 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         return RETURN_BAD_PARAM;
     }
 
-    // create internal_copy
+    //Create sensor conditions internal copy
     return_e rt = RETURN_OK;
     uint16_t time = input_sensor_data->time;
     bool control_button = input_sensor_data->control_button;
     bool light_sensor = input_sensor_data->light_sensor;
     bool microphone = input_sensor_data->microphone;
 
-    if (control_button)
+    if (control_button &&
+        state_ != HI_STATE_INIT &&
+        state_ != HI_STATE_ALIVE_SEQ)
     {
         state_ = HI_STATE_MANUAL_CONTROL;
-        // reset time
+        //Reset time
         input_sensor_data->time = 0;
         rt = lamp_handler.lamps_toggle();
 
-        // reset control_button flag
+        //Reset control_button flag
         input_sensor_data->control_button = false;
 
         goto handle_fail;
@@ -64,15 +64,17 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
     {
     case HI_STATE_INIT:
         state_ = HI_STATE_ALIVE_SEQ;
-        // reset time
+        //Reset time
         input_sensor_data->time = 0;
         rt = RETURN_OK;
         break;
+
     case HI_STATE_ALIVE_SEQ:
-        //FIXME: implement this
+        rt = lamp_handler.lamps_alive_sequence(LAMP_ALIVE_SEQ_WAIT_CYCLES);
         state_ = HI_STATE_OFF;
         rt = RETURN_OK;
         break;
+
     case HI_STATE_ON:
         rt = lamp_handler.lamps_on();
         if (time > TIME_WAIT_COUNT || light_sensor)
@@ -82,10 +84,11 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         }
         if (microphone)
         {
-            //reset timer
+            //Reset time
             input_sensor_data->time = 0;
         }
         break;
+
     case HI_STATE_OFF:
         rt = lamp_handler.lamps_off();
         if (light_sensor)
@@ -96,10 +99,11 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         {
             break;
         }
-        //reset time
+        //Reset time
         input_sensor_data->time = 0;
         state_ = HI_STATE_ON;
         break;
+
     case HI_STATE_MANUAL_CONTROL:
         if (time > TIME_WAIT_COUNT)
         {
@@ -107,6 +111,7 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
             state_ = HI_STATE_OFF;
         }
         break;
+
     default:
         //FIXME: implement other states
         break;

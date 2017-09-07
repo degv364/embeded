@@ -24,7 +24,7 @@ void comm::i2c::init(void)
     const eUSCI_I2C_MasterConfig i2cConfig = {
     EUSCI_B_I2C_CLOCKSOURCE_SMCLK,          // SMCLK Clock Source
             MCLOCK_FREQ,                            // SMCLK = 3MHz
-            EUSCI_B_I2C_SET_DATA_RATE_400KBPS,    // Desired I2C Clock of 400khz
+            EUSCI_B_I2C_SET_DATA_RATE_400KBPS,      // Desired I2C Clock of 400khz
             0,                                      // No byte counter threshold
             EUSCI_B_I2C_NO_AUTO_STOP                // No Autostop
             };
@@ -37,7 +37,6 @@ void comm::i2c::init(void)
 
     MAP_I2C_initMaster(EUSCI_B1_BASE, &i2cConfig);
 
-    //MAP_I2C_disableModule(EUSCI_B1_BASE);
     MAP_I2C_enableModule(EUSCI_B1_BASE);
 }
 
@@ -63,8 +62,7 @@ void comm::i2c::write8(uint8_t regAddr, uint8_t writeValue)
     EUSCI_B_I2C_TRANSMIT_INTERRUPT0);
 
     //Wait until I2C Bus is Free
-    while (I2C_isBusBusy (EUSCI_B1_BASE))
-        ;
+    while (I2C_isBusBusy (EUSCI_B1_BASE));
 
     //------ Send Register Address ------
 
@@ -89,8 +87,7 @@ void comm::i2c::write16(uint8_t regAddr, uint16_t writeValue)
     EUSCI_B_I2C_TRANSMIT_INTERRUPT0);
 
     //Wait until I2C Bus is Free
-    while (MAP_I2C_isBusBusy (EUSCI_B1_BASE))
-        ;
+    while (MAP_I2C_isBusBusy (EUSCI_B1_BASE));
 
     uint8_t firstByte = writeValue >> 8;
     uint8_t secondByte = writeValue & 0xFF;
@@ -124,16 +121,14 @@ uint8_t comm::i2c::read8(uint8_t regAddr)
     EUSCI_B_I2C_RECEIVE_INTERRUPT0);
 
     //Wait until I2C Bus is Free
-    while (I2C_isBusBusy (EUSCI_B1_BASE))
-        ;
+    while (I2C_isBusBusy (EUSCI_B1_BASE));
 
     //------ Send Register Address ------
 
     MAP_I2C_masterSendSingleByte(EUSCI_B1_BASE, regAddr);
 
     // Wait for Stop to be sent
-    while (MAP_I2C_masterIsStopSent(EUSCI_B1_BASE) == EUSCI_B_I2C_SENDING_STOP)
-        ;
+    while (MAP_I2C_masterIsStopSent(EUSCI_B1_BASE) == EUSCI_B_I2C_SENDING_STOP);
 
     //------ Receive Data ------
 
@@ -158,16 +153,14 @@ uint16_t comm::i2c::read16(uint16_t regAddr)
     EUSCI_B_I2C_RECEIVE_INTERRUPT0);
 
     //Wait until I2C Bus is Free
-    while (MAP_I2C_isBusBusy(EUSCI_B1_BASE))
-        ;
+    while (MAP_I2C_isBusBusy(EUSCI_B1_BASE));
 
     //------ Send Register Address ------
 
     MAP_I2C_masterSendSingleByte(EUSCI_B1_BASE, regAddr);
 
     // Wait for Stop to be sent
-    while (MAP_I2C_masterIsStopSent(EUSCI_B1_BASE) == EUSCI_B_I2C_SENDING_STOP)
-        ;
+    while (MAP_I2C_masterIsStopSent(EUSCI_B1_BASE) == EUSCI_B_I2C_SENDING_STOP);
 
     //------ Receive Data ------
 

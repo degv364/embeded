@@ -52,11 +52,11 @@ void ADC14_IRQHandler(void)
     __enable_irq();
 }
 
-void PORT5_IRQHandler(void)
+void PORT3_IRQHandler(void)
 {
     __disable_irq();
 
-    if (periph::InputGPIO::checkAndCleanIRQ(GPIO_PORT_P5, GPIO_PIN1))
+    if (periph::InputGPIO::checkAndCleanIRQ(GPIO_PORT_P3, GPIO_PIN5))
     {
         sensors.control_button = true;
     }

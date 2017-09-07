@@ -37,35 +37,38 @@ class Hi_dual_mean_fifo
 private:
     // count to know if one have enough values to have valid results
     uint16_t current_valid_values_;
-    //array to store values
+    // array to store values
     uint16_t data_[MAX_SAMPLES];
-    //array to store loud conditions
+    // array to store loud conditions
     uint8_t loud_conditions_[ADC_SAMPLES_PER_SECOND];
-    //limit of the fifo
+    // limit of the fifo
     uint16_t subs_index_;
     // get mean until this member
     uint16_t comp_index_;
 
+    // loud_conditions buffer position
     uint16_t loud_index_;
 
     // 5 seconds mean
     float mean_;
 
-    //counter that contains the number of loud samples in the last second
+    //number of loud samples in the last second
     uint16_t loud_count_;
 
     /*
      * Reset data to a value
      */
     return_e reset_to_value(uint16_t value);
+
     /*
-     * MOve pointer to next sample
+     * Move pointer to next sample
      */
     return_e move_next_sample();
 
 public:
     Hi_dual_mean_fifo(void);
     ~Hi_dual_mean_fifo(void);
+
     /*
      * Adds a new sample
      */

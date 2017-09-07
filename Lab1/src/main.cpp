@@ -71,7 +71,8 @@
 periph::LampHandler lamp_handler(1);
 periph::MicrophoneADC mic(ADC_SAMPLES_PER_SECOND, ADC_MEM0);
 periph::LightSensor light(periph::LightSensor::CONFIG_DEFAULT_100MS);
-periph::InputGPIO button(GPIO_PORT_P5, GPIO_PIN1);
+//periph::InputGPIO button(GPIO_PORT_P5, GPIO_PIN1);
+periph::InputGPIO button(GPIO_PORT_P3, GPIO_PIN5);
 
 Hi_dual_mean_fifo mic_fifo;
 
@@ -79,10 +80,9 @@ Hi_dual_mean_fifo mic_fifo;
  * Initialize sensor struct at time 0
  * Button not pressed
  * Light sensor detecting darkness
- * microphone detecting silence
+ * Microphone detecting silence
  */
 
-//FIXME: Add volatile
 hi_sensor_t sensors = { 0, false, false, false };
 
 static return_e hardware_init(void)
@@ -96,15 +96,14 @@ static return_e hardware_init(void)
 
     //FIXME: Move Timer32 to class
     MAP_Timer32_initModule(TIMER32_0_BASE, TIMER32_PRESCALER_16,
-    TIMER32_32BIT,
-                           TIMER32_PERIODIC_MODE);
+                           TIMER32_32BIT, TIMER32_PERIODIC_MODE);
 
     MAP_Interrupt_enableInterrupt(INT_T32_INT1);
 
     uint32_t T32_MaxCount = MAP_CS_getMCLK()
             / (TIMER32_PRESCALE * TIME_SAMPLES_PER_SECOND);
 
-    /* Starting the timer */
+    //Starting the timer
     MAP_Timer32_startTimer(TIMER32_0_BASE, false);
     MAP_Timer32_setCount(TIMER32_0_BASE, T32_MaxCount);
 
@@ -114,40 +113,39 @@ static return_e hardware_init(void)
     //Enable interrupts
     MAP_Interrupt_enableMaster();
 
-    // FIXME: change this to contemplate possible
+    //FIXME: change this to contemplate possible
     // errors during initialization
     return RETURN_OK;
 }
 
 int main(void)
 {
-    // Program main finite state machine
+    //Program main finite state machine
     Hi_state_machine fsm;
     return_e rt;
 
     rt = hardware_init();
-    if (rt != RETURN_OK)
-        return 1;
+    if (rt != RETURN_OK) return 1;
 
-    // Main loop counter
+
+    //Main loop counter
     uint64_t count = 0;
 
     while (1)
     {
-        // Store microphone condition
+        //Store microphone condition
         rt = mic_fifo.is_last_second_loud(&sensors.microphone);
-        if (rt != RETURN_OK)
-            break;
+        if (rt != RETURN_OK) break;
 
-        // Read light sensor condition
+        //Read light sensor condition
         if (count % LIGHT_SENSOR_MAINLOOP_READ_FREQ == 0)
         {
             sensors.light_sensor = (light.read() >= LIGHT_THRESHOLD);
         }
 
+        //Execute FSM
         rt = fsm.handle_sensors(&sensors);
-        if (rt != RETURN_OK)
-            break;
+        if (rt != RETURN_OK) break;
 
         count++;
     }
