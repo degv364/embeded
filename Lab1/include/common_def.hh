@@ -20,21 +20,18 @@
 #ifndef COMMON_DEF_H_
 #define COMMON_DEF_H_
 
-// FIXME: Determine appropriate value
-#define SOUND_THRESHOLD 600
+#define SOUND_LOUD_SAMPLES_PERCENT 95
 #define SOUND_THRESHOLD_PERCENT 10.0
 #define SOUND_SIGNAL_OFFSET 8175
 
 
-#define TIME_WAIT_SECONDS 30
+#define TIME_WAIT_SECONDS 15
 #define TIME_SAMPLES_PER_SECOND 10
 #define TIME_WAIT_COUNT (TIME_SAMPLES_PER_SECOND * TIME_WAIT_SECONDS)
 
 #define ADC_SAMPLES_PER_SECOND 50 //20
 
-// FIXME: Determine appropriate value
-#define LIGHT_THRESHOLD 30
-// FIXME: Determine appropriate value
+#define LIGHT_THRESHOLD 5
 #define LIGHT_SENSOR_MAINLOOP_READ_FREQ 100
 
 #define MEAN_SECONDS 5

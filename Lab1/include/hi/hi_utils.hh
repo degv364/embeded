@@ -39,15 +39,20 @@ private:
     uint16_t current_valid_values_;
     //array to store values
     uint16_t data_[MAX_SAMPLES];
+    //array to store loud conditions
+    uint8_t loud_conditions_[ADC_SAMPLES_PER_SECOND];
     //limit of the fifo
     uint16_t subs_index_;
     // get mean until this member
     uint16_t comp_index_;
 
+    uint16_t loud_index_;
+
     // 5 seconds mean
     float mean_;
-    // last second mean
-    float last_mean_;
+
+    //counter that contains the number of loud samples in the last second
+    uint16_t loud_count_;
 
     /*
      * Reset data to a value
