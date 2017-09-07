@@ -20,7 +20,7 @@
 #include "hi/hi_utils.hh"
 
 Hi_dual_mean_fifo::Hi_dual_mean_fifo(void) :
-        subs_index_(0), comp_index_(SAMPLES_PER_SECOND)
+        subs_index_(0), comp_index_(ADC_SAMPLES_PER_SECOND)
 {
     reset_to_value(0);
 }
@@ -61,12 +61,10 @@ return_e Hi_dual_mean_fifo::add_sample(uint16_t sample)
     data_[subs_index_] = std::abs(sample-SOUND_SIGNAL_OFFSET);
 
     //update last second mean
-    //last_mean_ += (float) sample / SAMPLES_PER_SECOND;
-    last_mean_ += (float) data_[subs_index_] / SAMPLES_PER_SECOND;
-    last_mean_ -= (float) data_[comp_index_] / SAMPLES_PER_SECOND;
-
-
+    last_mean_ += (float) data_[subs_index_] / ADC_SAMPLES_PER_SECOND;
+    last_mean_ -= (float) data_[comp_index_] / ADC_SAMPLES_PER_SECOND;
     move_next_sample();
+
     //update valid data count
     current_valid_values_ =
             (current_valid_values_ >= MAX_SAMPLES) ?

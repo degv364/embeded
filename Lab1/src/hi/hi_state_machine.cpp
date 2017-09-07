@@ -75,7 +75,7 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         break;
     case HI_STATE_ON:
         rt = lamp_handler.lamps_on();
-        if (time > TIMEOUT_30 || light_sensor)
+        if (time > TIME_WAIT_COUNT || light_sensor)
         {
             state_ = HI_STATE_OFF;
             break;
@@ -101,7 +101,7 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         state_ = HI_STATE_ON;
         break;
     case HI_STATE_MANUAL_CONTROL:
-        if (time > TIMEOUT_30)
+        if (time > TIME_WAIT_COUNT)
         {
             rt = lamp_handler.lamps_toggle();
             state_ = HI_STATE_OFF;

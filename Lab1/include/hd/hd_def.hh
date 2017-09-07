@@ -23,5 +23,6 @@
  * that hardware independent software does not need
  */
 #define MCLOCK_FREQ 3000000
+#define TIMER32_PRESCALE 16
 
 #endif /* DEFINITIONS_H_ */

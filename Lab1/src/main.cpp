@@ -85,7 +85,7 @@ Hi_dual_mean_fifo mic_fifo;
 //FIXME: Add volatile
 hi_sensor_t sensors = { 0, false, false, false };
 
-return_e hardware_init(void)
+static return_e hardware_init(void)
 {
     //Stop Watchdog timer
     MAP_WDT_A_holdTimer();
@@ -94,12 +94,19 @@ return_e hardware_init(void)
     button.configPullUp();
     button.enableInterrupt(GPIO_HIGH_TO_LOW_TRANSITION);
 
-    //MAP_Timer32_initModule(TIMER32_0_MODULE, TIMER32_PRESCALER_256,
-   //                        TIMER32_32BIT, TIMER32_FREE_RUN_MODE);
+    //FIXME: Move Timer32 to class
+    MAP_Timer32_initModule(TIMER32_0_BASE, TIMER32_PRESCALER_16,
+    TIMER32_32BIT,
+                           TIMER32_PERIODIC_MODE);
 
-   // MAP_Timer32_enableInterrupt(TIMER32_0_MODULE)
+    MAP_Interrupt_enableInterrupt(INT_T32_INT1);
+
+    uint32_t T32_MaxCount = MAP_CS_getMCLK()
+            / (TIMER32_PRESCALE * TIME_SAMPLES_PER_SECOND);
+
     /* Starting the timer */
-   // MAP_Timer32_startTimer(TIMER32_0_MODULE, true);
+    MAP_Timer32_startTimer(TIMER32_0_BASE, false);
+    MAP_Timer32_setCount(TIMER32_0_BASE, T32_MaxCount);
 
     //Start Microphone ADC sampling
     mic.start();
@@ -114,6 +121,7 @@ return_e hardware_init(void)
 
 int main(void)
 {
+    // Program main finite state machine
     Hi_state_machine fsm;
     return_e rt;
 
@@ -121,36 +129,27 @@ int main(void)
     if (rt != RETURN_OK)
         return 1;
 
-    uint64_t lightVal; //FIXME: Only for testing light sensor threshold
+    // Main loop counter
+    uint64_t count = 0;
 
     while (1)
     {
-        // store microphone condition
+        // Store microphone condition
         rt = mic_fifo.is_last_second_loud(&sensors.microphone);
         if (rt != RETURN_OK)
             break;
 
-        // read light sensor condition
-        lightVal = light.read();
-        sensors.light_sensor = (lightVal >= LIGHT_THRESHOLD);
+        // Read light sensor condition
+        if (count % LIGHT_SENSOR_MAINLOOP_READ_FREQ == 0)
+        {
+            sensors.light_sensor = (light.read() >= LIGHT_THRESHOLD);
+        }
 
-        // state_machine handle sensors
         rt = fsm.handle_sensors(&sensors);
         if (rt != RETURN_OK)
             break;
 
-        //FIXME: Currently testing if control_button can be reset in fsm.handle_sensors()
-        // Restore previous state of button
-        //if (sensors.control_button)
-        //    sensors.control_button = false;
-
-        // FIXME: Hack to wait some time
-        for (uint64_t wait_time = 0; wait_time < HACK_WAIT; wait_time++)
-            ;
-
-        // Update time
-        sensors.time++;
-
+        count++;
     }
 
     return 0;

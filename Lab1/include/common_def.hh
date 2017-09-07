@@ -20,37 +20,31 @@
 #ifndef COMMON_DEF_H_
 #define COMMON_DEF_H_
 
-// FIXME: hack for waiting some time in main loop
-#define HACK_WAIT 10 //5000000
-
-// FIXME: Change this value depending on timer frequency
-#define TIMEOUT_30 10000
-
-// FIXME: Change to a more appropriate value
-#define SOUND_THRESHOLD 8300
-
+// FIXME: Determine appropriate value
+#define SOUND_THRESHOLD 600
 #define SOUND_THRESHOLD_PERCENT 10.0
-
-// FIXME: Change to a more appropriate value
 #define SOUND_SIGNAL_OFFSET 8175
 
 
+#define TIME_WAIT_SECONDS 30
+#define TIME_SAMPLES_PER_SECOND 10
+#define TIME_WAIT_COUNT (TIME_SAMPLES_PER_SECOND * TIME_WAIT_SECONDS)
+
 #define ADC_SAMPLES_PER_SECOND 50 //20
 
-// FIXME: Change to a more appropriate value
+// FIXME: Determine appropriate value
 #define LIGHT_THRESHOLD 30
-
-// FIXME: this is a hack for hi/hd compatibility..
-#define SAMPLES_PER_SECOND (ADC_SAMPLES_PER_SECOND)
+// FIXME: Determine appropriate value
+#define LIGHT_SENSOR_MAINLOOP_READ_FREQ 100
 
 #define MEAN_SECONDS 5
-#define MAX_SAMPLES (SAMPLES_PER_SECOND * (MEAN_SECONDS + 1))
-#define MEAN_SAMPLES (SAMPLES_PER_SECOND * MEAN_SECONDS)
+#define MAX_SAMPLES (ADC_SAMPLES_PER_SECOND * (MEAN_SECONDS + 1))
+#define MEAN_SAMPLES (ADC_SAMPLES_PER_SECOND * MEAN_SECONDS)
 
 // Return values
 typedef enum return_e
 {
-    RETURN_OK = 0,   // Execution succesful
+    RETURN_OK = 0,   // Execution successful
     RETURN_FAIL,   // Execution failed
     RETURN_CRITICAL,   // Critical fail
     RETURN_BAD_PARAM   // Execution failed due to invalid parameters

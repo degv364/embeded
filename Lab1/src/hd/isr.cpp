@@ -18,7 +18,7 @@
  **/
 
 /* Standard Includes */
-
+#include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include "msp.h"
@@ -63,5 +63,16 @@ void PORT5_IRQHandler(void)
 
     __enable_irq();
 }
+
+void T32_INT1_IRQHandler(void)
+{
+    __disable_irq();
+
+    MAP_Timer32_clearInterruptFlag(TIMER32_0_BASE);
+    sensors.time++;
+
+    __enable_irq();
+}
+
 }
 
