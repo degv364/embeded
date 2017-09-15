@@ -19,11 +19,12 @@
 
 #include "hd/periph.hh"
 
+// Use pins J39, J38, J37
+
 // FIXME: this is a hack to not use 'new' and avoid using the heap
-static periph::OutputGPIO internal_lamp0(GPIO_PORT_P1, GPIO_PIN0);
-// FIXME: Use the correct pins
-static periph::OutputGPIO internal_lamp1(GPIO_PORT_P2, GPIO_PIN1);
-static periph::OutputGPIO internal_lamp2(GPIO_PORT_P3, GPIO_PIN2);
+static periph::OutputGPIO internal_lamp0(GPIO_PORT_P2, GPIO_PIN6);
+static periph::OutputGPIO internal_lamp1(GPIO_PORT_P2, GPIO_PIN4);
+static periph::OutputGPIO internal_lamp2(GPIO_PORT_P5, GPIO_PIN6);
 
 periph::LampHandler::LampHandler(uint16_t initial_enabled_lamps) :
         lamp0_(&internal_lamp0), lamp1_(&internal_lamp1), lamp2_(

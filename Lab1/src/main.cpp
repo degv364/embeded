@@ -68,7 +68,7 @@
 /* Hardware dependent (hd) */
 #include "hd/periph.hh"
 
-periph::LampHandler lamp_handler(1);
+periph::LampHandler lamp_handler(ENABLED_LAMPS);
 periph::MicrophoneADC mic(ADC_SAMPLES_PER_SECOND, ADC_MEM0);
 periph::LightSensor light(periph::LightSensor::CONFIG_DEFAULT_100MS);
 //periph::InputGPIO button(GPIO_PORT_P5, GPIO_PIN1);
