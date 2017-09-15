@@ -49,13 +49,16 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         state_ != HI_STATE_INIT &&
         state_ != HI_STATE_ALIVE_SEQ)
     {
-        state_ = HI_STATE_MANUAL_CONTROL;
+
+        //Reset control_button flag
+        input_sensor_data->control_button = false;
+
+        state_ = (state_ == HI_STATE_ON) ? HI_STATE_OFF : HI_STATE_MANUAL_CONTROL;
         //Reset time
         input_sensor_data->time = 0;
         rt = lamp_handler.lamps_toggle();
 
-        //Reset control_button flag
-        input_sensor_data->control_button = false;
+
 
         goto handle_fail;
     }

@@ -44,6 +44,9 @@ public:
     // Toggle the number of enabled lamps
     return_e lamps_toggle(void);
 
+    // Alive sequence
+    return_e lamps_alive_sequence(uint32_t wait_parameter);
+
   bool is_lamp_on(void);
   bool is_lamp_off(void);
 

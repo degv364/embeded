@@ -36,7 +36,7 @@ namespace
     {
         Hi_dual_mean_fifo *dual_fifo = new Hi_dual_mean_fifo();
         bool comp_condition;
-        (void) dual_fifo->is_last_second_big(&comp_condition);
+        (void) dual_fifo->is_last_second_loud(&comp_condition);
         EXPECT_FALSE(comp_condition);
     }
 
@@ -46,20 +46,20 @@ namespace
         bool comp_condition;
         for (int i=0; i<MAX_SAMPLES*2; i++)
         {
-            dual_fifo->add_sample(4);
+            dual_fifo->add_sample(SOUND_SIGNAL_OFFSET+4);
         }
 
         EXPECT_NEAR(4, dual_fifo->get_mean(), 0.01);
 
-        (void) dual_fifo->is_last_second_big(&comp_condition);
+        (void) dual_fifo->is_last_second_loud(&comp_condition);
         EXPECT_FALSE(comp_condition);
 
-        for (int i=0; i<=SAMPLES_PER_SECOND; i++)
+        for (int i=0; i<=ADC_SAMPLES_PER_SECOND; i++)
         {
-            dual_fifo->add_sample(20);
+            dual_fifo->add_sample(SOUND_SIGNAL_OFFSET+20);
         }
 
-        (void) dual_fifo->is_last_second_big(&comp_condition);
+        (void) dual_fifo->is_last_second_loud(&comp_condition);
         EXPECT_TRUE(comp_condition);
 
     }
@@ -87,13 +87,13 @@ namespace
 
         // button released no timeout
         sensor.control_button = false;
-        sensor.time = TIMEOUT_30-1;
+        sensor.time = TIME_WAIT_COUNT-1;
         st->handle_sensors(&sensor);
         EXPECT_EQ(HI_STATE_MANUAL_CONTROL, st->get_state());
         EXPECT_TRUE(lamp_handler.is_lamp_on());
 
         // timeout
-        sensor.time = TIMEOUT_30+1;
+        sensor.time = TIME_WAIT_COUNT+1;
         st->handle_sensors(&sensor);
         EXPECT_EQ(HI_STATE_OFF, st->get_state());
         EXPECT_FALSE(lamp_handler.is_lamp_on());
@@ -119,7 +119,7 @@ namespace
         EXPECT_TRUE(lamp_handler.is_lamp_on());
 
         // timeout
-        sensor.time = TIMEOUT_30+1;
+        sensor.time = TIME_WAIT_COUNT+1;
         st->handle_sensors(&sensor);
         EXPECT_EQ(HI_STATE_OFF, st->get_state());
 

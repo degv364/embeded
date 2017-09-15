@@ -39,7 +39,7 @@ return_e Hi_dual_mean_fifo::reset_to_value(uint16_t value)
         data_[index] = value;
     }
 
-    for (uint16_t index; index < MAX_SAMPLES; index++)
+    for (uint16_t index; index < ADC_SAMPLES_PER_SECOND; index++)
     {
         loud_conditions_[index] = (uint8_t) value;
     }
@@ -112,7 +112,12 @@ Hi_dual_mean_fifo::get_mean()
 float
 Hi_dual_mean_fifo::get_last_mean()
 {
-    return last_mean_;
+    float last_mean = 0;
+
+    for (uint16_t index = subs_index_; index< comp_index_; index++){
+        last_mean += data_[index]/ADC_SAMPLES_PER_SECOND;
+    }
+    return last_mean;
 }
 #endif
 

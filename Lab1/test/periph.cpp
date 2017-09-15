@@ -42,6 +42,11 @@ periph::LampHandler::lamps_toggle(void){
   return RETURN_OK;
 }
 
+return_e
+periph::LampHandler::lamps_alive_sequence(uint32_t wait_parameter){
+    return RETURN_OK;
+}
+
 bool
 periph::LampHandler::is_lamp_on(void){
   return this->lamp_state;
