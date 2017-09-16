@@ -1,0 +1,144 @@
+\input{../../general/doc/preamble.tex}
+
+\title{Universidad de Costa Rica\\{\small Facultad de Ingeniería\\Escuela de Ingeniería Eléctrica\\
+    Laboratorio Sistemas incrustados\\II ciclo 2017\\\vspace*{0.55in} Reporte de Laboratorio}\\ Práctica I \vspace*{1.1in}}
+\date{20 de Setiembre de 2017}
+
+\begin{document}
+
+\input{../../general/doc/portada.tex}
+
+
+\newpage
+%--------------------------------
+\section{Solución propuesta}
+%-------------------------------
+
+Para mejorar el desarrollo de la solución de este laboratorio, se tomó la decisión de dividir todo
+el código en la parte que depende del hardware, y la que no depende del hardware. De esta manera se
+pueden tener avances y pruebas sin necesidad de tener la tarjeta de desarrollo (dos integrantes con
+una sola tarjeta). El código que depende del hardware se probó en la tarjeta directamente, por otra
+parte el código que no es dependiente del hardware se probó utilizando el ``unit testing'' que
+ofrece \textit{google-test}.
+
+Otro criterio importante de diseño es que se modularizó el código, de manera que cada sensor se
+maneja con su propia clase, y las partes que son independientes del hardware se separaron
+también. Esto tiene la ventaja que permite tener código más entendible, y hace más fácil hacer
+modificaciones del funcionamiento del proyecto. De hecho durante el desarrollo del proyecto se
+hicieron varios cambios en el funcionamiento de ciertos módulos, y esto no afectó al resto de
+módulos. Por ejemplo se cambió la manera en que se calcula si el segundo actual está sobre el
+promedio establecido para encender la luz. Solo se hicieron cambios en uno de los módulos, y el
+resto del proyecto no sufrió modificaciones.
+
+Se tiene un loop de control principal, que al inicio se encarga de inicializar el hardware y los
+periféricos y luego se encarga de iterar periódicamente y definir su comportamiento dependiendo de
+las lecturas de los sensores. Es importante destacar que las lecturas de los sensores no se hace
+dentro de este loop principal, sino que se manejan con sus propias interrupciones, por lo que fue
+necesario crear el \textbf{struct de sensores} que se explica más adelante. 
+
+
+\subsection{Código dependiente del hardware (HD)}
+
+
+
+\subsection{Código independiente del hardware (HI)}
+
+\subsubsection{Struct de sensores}
+La toma de datos de los sensores es asincrónica respecto al ciclo de control principal. Entonces se
+utiliza una estructura para definir la interfaz de comunicación entre ambas partes. Este el el
+struct de sensores. En este se guarda la información relevante que necesita la máquina de estados
+para definir el comportamiento del sistema. Se guardan 4 valores, el primero es el valor de
+tiempo. En este se guarda la cantidad de tiempo que ha pasado, ya que algunas transiciones de estado
+están definidas por \textit{timeouts}, como por ejemplo cuando la lámpara se enciende cuando la
+habitación está oscura y se detecta ruido, el retorno al modo automático está asociado a un
+\textit{timeout}.
+
+El segundo guarda un booleano que indica si el botón de control ha sido presionado. Entonces cuando
+se atiende la interrupción de presionar el botón, se guarda el dato en el struct de sensores, y
+en luego la máquina de estados se encarga de retornar el valor a su estado inicial.
+
+La tercer entrada del struct de sensores se refiere al sensor de luz. Cuando se atiende la
+interrupción del sensor de luz, se compara con el \textit{threshold} establecido experimentalmente y
+se guarda en el struct un booleano que indica si la lectura actual superó o no dicho
+threshold. También estaba la opción de tener una atención de interrupción más simple y solo guardar
+el dato del sensor en el struct de sensores y que luego el loop de control principal se encargara de
+hacer la comparación. Sin embargo se tomó la decisión que el loop principal fuera independiente del
+hardware y por tanto debería funcionar independientemente del threshold de luz que se utilice (que
+depende del sensor). Entonces era mejor que el código HD se encargara de la comparación.
+
+La última entrada del struct de sensores es para el micrófono, y se guarda un booleano que indica si
+el último segundo cumple la condición de estar sobre el promedio establecido por los cinco segundos
+anteriores. Se decide guardar solo el booleano y no los datos por la misma razón expuesta para el
+caso del sensor de luz.
+
+\subsubsection{Fifo de manejo del micrófono}
+
+Una de las operaciones más complejas de este primer laboratorio era identificar si se cumplían las
+condiciones para encender la lámpara. Para el caso del sensor de luz es muy sencillo porque no se
+debe tomar en cuenta la historia, sino que solo importan datos inmediatos. Por otra parte para el
+caso del micrófono se debe tomar en cuenta los últimos 5 segundos, y compararlo con el último
+segundo escuchado.
+
+Para mantener el criterio de diseño de modularizar lo más posible, se decide crear una clase que se
+encarga de manejar este problema. A lo interno tiene un fifo donde se guardan los datos del
+micrófono y tiene métodos para agregar nuevas muestras y para identificar si se cumple o no la
+condición de sonido para encender la lámpara.
+
+Lo primero que se debe considerar es que se tienen dos fifos. El primero guarda los datos
+recolectados por los últimos 6 segundos. Esto se hace porque según las especificaciones se debe
+comparar el último segundo con el promedio de los últimos 5 segundos. Si solo se guardan 5 segundos
+entonces el promedio del último segundo estaría contemplado dentro del promedio de los cinco
+segundos, entonces para mejorar la correctitud del sistema se tomó la decisión de guardar un segundo
+más, de manera que los datos del último segundo no afecten el promedio contra el que se deben
+comparar.
+
+Para optimizar el proceso de obtener el promedio de los cinco segundos, este se
+actualiza cada vez que se agrega un nuevo dato. Se sabe el dato entrante (a la parte del fifo que
+define los cinco segundos, este no es el dato recién agregado pues pertenece al último segundo, y
+no se debe tomar en cuenta para el promedio), y el dato saliente, por lo que se puede utilizar
+(\ref{eq:promedio}) para calcular el promedio. Donde $N$ es la cantidad de muestras en los cinco
+segundos (depende de la frecuencia de muestreo), $s$ se refiere a una muestra o \textit{sample}, y
+$P$ se refiere al promedio.
+
+\begin{equation}
+  P_{new} = P_{old}-\frac{s_{out}}{N}+\frac{s_{in}}{N}
+\end{equation}
+
+El segundo fifo se utiliza para identificar si se cumple la condición necesaria de intensidad sonora
+para encender la lámpara, en este solo se contemplan las muestras del último segundo.  Cada vez que
+entra una muestra nueva, se compara con el promedio actual de los cinco segundos, y en caso de ser
+mayor al umbral definido, se guarda como un acierto. Cuando todos los valores en el fifo son
+aciertos se sabe que se cumple la condición. No se hace una simple comparación de promedios porque
+experimentalmente se descubrió que era muy fácil activar la lámpara, lo que aumentaba los falsos
+positivos. Luego de agregar este fifo extra se observó un mejor comportamiento.
+
+\section{Máquina de estados}
+
+La máquina de estados es el módulo que toma los valores del struct de sensores y con ellos decide el
+estado del sistema. Además hace las llamadas a las funciones de los actuadores, que en este caso son
+las lámparas. 
+
+
+\newpage
+%-------------------------------
+\section{Muestra del Código fuente}
+%-------------------------------
+
+
+
+\newpage
+%-------------------------------
+\section{Recomendaciones}
+%-------------------------------
+
+
+\newpage
+%----------------------
+% Bibliografía
+%----------------------
+
+
+%\bibliographystyle{apacite}
+%\bibliography{../general/biblografia.bib}
+%---------------------------------------------------------------------------------------------------------------
+\end{document}
