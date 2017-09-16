@@ -39,6 +39,39 @@ necesario crear el \textbf{struct de sensores} que se explica más adelante.
 
 \subsection{Código dependiente del hardware (HD)}
 
+\subsubsection{Lámparas}
+Para facilitar el desarrollo relacionado con GPIO, se crea una clase con el mismo nombre. Es una
+capa de abstracción sobre driverlib, para ofrecerle un API más generalizado a la parte que es
+independiente del hardware. OutputGPIO es una clase qeu hereda de GPIO y se refiere exclusivamente a
+pines de salida.
+
+En el constructor de la clase  se selecciona el puerto, el pin y el modo (o función). EN caso que
+nos e especifique, se utiliza salida digital. Además se implementan 3 métodos: set, reset y
+toggle. Set se encarga de poner el pin en High, reset de ponerlo en Low, y toggle de conmutar al
+estado opuesto al actual.
+
+Se creó una clase extra: LampHandler. Esta clase se encarga de abstraer el problema de la cantidad
+de lámparas habilitadas, y proporcionarle un API a la máquina de estados que esconde esta
+complejidad. A la hora de inicializar la clase se decide la cantidad de lámparas habilitadas, pero
+cabe destacar que se diseñó para que se pueda cambiar esta cantidad en cualquier momento durante la
+ejecución.
+
+Por dentro se instancian tres objetos de tipo OutputGPIO, uno para cada lámpara. y se controlan con
+los métodos (de LampHandler) lamps_on, lamps_off, lamps_toggle, y lamps_alive_sequence. Todos los
+métodos son evidentes a partir de lo expuesto anteriormente, excepto por el último. Este se encarga
+de encender y apagar la lámparas para mostrar la secuencia de inicialización. 
+
+\subsubsection{Botón de Control}
+% FIXME: hablar de InputGPIO
+% FIXME: explicar interrupcion
+% FIXME: talvez hablar del problema de detección doble?
+
+\subsubsection{Sensor de Luz}
+% FIXME: Configuración e i2c
+\subsubsection{Micrófono}
+% FIXME: configuración, ADC, Timer
+
+
 
 
 \subsection{Código independiente del hardware (HI)}
@@ -147,6 +180,8 @@ Se definen los siguientes estados:
 \item \textbf{Deinit}: Deinicialización del sistema. Como se espera un funcionamiento continuo este
   estado no se utiliza, pero sería utilizado en caso de fallas críticas. 
 \end{itemize}
+
+En la figura \ref{fig:state_machine} se muestra el diagrama de flujo de la máquina de estados. 
 
 \begin{figure}
 \centering
