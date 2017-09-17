@@ -30,7 +30,7 @@ periph::LampHandler::LampHandler(uint16_t initial_enabled_lamps) :
 void periph::LampHandler::set_enabled_lamps(uint16_t new_enabled_lamps)
 {
     // Check for valid inputs
-    if (new_enabled_lamps == 0 || new_enabled_lamps > 3)
+    if (new_enabled_lamps <= 0 || new_enabled_lamps > 3)
     {
         enabled_lamps_ = 1;
     }
