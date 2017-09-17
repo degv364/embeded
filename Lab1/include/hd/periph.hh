@@ -36,5 +36,6 @@
 #include "hd/lamp_handler.hh"
 #include "hd/microphone_adc.hh"
 #include "hd/light_sensor.hh"
+#include "hd/timer.hh"
 
 #endif /* INCLUDE_PERIPH_H_ */

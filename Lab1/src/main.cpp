@@ -59,30 +59,28 @@
 
 /* Project Includes*/
 #include "common_def.hh"
-
 /* Hardware independent (hi) */
 #include "hi/hi_def.hh"
 #include "hi/hi_state_machine.hh"
 #include "hi/hi_utils.hh"
-
 /* Hardware dependent (hd) */
 #include "hd/periph.hh"
+
 
 periph::LampHandler lamp_handler(ENABLED_LAMPS);
 periph::MicrophoneADC mic(ADC_SAMPLES_PER_SECOND, ADC_MEM0);
 periph::LightSensor light(periph::LightSensor::CONFIG_DEFAULT_100MS);
-periph::InputGPIO button(GPIO_PORT_P3, GPIO_PIN5); //Or P5.1
+periph::InputGPIO button(GPIO_PORT_P3, GPIO_PIN5);
+periph::Timer timer(TIMER32_0_BASE, TIME_INTERRUPTS_PER_SECOND);
 
 Hi_dual_mean_fifo mic_fifo;
 
-/*
- * Initialize sensor struct at time 0
- * Button not pressed
- * Light sensor detecting darkness
- * Microphone detecting silence
- */
-
-hi_sensor_t sensors = { 0, false, false, false };
+hi_sensor_t sensors = {
+                        0,     // Initialize software timer to 0
+                        false, // Button not pressed
+                        false, // Light sensor detecting darkness
+                        false  // Microphone detecting not loud condition
+                      };
 
 static return_e hardware_init(void)
 {
@@ -93,18 +91,9 @@ static return_e hardware_init(void)
     button.configPullUp();
     button.enableInterrupt(GPIO_HIGH_TO_LOW_TRANSITION);
 
-    //FIXME: Move Timer32 to class
-    MAP_Timer32_initModule(TIMER32_0_BASE, TIMER32_PRESCALER_16,
-                           TIMER32_32BIT, TIMER32_PERIODIC_MODE);
-
-    MAP_Interrupt_enableInterrupt(INT_T32_INT1);
-
-    uint32_t T32_MaxCount = MAP_CS_getMCLK()
-            / (TIMER32_PRESCALE * TIME_SAMPLES_PER_SECOND);
-
-    //Starting the timer
-    MAP_Timer32_startTimer(TIMER32_0_BASE, false);
-    MAP_Timer32_setCount(TIMER32_0_BASE, T32_MaxCount);
+    //Time Measurement configuration
+    timer.enableInterrupt();
+    timer.start();
 
     //Start Microphone ADC sampling
     mic.start();
@@ -117,10 +106,11 @@ static return_e hardware_init(void)
 
 int main(void)
 {
-    //Program main finite state machine
+    //Program main FSM
     Hi_state_machine fsm;
     return_e rt;
 
+    //Initialize hardware peripherals
     rt = hardware_init();
     if (rt != RETURN_OK) return 1;
 
@@ -130,13 +120,12 @@ int main(void)
 
     while (1)
     {
-        //Store microphone condition
+        //Read microphone condition
         rt = mic_fifo.is_last_second_loud(&sensors.microphone);
         if (rt != RETURN_OK) break;
 
         //Read light sensor condition
-        if (count % LIGHT_SENSOR_MAINLOOP_READ_FREQ == 0)
-        {
+        if (count % LIGHT_SENSOR_MAINLOOP_READ_PERIOD == 0) {
             sensors.light_sensor = (light.read() >= LIGHT_THRESHOLD);
         }
 

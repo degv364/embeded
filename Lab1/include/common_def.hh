@@ -20,41 +20,55 @@
 #ifndef COMMON_DEF_H_
 #define COMMON_DEF_H_
 
-//Percentage of samples SOUND_THRESHOLD_PERCENT higher than
-//mean in last second required for microphone loud condition
+/*Percentage of samples SOUND_THRESHOLD_PERCENT higher than
+  mean in last second required for microphone loud condition */
 #define SOUND_LOUD_SAMPLES_PERCENT 95
+
 //Sound percentage higher than mean to consider some sample loud
 #define SOUND_THRESHOLD_PERCENT 10.0
+
 //Sound silence approximate ADC level
 #define SOUND_SIGNAL_OFFSET 8175
 
+
 //Number of seconds to wait in ON condition (default=30 min)
 #define TIME_WAIT_SECONDS 15
+
 //Number of Timer32 interrupts (software counts) per second
-#define TIME_SAMPLES_PER_SECOND 10
+#define TIME_INTERRUPTS_PER_SECOND 10
+
 //Number of Timer32 interrupts (software counts) to wait in ON condition
-#define TIME_WAIT_COUNT (TIME_SAMPLES_PER_SECOND * TIME_WAIT_SECONDS)
+#define TIME_WAIT_COUNT (TIME_INTERRUPTS_PER_SECOND * TIME_WAIT_SECONDS)
+
 
 //Microphone number of samples per second
 #define ADC_SAMPLES_PER_SECOND 50 //20
 
+
 //Number of enabled lamps
 #define ENABLED_LAMPS 3
+
 //Low light lux level threshold
 #define LIGHT_THRESHOLD 5
-//Light sensor software reading frequency (defined by main loop counter)
-#define LIGHT_SENSOR_MAINLOOP_READ_FREQ 100
+
+//Light sensor software reading period (defined by main loop counter)
+#define LIGHT_SENSOR_MAINLOOP_READ_PERIOD 100
+
 //Number of for loop cycles to generate a delay in alive sequence
 #define LAMP_ALIVE_SEQ_WAIT_CYCLES 25000
 
+
 //Number of seconds taken into account for samples mean
 #define MEAN_SECONDS 5
+
 //Number of samples in MEAN_SECONDS
 #define MEAN_SAMPLES (ADC_SAMPLES_PER_SECOND * MEAN_SECONDS)
-//Total number of samples (MEAN_SECONDS + 1 Testing second)
+
+//Total number of samples (MEAN_SECONDS + One second for testing loud condition)
 #define MAX_SAMPLES (ADC_SAMPLES_PER_SECOND * (MEAN_SECONDS + 1))
 
-// Return values
+
+//Return values
 typedef enum return_e
 {
     RETURN_OK = 0,     // Execution successful

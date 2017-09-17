@@ -17,32 +17,27 @@
 
  **/
 
-#ifndef TESTING
-#include <stdint.h>
-#endif
+#ifndef INCLUDE_HD_TIMER_HH_
+#define INCLUDE_HD_TIMER_HH_
 
-#ifndef HI_DEF_H_
-#define HI_DEF_H_
+#include "hd/periph.hh"
 
-// States
-typedef enum hi_state_e
+namespace periph
 {
-    HI_STATE_NONE = 0,   // No state
-    HI_STATE_INIT,       // Initialize peripherals
-    HI_STATE_ALIVE_SEQ,  // Functioning confirmation
-    HI_STATE_ON,         // Lamp ON
-    HI_STATE_OFF,        // Lamp OFF
-    HI_STATE_DEINIT,     // Deinitialize
-    HI_STATE_FAIL,       // Failure occurred
-    HI_STATE_MANUAL_ON   // Manual button ON state
-} hi_state_e;
 
-typedef struct hi_sensor_t
+class Timer
 {
-    uint16_t time;       //Software time counter (managed by Timer32)
-    bool control_button; //Manual control button activation flag
-    bool light_sensor;   //Light sensor condition (high level=True)
-    bool microphone;     //Microphone loud flag (loud=True)
-} hi_sensor_t;
+public:
+    Timer(uint32_t timer32_base, uint16_t interrupts_per_second);
+    void start(void);
+    void stop(void);
+    uint16_t getInterruptsPerSecond(void);
+    void enableInterrupt(void);
+private:
+    uint32_t timer32_base_;
+    uint16_t interrupts_per_second_;
+};
 
-#endif
+}
+
+#endif /* INCLUDE_HD_TIMER_HH_ */
