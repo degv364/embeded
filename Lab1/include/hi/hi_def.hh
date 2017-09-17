@@ -34,8 +34,7 @@ typedef enum hi_state_e
     HI_STATE_OFF,       // Lamp OFF
     HI_STATE_DEINIT,       // Deinitialize
     HI_STATE_FAIL,       // Failure ocured, handle it
-    HI_STATE_MANUAL_CONTROL,       // Manual button state
-    HI_NOSTATE_LAST       // For range validation
+    HI_STATE_MANUAL_ON       // Manual button state
 } hi_state_e;
 
 typedef struct hi_sensor_t

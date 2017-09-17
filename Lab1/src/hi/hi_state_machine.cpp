@@ -53,11 +53,11 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         //Reset control_button flag
         input_sensor_data->control_button = false;
 
-        state_ = (state_ == HI_STATE_ON) ? HI_STATE_OFF : HI_STATE_MANUAL_CONTROL;
+        state_ = (state_ == HI_STATE_ON || state_ == HI_STATE_MANUAL_ON)
+                ? HI_STATE_OFF : HI_STATE_MANUAL_ON;
         //Reset time
         input_sensor_data->time = 0;
         rt = lamp_handler.lamps_toggle();
-
 
 
         goto handle_fail;
@@ -107,16 +107,15 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
         state_ = HI_STATE_ON;
         break;
 
-    case HI_STATE_MANUAL_CONTROL:
+    case HI_STATE_MANUAL_ON:
         if (time > TIME_WAIT_COUNT)
         {
-            rt = lamp_handler.lamps_toggle();
+            rt = lamp_handler.lamps_off();
             state_ = HI_STATE_OFF;
         }
         break;
 
     default:
-        //FIXME: implement other states
         break;
     }
 
