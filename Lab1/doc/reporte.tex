@@ -12,6 +12,52 @@
 \newpage
 
 \section{Problema a Resolver}
+Se debe hacer una prueba de concepto para una luz de noche. Este sistema debe ser capaz de sensar la
+luz ambiental y el ruido, para determinar si es necesario encender o no las luces. El objetivo es
+qeu se pueda utilizar en casas con niños pequeños para cuando se despiertan en medio de la noche. 
+
+
+En la tabla \ref{tab:reg_table} se muestran los requerimientos solicitados, y si se lograron para la
+fecha de entrega.
+
+\begin{table}[]
+\centering
+\caption{Tabla de requerimientos}
+\label{tab:reg_table}
+\begin{tabular}{|c|c|c|p{7cm}|}
+  \hline
+  Completado & Código & Requerimiento & Descripción\\
+  \hline
+  Sí & SRS-001 & Número de luces a controlar &El producto debe ser capaz de controlar una, dos, o
+                                               tres lámparas LED\\
+  \hline
+  Sí & SRS-002 & Confirmación de funcionamiento & Una vez energizado el sistema la lámpara debe
+                                                  parpadear 3 veces, luego pasa al estado inicial\\
+  \hline
+  Sí & SRS-003 & Estado inicial de iluminación & El producto debe ser capaz de determinar el nivel
+                                                 inicial de luz, para saber si el estado inicial de
+                                                 la lámpara es encendido o apagado \\
+  \hline
+  Sí & SRS-004& Tiempo de lámpara encendida & La lámpara debe cumplir con el tiempo mínimo de
+                                            encendido, luego del cual se apaga, si no encuentra la
+                                              condición de encendido \\
+  \hline
+  Sí & SRS-005& Tiempo de lámpara apagada & La lámpara se debe mantener apagada indefinidamente,
+                                            hasta que se encuentre la condición de encendido\\
+  \hline
+  Sí & SRS-006& Condición de encendido & La lámpara se debe encender si el nivel le iluminación se
+                                         encuentra por debajo del umbral día-noche, y el nivel de
+                                         sonido es 10 por ciento mayor al promedio de los últimos 5
+                                         segundos por un segundo\\
+  \hline
+  Sí & SRS-007& Botón de Control&  El usuario debe disponer de un botón de control, que alterna el
+                                  estado de la lámpara. Al encenderla debe respetar un tiempo mínimo
+                                  de encendido\\
+  \hline
+  
+\end{tabular}
+\end{table}
+
 
 \section{Contexto de Mercado}
 
