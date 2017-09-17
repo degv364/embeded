@@ -19,16 +19,10 @@
 
 #include "hd/periph.hh"
 
-// Use pins J39, J38, J37
-
-// FIXME: this is a hack to not use 'new' and avoid using the heap
-static periph::OutputGPIO internal_lamp0(GPIO_PORT_P2, GPIO_PIN6);
-static periph::OutputGPIO internal_lamp1(GPIO_PORT_P2, GPIO_PIN4);
-static periph::OutputGPIO internal_lamp2(GPIO_PORT_P5, GPIO_PIN6);
-
 periph::LampHandler::LampHandler(uint16_t initial_enabled_lamps) :
-        lamp0_(&internal_lamp0), lamp1_(&internal_lamp1), lamp2_(
-                &internal_lamp2)
+        lamp0_(GPIO_PORT_P2, GPIO_PIN0), //R
+        lamp1_(GPIO_PORT_P2, GPIO_PIN1), //G
+        lamp2_(GPIO_PORT_P2, GPIO_PIN2)  //B
 {
     set_enabled_lamps(initial_enabled_lamps);
 }
@@ -42,71 +36,42 @@ void periph::LampHandler::set_enabled_lamps(uint16_t new_enabled_lamps)
     }
     // set enabled lamps value
     enabled_lamps_ = new_enabled_lamps;
-
-    // FIXME: remove this part once the correct pins are used
-    enabled_lamps_ = 1;
 }
 
 return_e periph::LampHandler::lamps_on(void)
 {
-    switch (enabled_lamps_)
-    {
-    case 1:
-        lamp0_->set();
-        lamp1_->reset();
-        lamp2_->reset();
-        break;
-    case 2:
-        lamp0_->set();
-        lamp1_->set();
-        lamp2_->reset();
-        break;
-    case 3:
-        lamp0_->set();
-        lamp1_->set();
-        lamp2_->set();
-        break;
-    default:
-        lamp0_->reset();
-        lamp1_->reset();
-        lamp2_->reset();
+    if(enabled_lamps_ >= 1) lamp0_.set();
+    else lamp0_.reset();
 
-    }
+    if(enabled_lamps_ >= 2) lamp1_.set();
+    else lamp1_.reset();
+
+    if(enabled_lamps_ >= 3) lamp2_.set();
+    else lamp2_.reset();
+
     return RETURN_OK;
 }
 
 return_e periph::LampHandler::lamps_off(void)
 {
-    lamp0_->reset();
-    lamp1_->reset();
-    lamp2_->reset();
+    lamp0_.reset();
+    lamp1_.reset();
+    lamp2_.reset();
+
     return RETURN_OK;
 }
 
 return_e periph::LampHandler::lamps_toggle(void)
 {
-    switch (enabled_lamps_)
-    {
-    case 1:
-        lamp0_->toggle();
-        lamp1_->reset();
-        lamp2_->reset();
-        break;
-    case 2:
-        lamp0_->toggle();
-        lamp1_->toggle();
-        lamp2_->reset();
-        break;
-    case 3:
-        lamp0_->toggle();
-        lamp1_->toggle();
-        lamp2_->toggle();
-        break;
-    default:
-        lamp0_->reset();
-        lamp1_->reset();
-        lamp2_->reset();
-    }
+    if(enabled_lamps_ >= 1) lamp0_.toggle();
+    else lamp0_.reset();
+
+    if(enabled_lamps_ >= 2) lamp1_.toggle();
+    else lamp1_.reset();
+
+    if(enabled_lamps_ >= 3) lamp2_.toggle();
+    else lamp2_.reset();
+
     return RETURN_OK;
 }
 

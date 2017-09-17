@@ -31,9 +31,9 @@ namespace periph
 class LampHandler
 {
 private:
-    periph::OutputGPIO *lamp0_;
-    periph::OutputGPIO *lamp1_;
-    periph::OutputGPIO *lamp2_;
+    periph::OutputGPIO lamp0_;
+    periph::OutputGPIO lamp1_;
+    periph::OutputGPIO lamp2_;
 
     uint16_t enabled_lamps_;
 
