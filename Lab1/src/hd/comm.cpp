@@ -22,11 +22,11 @@
 void comm::i2c::init(void)
 {
     const eUSCI_I2C_MasterConfig i2cConfig = {
-    EUSCI_B_I2C_CLOCKSOURCE_SMCLK,          // SMCLK Clock Source
-            MCLOCK_FREQ,                            // SMCLK = 3MHz
-            EUSCI_B_I2C_SET_DATA_RATE_400KBPS,      // Desired I2C Clock of 400khz
-            0,                                      // No byte counter threshold
-            EUSCI_B_I2C_NO_AUTO_STOP                // No Autostop
+    EUSCI_B_I2C_CLOCKSOURCE_SMCLK,              // SMCLK Clock Source
+            MCLOCK_FREQ,                        // SMCLK = 3MHz
+            EUSCI_B_I2C_SET_DATA_RATE_400KBPS,  // Desired I2C Clock of 400khz
+            0,                                  // No byte counter threshold
+            EUSCI_B_I2C_NO_AUTO_STOP            // No Autostop
             };
 
     //Setup GPIOs: I2C_SCL(P6.5), I2C_SDA(P6.4)

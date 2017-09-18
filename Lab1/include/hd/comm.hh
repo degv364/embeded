@@ -31,11 +31,32 @@ namespace comm
 {
 namespace i2c
 {
+/* Initialize I2C module in master mode at EUSCI_B1
+ * and pins P6.5(I2C_SCL), P6.4(I2C_SDA)
+ */
 void init(void);
+
+//Set slave address prior to I2C communication
 void setSlave(uint16_t slaveAddr);
+
+/* Write 1 byte (writeValue) from master (MSP432) to
+ * some slave register indicated by regAddr
+ */
 void write8(uint8_t regAddr, uint8_t writeValue);
+
+/* Write 2 bytes (writeValue) from master (MSP432) to
+ * some slave register indicated by regAddr
+ */
 void write16(uint8_t regAddr, uint16_t writeValue);
+
+/* Read 1 byte from some slave register indicated
+ * by regAddr to master (MSP432)
+ */
 uint8_t read8(uint8_t regAddr);
+
+/* Read 2 bytes from some slave register indicated
+ * by regAddr to master (MSP432)
+ */
 uint16_t read16(uint16_t regAddr);
 }
 }

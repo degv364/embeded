@@ -24,17 +24,36 @@
 
 namespace periph
 {
-
+/*
+ * Class that manages the Timer32 configuration allowing to set
+ * a configurable number of interrupts per second
+ */
 class Timer
 {
 public:
+    /*
+     * Timer constructor initializes the specified Timer32 module
+     * and configures the timer to issue the indicated number of
+     * interrupts per second
+     */
     Timer(uint32_t timer32_base, uint16_t interrupts_per_second);
+
+    //Start the timer count
     void start(void);
+
+    //Halts the timer
     void stop(void);
+
+    //Get the current number of interrupts per second
     uint16_t getInterruptsPerSecond(void);
+
+    //Enable the interrupt generation for the specified timer
     void enableInterrupt(void);
+
+    //Clean the interrupt flag for specified Timer32 module
+    static void cleanIRQ(uint32_t timer32_base);
 private:
-    uint32_t timer32_base_;
+    uint32_t timer32_base_; //Timer32 module
     uint16_t interrupts_per_second_;
 };
 

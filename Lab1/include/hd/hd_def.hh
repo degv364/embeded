@@ -22,8 +22,10 @@
 /* Use this for very hardware dependent definitions
  * that hardware independent software does not need
  */
+
 //Master clock frequency
 #define MCLOCK_FREQ 3000000
+
 //Timer32 prescale factor
 #define TIMER32_PRESCALE 16
 

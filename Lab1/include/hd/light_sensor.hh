@@ -25,13 +25,27 @@
 namespace periph
 {
 
+/*
+ * Class that manages configuration and functionality for
+ * the OPT3001 I2C Light Sensor peripheral
+ */
+
 class LightSensor
 {
 public:
+    /*
+     * LightSensor constructor initializes the OPT3001 peripheral
+     * with specified configuration mode
+     */
     LightSensor(uint16_t config_value = CONFIG_DEFAULT_800MS);
+
+    //Read Light Sensor Lux value
     uint64_t read(void);
+
+    //Read some register value specified by regAddr parameter
     uint16_t readRegister(uint8_t regAddr);
 
+    //Light Sensor related constants
     static constexpr uint8_t LIGHT_SENSOR_I2C_ADDR = 0x44;
     static constexpr uint8_t RESULT_REG = 0x00;
     static constexpr uint8_t CONFIG_REG = 0x01;

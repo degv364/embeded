@@ -94,6 +94,7 @@ void periph::InputGPIO::enableInterrupt(uint8_t edgeSelect)
     MAP_GPIO_enableInterrupt(GPIO_Port_, GPIO_Pins_);
     MAP_GPIO_interruptEdgeSelect(GPIO_Port_, GPIO_Pins_, edgeSelect);
 
+    //Calculates interrupt port from corresponding GPIO Port
     uint32_t INT_Port = (INT_PORT1 - GPIO_PORT_P1) + GPIO_Port_;
     assert(INT_Port >= INT_PORT1 && INT_Port <= INT_PORT6);
 
@@ -114,6 +115,7 @@ bool periph::InputGPIO::checkAndCleanIRQ(uint8_t GPIO_Port, uint16_t GPIO_Pin)
 {
     uint64_t status = MAP_GPIO_getEnabledInterruptStatus(GPIO_Port);
     MAP_GPIO_clearInterruptFlag(GPIO_Port, status);
+    //Returns true if Interrupt flag corresponds to specified GPIO_Pin
     return (status & GPIO_Pin);
 }
 

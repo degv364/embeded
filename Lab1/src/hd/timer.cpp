@@ -26,7 +26,10 @@ periph::Timer::Timer(uint32_t timer32_base, uint16_t interrupts_per_second):
     interrupts_per_second_(interrupts_per_second)
 {
     assert(timer32_base_ == TIMER32_0_BASE || timer32_base_ == TIMER32_1_BASE);
-    MAP_Timer32_initModule(TIMER32_0_BASE, TIMER32_PRESCALER_16,
+    /* Periodic mode allows to set a max timer count, which is required to
+     * control the number of interrupts per second
+     */
+    MAP_Timer32_initModule(timer32_base_, TIMER32_PRESCALER_16,
                            TIMER32_32BIT, TIMER32_PERIODIC_MODE);
 }
 
@@ -36,7 +39,11 @@ void periph::Timer::start(void)
             (TIMER32_PRESCALE * interrupts_per_second_);
     assert(T32_MaxCount >= 1);
 
+    /* Configures the max timer count to generate the required
+     * number of interrupts per second
+     */
     MAP_Timer32_setCount(timer32_base_, T32_MaxCount);
+    //Starts the Timer32 module in continuous mode (false)
     MAP_Timer32_startTimer(timer32_base_, false);
 }
 
@@ -58,4 +65,9 @@ void periph::Timer::enableInterrupt(void)
                                     INT_T32_INT2 : 0;
 
     MAP_Interrupt_enableInterrupt(timer32_interrupt);
+}
+
+void periph::Timer::cleanIRQ(uint32_t timer32_base)
+{
+    MAP_Timer32_clearInterruptFlag(timer32_base);
 }

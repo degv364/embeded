@@ -31,8 +31,9 @@
 
 /*Variables defined in other files*/
 extern periph::MicrophoneADC mic;
-
 extern periph::LampHandler lamp_handler;
+extern periph::InputGPIO button;
+
 extern hi_sensor_t sensors;
 extern Hi_dual_mean_fifo mic_fifo;
 
@@ -40,6 +41,10 @@ extern Hi_dual_mean_fifo mic_fifo;
 extern "C"
 {
 
+/* ISR that manages the microphone reading. Stores the current
+ * ADC sample (after some processing) in the microphone circular
+ * buffer for later analysis
+ */
 void ADC14_IRQHandler(void)
 {
     __disable_irq();
@@ -52,6 +57,7 @@ void ADC14_IRQHandler(void)
     __enable_irq();
 }
 
+// ISR that sets the control_button flag when user button is pressed
 void PORT3_IRQHandler(void)
 {
     __disable_irq();
@@ -64,11 +70,14 @@ void PORT3_IRQHandler(void)
     __enable_irq();
 }
 
+/* ISR activated by Timer32 for time measurement through the
+ * software timer update
+*/
 void T32_INT1_IRQHandler(void)
 {
     __disable_irq();
 
-    MAP_Timer32_clearInterruptFlag(TIMER32_0_BASE);
+    periph::Timer::cleanIRQ(TIMER32_0_BASE);
     sensors.time++;
 
     __enable_irq();

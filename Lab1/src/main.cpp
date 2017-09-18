@@ -57,7 +57,7 @@
 #include "msp.h"
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
-/* Project Includes*/
+/* Project Includes */
 #include "common_def.hh"
 /* Hardware independent (hi) */
 #include "hi/hi_def.hh"
@@ -67,20 +67,24 @@
 #include "hd/periph.hh"
 
 
+//Global object declarations
+
+//Hardware dependent (hd)
 periph::LampHandler lamp_handler(ENABLED_LAMPS);
 periph::MicrophoneADC mic(ADC_SAMPLES_PER_SECOND, ADC_MEM0);
 periph::LightSensor light(periph::LightSensor::CONFIG_DEFAULT_100MS);
 periph::InputGPIO button(GPIO_PORT_P3, GPIO_PIN5);
 periph::Timer timer(TIMER32_0_BASE, TIME_INTERRUPTS_PER_SECOND);
 
+//Hardware independent (hi)
 Hi_dual_mean_fifo mic_fifo;
-
 hi_sensor_t sensors = {
                         0,     // Initialize software timer to 0
                         false, // Button not pressed
                         false, // Light sensor detecting darkness
                         false  // Microphone detecting not loud condition
                       };
+
 
 static return_e hardware_init(void)
 {
@@ -104,6 +108,7 @@ static return_e hardware_init(void)
     return RETURN_OK;
 }
 
+
 int main(void)
 {
     //Program main FSM
@@ -114,13 +119,12 @@ int main(void)
     rt = hardware_init();
     if (rt != RETURN_OK) return 1;
 
-
     //Main loop counter
     uint64_t count = 0;
 
     while (1)
     {
-        //Read microphone condition
+        //Determine microphone condition
         rt = mic_fifo.is_last_second_loud(&sensors.microphone);
         if (rt != RETURN_OK) break;
 

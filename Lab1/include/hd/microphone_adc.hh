@@ -25,15 +25,37 @@
 namespace periph
 {
 
+/*
+ * Class that manages the BOOSTXL-EDUMKII microphone reading
+ * through ADC module
+ */
 class MicrophoneADC
 {
 public:
+    /* MicrophoneADC constructor allows to define the number of
+     * ADC samples per second and the ADC register to store the
+     * captured data
+     */
     MicrophoneADC(uint16_t samplesPerSecond, uint32_t ADC_MEM_Pos = ADC_MEM0);
+
+    //Recofigure the number of ADC samples per second and the ADC register
     void config(uint16_t samplesPerSecond, uint32_t ADC_MEM_Pos = ADC_MEM0);
+
+    //Start the ADC periodic sampling
     void start(void);
+
+    //Halts the ADC module
     void stop(void);
+
+    //Read the current value stored in the configured ADC memory position register
     uint16_t read(void);
+
+    //Read the current value stored in some specified ADC memory position register
     static uint16_t read(uint32_t ADC_MEM_Pos);
+
+    /* Check if there is a pending interrupt request from some ADC
+     * memory position register and clean the interrupt flag
+     */
     static bool checkAndCleanIRQ(uint32_t ADC_MEM_Interrupt);
 
 private:
