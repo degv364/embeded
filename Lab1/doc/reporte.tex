@@ -1,138 +1,69 @@
 \input{../../general/doc/preamble.tex}
-
-\title{Universidad de Costa Rica\\{\small Facultad de Ingeniería\\Escuela de Ingeniería Eléctrica\\
-    Laboratorio Sistemas incrustados\\II ciclo 2017\\\vspace*{0.55in} Reporte de Laboratorio}\\ Práctica I \vspace*{1.1in}}
-\date{20 de Setiembre de 2017}
-
 \begin{document}
-
-\input{../../general/doc/portada.tex}
-
-
-\newpage
+%Header-Make sure you update this information!!!!
+\noindent
+\large\textbf{Laboratorio I: reporte} \hfill Laboratorio de sistemas Incrustados \\
+\normalsize Esteban Zamora Alvarado \hfill Carné: B47769 \\
+Daniel Esteban García Vaglio \hfill Carné: B42781 \\
+Profesor: Esteban Ortiz  \hfill Fecha: 20-setiempre-2017 \\
 
 \section{Problema a Resolver}
-Se debe hacer una prueba de concepto para una luz de noche. Este sistema debe ser capaz de sensar la
-luz ambiental y el ruido, para determinar si es necesario encender o no las luces. El objetivo es
-qeu se pueda utilizar en casas con niños pequeños para cuando se despiertan en medio de la noche. 
-
-
-En la tabla \ref{tab:reg_table} se muestran los requerimientos solicitados, y si se lograron para la
-fecha de entrega.
-
-\begin{table}[]
-\centering
-\caption{Tabla de requerimientos}
-\label{tab:reg_table}
-\begin{tabular}{|c|c|c|p{7cm}|}
-  \hline
-  Completado & Código & Requerimiento & Descripción\\
-  \hline
-  Sí & SRS-001 & Número de luces a controlar &El producto debe ser capaz de controlar una, dos, o
-                                               tres lámparas LED\\
-  \hline
-  Sí & SRS-002 & Confirmación de funcionamiento & Una vez energizado el sistema la lámpara debe
-                                                  parpadear 3 veces, luego pasa al estado inicial\\
-  \hline
-  Sí & SRS-003 & Estado inicial de iluminación & El producto debe ser capaz de determinar el nivel
-                                                 inicial de luz, para saber si el estado inicial de
-                                                 la lámpara es encendido o apagado \\
-  \hline
-  Sí & SRS-004& Tiempo de lámpara encendida & La lámpara debe cumplir con el tiempo mínimo de
-                                            encendido, luego del cual se apaga, si no encuentra la
-                                              condición de encendido \\
-  \hline
-  Sí & SRS-005& Tiempo de lámpara apagada & La lámpara se debe mantener apagada indefinidamente,
-                                            hasta que se encuentre la condición de encendido\\
-  \hline
-  Sí & SRS-006& Condición de encendido & La lámpara se debe encender si el nivel le iluminación se
-                                         encuentra por debajo del umbral día-noche, y el nivel de
-                                         sonido es 10 por ciento mayor al promedio de los últimos 5
-                                         segundos por un segundo\\
-  \hline
-  Sí & SRS-007& Botón de Control&  El usuario debe disponer de un botón de control, que alterna el
-                                  estado de la lámpara. Al encenderla debe respetar un tiempo mínimo
-                                  de encendido\\
-  \hline
-  
-\end{tabular}
-\end{table}
-
+Se debe hacer una prueba de concepto para una luz de noche. Esta es una lampara que se apaga durante
+el día, y durante la noche se enciende al detectar ruido (por ejemplo que se despierte un niño pequeño)
+con la capacidad de configurarse a una, dos, o tres lámparas. Además debe contar con un botón de
+control para mantener las lámparas encendidas por un tiempo determinado cuando el cliente así lo
+requiera. 
 
 \section{Contexto de Mercado}
 
-Hay varias propuestas en el mercado de productos parecidos. Entre ellos destaca \textit{Sensky
-  Skl001}, que es una lámpara que se acciona por luz y por movimiento. Funciona parecido al producto
-propuesto para este laboratorio, pero no tiene sensor de audio. Tiene un costo aproximado de 14
-dólares. En general los clientes está complacidos con el producto pero una queja común es que no se
-apaga por completo, sino que siempre tiene una leve luz activada durante la noche, y que por tanto
-no lo recomiendan para cuartos, sino que es mejor para pasillos.
-% https://www.amazon.com/Sensky-Activated-Bedroom-Staircase-Hallway/dp/B0132IB68G/ref=sr_1_5/132-4000312-3358733?s=lamps-light&ie=UTF8&qid=1505612984&sr=1-5&refinements=p_n_feature_ten_browse-bin%3A5587102011
+De varios productos buscados, destaca \textit{ZAZU}, se trata de una lámpara en forma de búho con un
+aro luminoso alrededor. El búho y el aro tienen 3 intensidades de luz ajustables de forma
+independiente, y además es activado por sonido. Tiene un costo aproximado de 40 dólares. Varios de
+los comentarios positivos se refieren a que existen dos fuentes de luz configurables por
+separado. La mayor parte de las quejas se refieren a que la activación por sonido no funciona bien,
+ya que no se enciende aún cuando los niños lloran.
 
-Otro que destaca es \textit{ZAZU}, se trata de una lámpara en forma de búho con un aro luminoso alrededor. El
-búho y el aro tienen 3 intensidades de luz ajustables de forma independiente, y además es activado
-por sonido. Tiene un costo aproximado de 40 dólares. Varios de los comentarios positivos se refieren
-a que existen dos fuentes de luz configurables por separado, en muchos casos utilizan el aro para
-leer un libro antes de dormir, y la luz del búho para que el niño se duerma. La mayor parte de las
-quejas se refieren a que la activación por sonido no funciona bien, ya que no se enciende aún cuando
-los niños lloran.
-% https://www.amazon.com/Zazu-Kids-Voice-Activated-Nightlight/dp/B00WSB43XY/ref=sr_1_1?s=lamps-light&ie=UTF8&qid=1505613867&sr=1-1&keywords=voice+activated
-
-Otro producto que destaca es \textit{Zitrades Baby Night Rainbow}. Se trata de un arcoiris luminoso que se
-activa por luz y por sonido. No es tan configurable como ZAZU, pero cuesta menos de la mitad,
-aproximadamente 17 dólares. Tiene varias reseñas positivas, que en su mayoría se refieren a lo
-tierno del diseño y a que a los niños les gusta mucho. Los comentarios negativos se refieren a un
-comportamiento errático de las luces, en muchos casos se encienden sin una razón aparente y aveces
-provoca detellos que despiertan alos niños. En un caso, los destellos llegaron a asustar a una delas
-hijas de los clientes, pero no lo devolvieron porque tiene un diseño muy tierno.
-% https://www.amazon.com/Zitrades-Rainbow-Toddler-Nightlight-Sensor/dp/B0111AA67Y/ref=sr_1_9?s=lamps-light&ie=UTF8&qid=1505614831&sr=1-9&keywords=voice+activated
-
-Se debe tomar en cuenta que este es un producto para niños y por tanto se le da mucha importancia a
-que tenga un diseño adorable. En muchos casos aunque el producto no cumplía con las expectativas de
-los padres, los niños se sentían muy contentos. Esto es algo que no se toma en cuenta para este
-laboratorio, pero es importante contemplarlo para poder sacar el producto a la venta. Por otra parte
-la mayor parte de las quejas son por el funcionamiento del producto, que sí está vinculado con el
-desarrollo de este laboratorio. De los resultados experimentales realizados, no se han observado
-comportamientos erráticos en las luces ni que el sistema falle en detectar el sonido; como sucede con
-los productos competidores.
-
-Otro aspecto importante a tomar en cuenta es que ninguno de los productos se mantenía encendido por
-tanto tiempo como se solicita en la descripción de este laboratorio. El que tarda más tiempo
-encendido dura 7 minutos. Por lo que se deben reevaluar los 30 minutos propuestos antes de sacar el
-producto al mercado.  
+Ninguno de los productos se mantenía encendido por más de 7 minutos. Por lo que se deben reevaluar
+los 30 minutos propuestos antes de sacar el producto al mercado.
 
 \section{Solución Propuesta}
+
+Se tomó la decisión de dividir todo el código en la parte que depende del hardware (HD), y la que no
+depende del hardware (HI).  El código que depende del hardware se probó en la tarjeta directamente, por
+otra parte el código que no es dependiente del hardware se probó utilizando el ``unit testing'' que
+ofrece \textit{google-test}.
+
+Se implementó una máquina de estados que se encarga definir el comportamiento del sistema según las
+lecturas de los sensores. Esta se actualiza periódicamente mediante el ciclo de control
+principal. Los periféricos (sensor de luz y micrófono), se configuran para toma de datos automática,
+independiente de la ejecución del ciclo de control principal. Por esta razón el código HD se encarga
+de actualizar el \textit{struct de sensores}. Donde se guardan los valores sensados que luego se
+utilizan en la máquina de estados, este struct funciona como un contenedor de mensajes de
+sincronización entre HD y HI. En la figura \ref{fig:data_flow} se muestra el flujo de datos del sistema.
+
 
 \section{Configuración de periféricos}
 
 \subsection{Timer}
-Para el conteo del tiempo se utiliza el módulo Timer32\_1, el cual se configura para generar una
-determinada cantidad de interrupciones por segundo (definido en TIME\_INTERRUPTS\_PER\_SECOND). Para
-esto se utiliza el modo periódico (TIMER32\_PERIODIC\_MODE) para poder determinar el valor máximo
-desde el cual se genera la cuenta regresiva hacia 0, y así establecer la cantidad de interrupciones
-deseada en función de dicho valor máximo y la frecuencia del timer, la cual se obtiene de preescalar
-por 16 (TIMER32\_PRESCALER\_16) el MCLK (que se encuentra operando a 3 MHz). También, se configura
-el Timer en modo continuo, de manera que una vez el conteo llega a 0 el mismo se vuelve a reiniciar
-de manera automática. A parte de esto se deben activar las interrupciones, las cuales se generan
+Para el conteo del tiempo se utiliza el módulo Timer32\_1, el cual se configura para generar
+(TIME\_INTERRUPTS\_PER\_SECOND) interrupciones por segundo. Para esto se utiliza el modo periódico
+(TIMER32\_PERIODIC\_MODE). También, se configura el Timer en modo continuo, para que reinicie la
+cuenta al llegar a 0. A parte de esto se deben activar las interrupciones, las cuales se generan
 cuando el valor de conteo llega a 0.
 
 \subsection{Sensor de luz con I2C}
 Para enviar la configuración del sensor de luz al OPT3001 se utiliza el protocolo I2C, en donde la
 funcionalidad requerida se establece mediante la escritura del registro de 16 bits llamado
-\texttt{Configuration Register (01h)}. Para la solución implementada se aplicó la configuración de
-rango de escala completa automático, de forma que el sensor se adapta al rango de los valores
-medidos de manera dinámica para dar una mejor precisión. Además, se establece que el tiempo de
-conversión sea de 100 ms, tal que se pudiera tener un nuevo resultado tan rápido como fuera posible
-para el sensor. Se utiliza también el modo de conversión continua, para que el sensor constantemente
-se encuentre capturando nuevas mediciones. Todo esto implica escribir en dicho registro el valor
-\texttt{0xC410}.
+\texttt{Configuration Register (01h)}. Se aplicó la configuración de rango de escala completa
+automático, de forma que el sensor se adapta al rango de los valores medidos de manera
+dinámica. Además, se establece que el tiempo de conversión sea de 100 ms. Se utiliza también el modo
+de conversión continua, para que el sensor constantemente se encuentre capturando nuevas
+mediciones. Todo esto implica escribir en dicho registro el valor \texttt{0xC410}.
 
-Por otra parte, a pesar de que el sensor de luz (OPT3001) permite generar interrupciones para
-detectar si los valores de medición se encuentran en un rango válido, estas no se emplean en el diseño.
-
-Con respecto al protocolo I2C, fue necesario configurar los pines P6.5 como I2C\_SCL, y P6.4 como
-I2C\_SDA, los cuales se encuentran conectados al sensor de luz. Además, se utiliza MCLK como reloj
-para la interfaz I2C y se configura una tasa de datos de 400 Kbps.  
+No se utilizan interrupciones originadas del sensor.  Con respecto al protocolo I2C, fue necesario
+configurar los pines P6.5 como I2C\_SCL, y P6.4 como I2C\_SDA, los cuales se encuentran conectados
+al sensor de luz. Además, se utiliza MCLK como reloj para la interfaz I2C y se configura una tasa de
+datos de 400 Kbps.
 
 \subsection{Micrófono con ADC}
 Con respecto a la configuración del módulo ADC, en primer lugar se configura el MCLK como el reloj
@@ -147,104 +78,49 @@ habilitación de conversión (\texttt{ADC14ENC}) para volver a iniciar otra conv
 se envía una sola vez y el módulo permite procesar nuevas muestras de manera automática, al enviar la
 señal de muestreo y conversión (\texttt{SAMPCON}).
 
-Con respecto a la señal de muestreo, esta se establece mediante el TimerA0, de forma que el proceso
-de muestreo ocurre de manera automática por hardware en lugar de requerir una activación por
-software mediante la bandera \texttt{ADC14SC}. En este sentido, se configura el TimerA0 con el reloj
+El proceso de muestreo se activa por hardware con el TimerA0. Se configura el TimerA0 con el reloj
 \texttt{ACLK}, el cual es alimentado con la fuente \texttt{REFO}, de forma que se opera a una
 frecuencia de 32 KHz y en donde no se utiliza preescalado. Este timer se configura para operar en
-\textit{Up Mode}, en el cual se cuenta hacia arriba y se puede configurar el valor máximo de conteo
-mediante el registro \texttt{CCR0}, después del cual se reinicia el conteo a 0. Se deshabilitan las
-interrupciones de este módulo que se activan al contar hacia (CCIFG) y desde (TAIFG) \texttt{CCR0},
-ya que estas no son requeridas para la interacción con el ADC. 
+\textit{Up Mode}, en el cual se cuenta hacia arriba y se configura el valor máximo de conteo
+mediante el registro \texttt{CCR0}. Se deshabilitan las interrupciones de este módulo ya que estas
+no son requeridas para el ADC.
 
-La señal de muestreo se genera a partir de una salida del TimerA0 (\texttt{OUT1}), la cual se puede
-considerar de tipo PWM y se establece según el valor del registro \texttt{CCR1} (Capture Compare
-Register 1) y el modo \textit{Set/Reset}. Este registro se configura tal que tiene el mismo valor
-que el valor máximo de conteo (\texttt{CCR0}), de manera que la señal se mantiene en bajo hasta
-llegar exactamente al último valor de conteo, y se mantiene en alto solamente durante dicho número
-(un ciclo del TimerA0, ACLK), volviendo a estar en bajo en el siguiente ciclo, en el cual se regresa
-al valor de conteo de 0. Esto se hace así porque permite establecer la frecuencia de muestreo
-mediante el valor máximo de conteo, y porque esta señal debe estar en alto durante un tiempo
-reducido (debe ser menor a $420~\mu s$, en este caso es $1/ACLK \approx 30.5~\mu s$ ), en el cual se
-lleva a cabo el muestreo de la entrada analógica.
-
-
-\subsection{GPIOs}
-Los GPIOs (General Purpose Input Output) se emplean tanto para las salidas de los LEDs como para la
-entrada del botón. En el caso de los LEDs, se configuran los pines correspondientes como salidas, y
-se controlan según la lógica del programa. 
-
-Para el funcionamiento del botón, se configura el pin correspondiente como entrada y se habilita la
-interrupción en la transición de alto a bajo en el valor de entrada. De esta forma, cuando se
-presiona el botón (normalmente en alto) se genera un pulso en bajo que activa la interrupción, lo
-cual permite detectar cuando el usuario utiliza el control manual. 
-
+La señal de muestreo se genera a partir de \texttt{OUT1} del TimerA0, la cual se puede considerar de
+tipo PWM y se establece según el valor del registro \texttt{CCR1} (Capture Compare Register 1) y el
+modo \textit{Set/Reset}. Este registro se configura con el mismo valor que el valor máximo de conteo
+(\texttt{CCR0}), de manera que la señal se mantiene en bajo hasta llegar exactamente al último valor
+de conteo, y se mantiene en alto solamente durante un ciclo. Vuelve a estar en bajo en el siguiente
+ciclo, en el cual se regresa al valor de conteo de 0. Esto se hace así porque esta señal debe estar
+en alto durante un tiempo reducido (debe ser menor a $420~\mu s$, en este caso es
+$1/ACLK \approx 30.5~\mu s$ ), en el cual se lleva a cabo el muestreo de la entrada analógica.
 
 %--------------------------------
 \section{Implementación}
 %-------------------------------
 
-Para mejorar el desarrollo de la solución de este laboratorio, se tomó la decisión de dividir todo
-el código en la parte que depende del hardware, y la que no depende del hardware. De esta manera se
-pueden tener avances y pruebas sin necesidad de tener la tarjeta de desarrollo (dos integrantes con
-una sola tarjeta). El código que depende del hardware se probó en la tarjeta directamente, por otra
-parte el código que no es dependiente del hardware se probó utilizando el ``unit testing'' que
-ofrece \textit{google-test}.
-
-Otro criterio importante de diseño es que se modularizó el código, de manera que cada sensor se
-maneja con su propia clase, y las partes que son independientes del hardware se separaron
-también. Esto tiene la ventaja que permite tener código más entendible, y hace más fácil hacer
-modificaciones del funcionamiento del proyecto. De hecho durante el desarrollo del proyecto se
-hicieron varios cambios en el funcionamiento de ciertos módulos, y esto no afectó al resto de
-módulos. Por ejemplo se cambió la manera en que se calcula si el segundo actual está sobre el
-promedio establecido para encender la luz. Solo se hicieron cambios en uno de los módulos, y el
-resto del proyecto no sufrió modificaciones.
-
-Se tiene un loop de control principal, que al inicio se encarga de inicializar el hardware y los
-periféricos y luego se encarga de iterar periódicamente y definir su comportamiento dependiendo de
-las lecturas de los sensores. Es importante destacar que las lecturas de los sensores no se hace
-dentro de este loop principal, sino que se manejan con sus propias interrupciones, por lo que fue
-necesario crear el \textbf{struct de sensores} que se explica más adelante. 
-
-
-\subsection{Código dependiente del hardware (HD)}
-
-\subsubsection{GPIOs}
+\subsection{GPIOs (HD)}
 Para la implementación del manejo de los GPIOs se implementaron las clases \texttt{OutputGPIO} e
 \texttt{InputGPIO}, las cuales son derivadas de la clase \texttt{GPIO} y corresponden a
 abstracciones sobre DriverLib. La clase \texttt{GPIO} permite contener la información sobre el
 puerto de entrada/salida y el grupo de pines que controla el objeto. En el constructor de la clase
 se selecciona el puerto, el pin y el modo (o función). 
 
-La clase \texttt{OutputGPIO} permite configurar los pines como salidas y brinda la
-funcionalidad básica para hacer set, reset y toggle de manera más abstracta (por ejemplo
-led.toggle()). Por otra parte, la clase \texttt{InputGPIO} le permite a los pines ser configurados
-como entradas, para leer su valor o para establecer interrupciones en determinados flancos de la
-señal de entrada, mediante métodos de configuración.
+La clase \texttt{OutputGPIO} permite configurar los pines como salidas y brinda la funcionalidad
+básica para hacer set, reset y toggle. Por otra parte, la clase \texttt{InputGPIO} le permite a los
+pines ser configurados como entradas, para leer su valor o para establecer interrupciones en
+determinados flancos de la señal de entrada, mediante métodos de configuración.
 
-
-\subsubsection{Lámparas}
-Las lámparas son controlador mediante la clase \texttt{LampHandler}, la cual se encarga de abstraer
+Las lámparas son controladas mediante la clase \texttt{LampHandler}, la cual se encarga de abstraer
 el problema de la cantidad de lámparas habilitadas, y proporcionarle un API a la máquina de estados
-que esconde esta complejidad. A la hora de inicializar la clase se decide la cantidad de lámparas
-habilitadas, pero cabe destacar que se diseñó para que se pueda cambiar esta cantidad en cualquier
-momento durante la ejecución.
+que esconde esta complejidad.
 
-Por dentro se instancian tres objetos de tipo \texttt{OutputGPIO}, uno para cada lámpara. y se
-controlan con los métodos (de LampHandler) lamps\_on, lamps\_off, lamps\_toggle, y
-lamps\_alive\_sequence. Todos los métodos son evidentes a partir de lo expuesto anteriormente,
-excepto por el último. Este se encarga de encender y apagar la lámparas para mostrar la secuencia de
-inicialización.
-
- 
-\subsubsection{Botón de Control}
 Para implementar el botón de control se utiliza un objeto de tipo \texttt{InputGPIO}, el cual
 permite configurar la interrupción que genera el botón en un GPIO para el control manual del
 usuario. En esta interrupción del botón, se establece una bandera (sensors.control\_button) que
 posteriormente es utilizada para detectar que se requiere responder a un control manual dentro del
 main loop.
 
-\subsubsection{Timer}
+\subsection{Timer (HD)}
 Para el funcionamiento de la medición de tiempo se implementó la clase \texttt{Timer}, la cual
 permite configurar el módulo Timer32 para generar una determinada cantidad de interrupciones por
 segundo, tal como se discutión en la sección de configuración de periféricos. De esta manera, el
@@ -257,133 +133,57 @@ En este caso, las interrupciones se utilizan para incrementar un contador por so
 (sensors.time) que lleva una medición del tiempo transcurrido, en donde la cantidad de
 interrupciones por segundo determina la precisión de la escala de tiempo.
 
-\subsubsection{Sensor de Luz con I2C}
-Para implementar el sensor de luz se creo la clase \texttt{LightSensor}, la cual mediante el
+\subsection{Sensor de Luz con I2C (HD)}
+Para implementar el sensor de luz se creó la clase \texttt{LightSensor}, la cual mediante el
 protocolo I2C configura en el constructor el comportamiento indicado previamente para el
-sensor. Este constructor recibe el modo de configuración, permitiendo elegir entre un muestreo 100
-ms o de 800 ms. Además, permite leer el valor obtenido del registro \texttt{Result} del sensor en
-unidades de Lux, para lo cual se toma el contenido de este registro y se operan los valor de
-fracción (bits [11:0]) y de exponente (bits [15:12]) para generar el resultado adecuado. Es
-importante destacar que para facilitar el procesamiento de estos datos se aproximó el resultado en
-Lux aplicando un desplazamiento extra de 6 bits a la derecha (factor de $0.0156$) en lugar de
+sensor. Además, permite leer el valor obtenido del registro \texttt{Result} del sensor en unidades
+de Lux, para lo cual se toma el contenido de este registro y se operan los valores de fracción (bits
+[11:0]) y de exponente (bits [15:12]) para generar el resultado adecuado. Se aproximó el resultado
+en Lux aplicando un desplazamiento extra de 6 bits a la derecha (factor de $0.0156$) en lugar de
 multiplicar por el factor de $0.01$ en la ecuación $Lux = 0.01 \cdot 2^{E[3:0]} \cdot R[11:0]$, de
 manera que no fuera necesario aplicar aritmética de punto flotante. Esta aproximación es válida
-porque en esta aplicación solo se requiere establecer un threshold para el nivel de luz entre día y
-noche, de manera que no es necesario tener el valor exacto en medido en Lux.
+porque solo se requiere establecer un umbral entre día y noche de manera que no es necesario tener
+el valor exacto en medido en Lux.
 
-Para el funcionamiento del I2C se utilizaron las rutinas de DriverLib que permiten comunicación
-tanto de escritura como de lectura mediante esta interfaz de datos. De esta manera se implementó el
-namespace \texttt{comm} y dentro del mismo el namespace \texttt{i2c} para encapsular las funciones
-relacionadas con este protocolo. Dentro de dichas funciones se encuentra init, la cual establece al
-MSP432 como el maestro de la comunicación y configura los pines para I2C, la tasa de datos, el reloj
-de operación de la interfaz, entre otros. También, la función setSlave permite establecer la
-dirección del dispositivo al cual se desea establecer la comunicación. 
-
-Por otra parte, para la transferencia de datos propiamente se tienen las funciones de escritura
-write8, write16 y de lectura read8 y read16, permitiendo leer y escribir a registros de 1 o 2
-bytes. Estas funciones internamente llaman a las rutinas de DriverLib, tales como SendSingleByte,
-ReceiveSingleByte, ReceiveMultiByte, entre otras, para cumplir con los diagramas de temporización
-del protocolo I2C. En el caso de las funciones de escritura, estas reciben como parámetros el dato a
-escribir y la dirección del registro destino, mientras que las de lectura solo reciben la dirección
-del registro fuente y retornan el valor leído del mismo.
+Para el funcionamiento del I2C se utilizaron las rutinas de DriverLib.  Dentro de las funciones de
+i2c se encuentra init, la cual establece al MSP432 como el maestro de la comunicación y configura
+los pines para I2C, la tasa de datos, el reloj de operación de la interfaz, entre otros. También, la
+función setSlave permite establecer la dirección del dispositivo al cual se desea establecer la
+comunicación. Por otra parte, para la transferencia de datos propiamente se tienen las funciones de
+escritura write8, write16 y de lectura read8 y read16, permitiendo leer y escribir a registros de 1
+o 2 bytes. Estas funciones internamente llaman a las rutinas de DriverLib, para cumplir con los
+diagramas de temporización del protocolo I2C.
 
 
-\subsubsection{Micrófono con ADC}
+\subsection{Micrófono con ADC (HD)}
 Para manejar este módulo y su configuración se creó la clase \texttt{MicrophoneADC}, la cual recibe
-como parámetros en su constructor la cantidad de muestras por segundo que se requieren para el
-micrófono así como el registro de ADC en donde se almacenarán las muestras capturadas. El método
-config, permite reconfigurar el comportamiento establecido en el constructor de ser necesario en la
-ejecución del programa. El constructor y el método config se encargan de implementar la
-configuración descrita previamente, la cual involucra el ADC, los GPIOs con sus funciones
-alternativas correspondientes y el TimerA0.
-
-Por otra parte, el método start permite iniciar la conversión del ADC, y el método stop
-detenerla. Además, el método read permite recuperar por software el valor actual de la última
-muestra almacenada en el registro del ADC.
+como parámetros necesarios la configuración de ADC, GPIOs y TimerA0. El método start
+inicia la conversión del ADC, y el método stop la detiene. Además, el método read permite
+recuperar por software el valor actual de la última muestra almacenada en el registro del ADC.
 
 Además de esta clase, parte de la funcionalidad a nivel de hardware para el micrófono se encuentra
-en la rutina de atención a interrupción (ISR) del ADC (ADC14\_IRQHandler), en la cual se agrega una
-muestra al buffer del micrófono, el cual internamente sí corresponde a código independiente del
-hardware (HI). Esta rutina se activa cuando se escribe un nuevo valor al registro del ADC
-configurado, lo cual permite capturar cada una de las muestras generadas.
+en la rutina de atención a interrupción (ISR) del ADC (ADC14\_IRQHandler). Esta rutina se activa
+cuando se escribe un nuevo valor al registro del ADC configurado, lo cual permite capturar cada una
+de las muestras generadas.
 
-\subsection{Código independiente del hardware (HI)}
+\subsection{Manejo del micrófono (HI)}
 
-\begin{figure}
-\centering
-\scalebox{.5}{\input{data_flow.tex}}
-\caption{Diagrama de Flujo de datos}
-\label{fig:data_flow}
-\end{figure}
+Se crea una clase que se encarga de manejar este problema. A lo interno tiene una estructura donde
+se guardan los datos del micrófono y tiene métodos para agregar nuevas muestras y para identificar
+si se cumple o no la condición de sonido para encender la lámpara.
 
+Hay dos fifos. El primero guarda los datos recolectados por los últimos 6 segundos, de manera que
+los datos del último segundo no afecten el promedio contra el que se deben comparar. Se guarda valor
+absoluto de la diferencia entre el valor de muestra resultante del ADC y un número determinado que
+corresponde al valor del ADC en la condición de silencio, (aproximadamente 8175). Este
+pre-procesamiento permite detectar incrementos en la amplitud del sonido, y no incrementos en la
+señal.
 
-\subsubsection{Struct de sensores}
-La toma de datos de los sensores es asincrónica respecto al ciclo de control principal. Entonces se
-utiliza una estructura para definir la interfaz de comunicación entre ambas partes. Este es el
-struct de sensores, Como se muestra en la figura \ref{fig:data_flow}. En este se guarda la
-información relevante que necesita la máquina de estados para definir el comportamiento del
-sistema. Se guardan 4 valores, el primero es el valor de tiempo. En este se guarda la cantidad de
-tiempo que ha pasado, ya que algunas transiciones de estado están definidas por \textit{timeouts},
-como por ejemplo cuando la lámpara se enciende cuando la habitación está oscura y se detecta ruido,
-el retorno al modo automático está asociado a un \textit{timeout}.
-
-El segundo guarda un booleano que indica si el botón de control ha sido presionado. Entonces cuando
-se atiende la interrupción de presionar el botón, se guarda el dato en el struct de sensores, y
-en luego la máquina de estados se encarga de retornar el valor a su estado inicial.
-
-La tercer entrada del struct de sensores se refiere al sensor de luz. Cuando se atiende la
-interrupción del sensor de luz, se compara con el \textit{threshold} establecido experimentalmente y
-se guarda en el struct un booleano que indica si la lectura actual superó o no dicho
-threshold. También estaba la opción de tener una atención de interrupción más simple y solo guardar
-el dato del sensor en el struct de sensores y que luego el loop de control principal se encargara de
-hacer la comparación. Sin embargo se tomó la decisión que el loop principal fuera independiente del
-hardware y por tanto debería funcionar independientemente del threshold de luz que se utilice (que
-depende del sensor). Entonces era mejor que el código HD se encargara de la comparación.
-
-La última entrada del struct de sensores es para el micrófono, y se guarda un booleano que indica si
-el último segundo cumple la condición de estar sobre el promedio establecido por los cinco segundos
-anteriores. Se decide guardar solo el booleano y no los datos por la misma razón expuesta para el
-caso del sensor de luz.
-
-\subsubsection{Fifo de manejo del micrófono}
-
-Una de las operaciones más complejas de este primer laboratorio era identificar si se cumplían las
-condiciones para encender la lámpara. Para el caso del sensor de luz es muy sencillo porque no se
-debe tomar en cuenta la historia, sino que solo importan datos inmediatos. Por otra parte para el
-caso del micrófono se debe tomar en cuenta los últimos 5 segundos, y compararlo con el último
-segundo escuchado.
-
-Para mantener el criterio de diseño de modularizar lo más posible, se decide crear una clase que se
-encarga de manejar este problema. A lo interno tiene un fifo donde se guardan los datos del
-micrófono y tiene métodos para agregar nuevas muestras y para identificar si se cumple o no la
-condición de sonido para encender la lámpara.
-
-Lo primero que se debe considerar es que se tienen dos fifos. El primero guarda los datos
-recolectados por los últimos 6 segundos. Esto se hace porque según las especificaciones se debe
-comparar el último segundo con el promedio de los últimos 5 segundos. Si solo se guardan 5 segundos
-entonces el promedio del último segundo estaría contemplado dentro del promedio de los cinco
-segundos, entonces para mejorar la correctitud del sistema se tomó la decisión de guardar un segundo
-más, de manera que los datos del último segundo no afecten el promedio contra el que se deben
-comparar.
-
-Con respecto a los datos que entran al fifo estos corresponden al valor absoluto de la diferencia
-entre el valor de muestra resultante del ADC y un número determinado que corresponde al valor del
-ADC en la condición de silencio, el cual se estimó que corresponde a 8175. Hacer este
-preprocesamiento a las muestras permite generar valores cuya magnitud es proporcional al nivel de
-sonido, ya que originalmente esta señal al ser oscilatoria puede tener muestras que sean
-relativamente bajas en un nivel alto de sonido (mayor amplitud).  
-
-Para optimizar el proceso de obtener el promedio de los cinco segundos, este se
-actualiza cada vez que se agrega un nuevo dato. Se sabe el dato entrante (a la parte del fifo que
-define los cinco segundos, este no es el dato recién agregado pues pertenece al último segundo, y
-no se debe tomar en cuenta para el promedio), y el dato saliente, por lo que se puede utilizar
-(\ref{eq:promedio}) para calcular el promedio. Donde $N$ es la cantidad de muestras en los cinco
-segundos (depende de la frecuencia de muestreo), $s$ se refiere a una muestra o \textit{sample}, y
-$P$ se refiere al promedio.
-
-\begin{equation}
-  P_{new} = P_{old}-\frac{s_{out}}{N}+\frac{s_{in}}{N}
-\end{equation}
+Para optimizar el proceso de obtener el promedio de los cinco segundos, este se actualiza cada vez
+que se agrega un nuevo dato. Se puede utilizar
+$\left(P_{new} = P_{old}+\frac{s_{in}-s_{out}}{N}\right)$ para calcular el promedio. Donde $N$ es la
+cantidad de muestras en los cinco segundos (depende de la frecuencia de muestreo), $s$ se refiere a
+una muestra o \textit{sample}, y $P$ se refiere al promedio.
 
 El segundo fifo se utiliza para identificar si se cumple la condición necesaria de intensidad sonora
 para encender la lámpara, en este solo se contemplan las muestras del último segundo.  Cada vez que
@@ -394,35 +194,48 @@ hace una simple comparación de promedios porque experimentalmente se descubrió
 activar la lámpara, lo que aumentaba los falsos positivos. Luego de agregar este fifo extra se
 observó un mejor comportamiento en la activación de la lámpara.
 
-\section{Máquina de estados}
+\subsection{Máquina de estados (HI)}
 
 La máquina de estados es el módulo que toma los valores del struct de sensores y con ellos decide el
 estado del sistema. Además hace las llamadas a las funciones de los actuadores, que en este caso son
 las lámparas. 
-
-Se definen los siguientes estados:
-
-\begin{itemize}
-\item \textbf{None}: Este es el estado con el que se inicializa el objeto. 
-\item \textbf{Init}: Indica que el sistema se encuentra en el estado de inicialización, que en el
-  caso particular de este proyecto, ocurre mientras se configuran los periféricos.
-\item \textbf{Alive\_sequence}: Indica que el sistema se encuentra realizando la secuencia de
+Los estados más relevantes son:
+ \textbf{Alive\_sequence}: Indica que el sistema se encuentra realizando la secuencia de
   inicialización para indicar su correcto funcionamiento. Hasta que se complete la secuencia, se
   pasa al siguiente estado. 
-\item \textbf{ON}: La lámpara se encuentra encendida.
-\item \textbf{OFF}: La lámpara se encuentra apagada.
-\item \textbf{Manual\_control}: Este es el estado al que entra el sistema cuando se presiona el
+ \textbf{ON}: La lámpara se encuentra encendida.
+ \textbf{OFF}: La lámpara se encuentra apagada.
+ \textbf{Manual\_control}: Este es el estado al que entra el sistema cuando se presiona el
   botón de control y la luz estaba apagada, entonces se enciende por un tiempo determinado. Es
   distinto a \textbf{ON} porque no se hacen lecturas de luz o sonido para apagar la lámpara antes
-  qeu se complete el tiempo.
-\item \textbf{Fail}: Este es el estado para manejo de errores. En este proyecto no hay rutinas que
-  puedan generar errores. Lo peor es que haya un error con los sensores, pero en ese caso simplemente
-  no se hacen actualizaciones al struct de sensores. 
-\item \textbf{Deinit}: Deinicialización del sistema. Como se espera un funcionamiento continuo este
-  estado no se utiliza, pero sería utilizado en caso de fallas críticas. 
-\end{itemize}
+  que se complete el tiempo.
 
 En la figura \ref{fig:state_machine} se muestra el diagrama de flujo de la máquina de estados. 
+
+%-------------------------------
+\section{Problemas encontrados y posibles mejoras}
+% -------------------------------
+
+Un problema menor encontrado corresponde a que a veces el botón de usuario se detecta
+dos veces en un mismo click, por lo que la lámpara conmuta dos veces su estado de luz y regresa al
+estado original antes de presionar el botón. Este comportamiento ocurre de manera aleatoria y se
+debe a que se detectan dos interrupciones en una misma acción. Debido al comportamiento aleatorio de
+este error, no se tiene una solución sistemática al mismo. La causa más probable de esta doble
+activación corresponde a que la señal de entrada al pin digital detecta en ciertas ocasiones dos
+flancos negativos debido a la vibración del botón al presionarlo.
+
+Una de las posibles mejoras para el sistema implementado consiste en lograr resolver la doble
+activación del botón de control manual, de manera que se logren ignorar posteriores interrupciones
+del botón que se encuentren relativamente cerca de una primera interrupción generada por el mismo.
+
+\begin{figure}
+  \centering
+\scalebox{.4}{\input{data_flow.tex}}
+\caption{Diagrama de Flujo de datos}
+\label{fig:data_flow}
+\end{figure}
+
+
 
 \begin{figure}
 \centering
@@ -431,52 +244,17 @@ En la figura \ref{fig:state_machine} se muestra el diagrama de flujo de la máqu
 \label{fig:state_machine}
 \end{figure}
 
-
-
-\newpage
-%-------------------------------
-\section{Problemas encontrados}
-%-------------------------------
-En un principio al integrar el módulo del micrófono con ADC y el sensor de luz el programa se
-quedaba pegado en una rutina de I2C esperando la detección de la bandera stop en cierta parte del
-proceso de comunicación. Se pudo ver que lo que ocurría era que la rutina de interrupción del ADC
-(que se ejecuta frecuentemente a lo largo de la ejecución del programa) se ejecutaba mientras
-ocurría la comunicación I2C, la cual es bastante sensible a la temporización de las señales
-involucradas (I2C\_SCL e I2C\_SDA), y por lo tanto se interrumpía de manera inesperada y provocaba
-el problema observado. Esto se arregló deshabilitando las interrupciones a nivel global al entrar a
-las funciones de i2c de lectura y escritura, y volviendolas a habilitar al final de las mismas.
-
-Otro problema observado fue que originalmente la condición de alto nivel de sonido se activaba
-aplicando pulsos de sonido muy cortos (considerablemente menores a 1 segundo), lo cual se debía a
-que se promediaban las muestras del último segundo capturado y el efecto de pulsos cortos se
-mantenía a largo plazo, generando activaciones incorrectas. Esto se solucionó incluyendo un buffer
-de aciertos, el cual contiene valor booleanos correspondientes al último segundo, lo cual permite
-verificar si el nivel de sonido efectivamente se mantuvo alto a lo largo de dicho segundo y así
-activar la condición de sonido de la manera esperada.
-
-Finalmente, un problema menor encontrado corresponde a que a veces el botón de usuario se detecta dos
-veces en un mismo presionado, por lo que la lámpara conmuta dos veces su estado de luz y por lo
-tanto regresa al estado original antes de presionar el botón. Este comportamiento ocurre de manera
-aleatoria y se debe a que se detectan dos interrupciones en una misma acción. Debido al comportamiento
-errático de este error, ya que muchas veces no ocurre pero otras sí, no fue posible encontrar una
-solución sistemática al mismo. La causa más probable de esta doble activación corresponde a que la
-señal de entrada al pin digital detecta en ciertas ocasiones dos flancos negativos debido a la
-vibración del botón al presionarlo, generando las dos interrupciones mencionadas.
-
-
-\newpage
-%-------------------------------
-\section{Posibles Mejoras}
-%-------------------------------
-Una de las posibles mejoras para el sistema implementado consiste en lograr resolver la doble
-activación del botón de control manual, de manera que se logren ignorar posteriores interrupciones
-del botón que se encuentren relativamente cerca de una primera interrupción generada por el mismo.
-
-\newpage
 %----------------------
-% Bibliografía
-%----------------------
+\textbf{ Bibliografía}
+% ----------------------
 
+Technical Reference manual, MSP432P4XX Simple Link Microcontrollers. Texas Instruments. Marzo 2017.
+
+MSP432 Peripheral Driver Library. Users Guide. Texas Instruments. 2015.
+
+BOOSTXL-EDUMKII Educational BoosterPack, Module Mark II. Texas Instruments. Marzo 2017.
+
+Zazu kids voice activated night licht. Amazon.com Tomado 18 setiembre 2017.
 
 %\bibliographystyle{apacite}
 %\bibliography{../general/biblografia.bib}

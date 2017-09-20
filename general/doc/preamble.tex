@@ -1,4 +1,4 @@
-\documentclass[12pt,letterpaper]{article}
+\documentclass[11pt,letterpaper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[activeacute,spanish]{babel}
@@ -30,6 +30,8 @@
 \usepackage{natbib}
 \usepackage{rotating}
 \usepackage[section]{placeins}
+\usepackage{titlesec}
+\usepackage{wrapfig}
 
 \lhead{ Laboratorio Sistemas Incrustados}
 \chead{}
@@ -38,27 +40,9 @@
 \cfoot{\thepage}
 \rfoot{Universidad de Costa Rica}
 
-\definecolor{vgreen}{RGB}{104,180,104}
-\definecolor{vblue}{RGB}{49,49,255}
-\definecolor{vorange}{RGB}{255,143,102}
+\titleformat*{\section}{\large\bfseries}
+\titleformat*{\subsection}{\bfseries}
 
-\lstset{
-  language=Verilog,
-  basicstyle=\small,
-  keywordstyle=\color{vblue},
-  identifierstyle=\color{black},
-  commentstyle=\color{vgreen},
-  numbers=left,
-  numberstyle={\tiny \color{black}},
-  numbersep=10pt,
-  tabsize=4
-}
-
-%-------------------------------------------------------------
-
-%\renewcommand{\labelenumi}{\alph{enumi}.}
-%\addto\captionsspanish{\renewcommand{\tablename}{Tabla}}                    % Cambiar nombre a tablas
-%\addto\captionsspanish{\renewcommand{\listtablename}{Índice de tablas}}     % Cambiar nombre a lista de tablas
 \pagenumbering{Roman}
 %------------------------------------------------------------
 
