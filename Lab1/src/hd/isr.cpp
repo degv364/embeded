@@ -58,11 +58,11 @@ void ADC14_IRQHandler(void)
 }
 
 // ISR that sets the control_button flag when user button is pressed
-void PORT3_IRQHandler(void)
+void PORT4_IRQHandler(void)
 {
     __disable_irq();
 
-    if (periph::InputGPIO::checkAndCleanIRQ(GPIO_PORT_P3, GPIO_PIN5))
+    if (periph::InputGPIO::checkAndCleanIRQ(GPIO_PORT_P4, GPIO_PIN1))
     {
         sensors.control_button = true;
     }

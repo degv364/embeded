@@ -5,7 +5,7 @@
 \large\textbf{Laboratorio I: reporte} \hfill Laboratorio de sistemas Incrustados \\
 \normalsize Esteban Zamora Alvarado \hfill Carné: B47769 \\
 Daniel Esteban García Vaglio \hfill Carné: B42781 \\
-Profesor: Esteban Ortiz  \hfill Fecha: 20-setiempre-2017 \\
+Profesor: Esteban Ortiz  \hfill Fecha: 20-Setiembre-2017 \\
 
 \section{Problema a Resolver}
 Se debe hacer una prueba de concepto para una luz de noche. Esta es una lampara que se apaga durante
@@ -123,7 +123,7 @@ main loop.
 \subsection{Timer (HD)}
 Para el funcionamiento de la medición de tiempo se implementó la clase \texttt{Timer}, la cual
 permite configurar el módulo Timer32 para generar una determinada cantidad de interrupciones por
-segundo, tal como se discutión en la sección de configuración de periféricos. De esta manera, el
+segundo, tal como se discutió en la sección de configuración de periféricos. De esta manera, el
 constructor de la clase recibe el módulo Timer32 que se desea configurar (1 o 2) y la cantidad de
 interrupciones deseada. Además, los métodos start y stop permiten respectivamente iniciar o detener
 el conteo y por lo tanto la generación de interrupciones, las cuales se deben previamente activar
@@ -189,10 +189,7 @@ El segundo fifo se utiliza para identificar si se cumple la condición necesaria
 para encender la lámpara, en este solo se contemplan las muestras del último segundo.  Cada vez que
 entra una muestra nueva, se compara con el promedio actual de los cinco segundos, y en caso de ser
 mayor al umbral definido, se guarda como un acierto. Cuando un determinado porcentaje de valores en
-este fifo son aciertos se sabe que se cumple la condición de activación por sonido. No se
-hace una simple comparación de promedios porque experimentalmente se descubrió que era muy fácil
-activar la lámpara, lo que aumentaba los falsos positivos. Luego de agregar este fifo extra se
-observó un mejor comportamiento en la activación de la lámpara.
+este fifo son aciertos se sabe que se cumple la condición de activación por sonido. 
 
 \subsection{Máquina de estados (HI)}
 
@@ -218,19 +215,19 @@ En la figura \ref{fig:state_machine} se muestra el diagrama de flujo de la máqu
 
 Un problema menor encontrado corresponde a que a veces el botón de usuario se detecta
 dos veces en un mismo click, por lo que la lámpara conmuta dos veces su estado de luz y regresa al
-estado original antes de presionar el botón. Este comportamiento ocurre de manera aleatoria y se
-debe a que se detectan dos interrupciones en una misma acción. Debido al comportamiento aleatorio de
-este error, no se tiene una solución sistemática al mismo. La causa más probable de esta doble
+estado original antes de presionar el botón. La causa más probable de esta doble
 activación corresponde a que la señal de entrada al pin digital detecta en ciertas ocasiones dos
-flancos negativos debido a la vibración del botón al presionarlo.
+flancos negativos debido a la vibración del botón al presionarlo, generando dos interrupciones. Este
+problema pudo ser solucionado al utilizar el botón del Joystick del BOSTERPACK MK II, con el cual no
+se tuvo este ruido en la señal o glitch.
 
-Una de las posibles mejoras para el sistema implementado consiste en lograr resolver la doble
-activación del botón de control manual, de manera que se logren ignorar posteriores interrupciones
-del botón que se encuentren relativamente cerca de una primera interrupción generada por el mismo.
+Una de las posibles mejoras para el sistema implementado consiste en pasar de este prototipo inicial
+a uno que contemple la electrónica de potencia requerida para poder alimentar lámparas de hasta 15
+Watts.
 
 \begin{figure}
   \centering
-\scalebox{.4}{\input{data_flow.tex}}
+\scalebox{.75}{\input{data_flow.tex}}
 \caption{Diagrama de Flujo de datos}
 \label{fig:data_flow}
 \end{figure}
@@ -239,7 +236,8 @@ del botón que se encuentren relativamente cerca de una primera interrupción ge
 
 \begin{figure}
 \centering
-\scalebox{.4}{\input{state_machine.tex}}
+\hspace*{-1cm}
+\scalebox{.5}{\input{state_machine.tex}}
 \caption{Diagrama de la Máquina de Estados}
 \label{fig:state_machine}
 \end{figure}

@@ -73,7 +73,7 @@
 periph::LampHandler lamp_handler(ENABLED_LAMPS);
 periph::MicrophoneADC mic(ADC_SAMPLES_PER_SECOND, ADC_MEM0);
 periph::LightSensor light(periph::LightSensor::CONFIG_DEFAULT_100MS);
-periph::InputGPIO button(GPIO_PORT_P3, GPIO_PIN5);
+periph::InputGPIO button(GPIO_PORT_P4, GPIO_PIN1);
 periph::Timer timer(TIMER32_0_BASE, TIME_INTERRUPTS_PER_SECOND);
 
 //Hardware independent (hi)
