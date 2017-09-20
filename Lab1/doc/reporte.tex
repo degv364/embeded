@@ -366,6 +366,13 @@ segundos, entonces para mejorar la correctitud del sistema se tomó la decisión
 más, de manera que los datos del último segundo no afecten el promedio contra el que se deben
 comparar.
 
+Con respecto a los datos que entran al fifo estos corresponden al valor absoluto de la diferencia
+entre el valor de muestra resultante del ADC y un número determinado que corresponde al valor del
+ADC en la condición de silencio, el cual se estimó que corresponde a 8175. Hacer este
+preprocesamiento a las muestras permite generar valores cuya magnitud es proporcional al nivel de
+sonido, ya que originalmente esta señal al ser oscilatoria puede tener muestras que sean
+relativamente bajas en un nivel alto de sonido (mayor amplitud).  
+
 Para optimizar el proceso de obtener el promedio de los cinco segundos, este se
 actualiza cada vez que se agrega un nuevo dato. Se sabe el dato entrante (a la parte del fifo que
 define los cinco segundos, este no es el dato recién agregado pues pertenece al último segundo, y
@@ -430,14 +437,40 @@ En la figura \ref{fig:state_machine} se muestra el diagrama de flujo de la máqu
 %-------------------------------
 \section{Problemas encontrados}
 %-------------------------------
-% FIXME: talvez hablar del problema de detección doble?
+En un principio al integrar el módulo del micrófono con ADC y el sensor de luz el programa se
+quedaba pegado en una rutina de I2C esperando la detección de la bandera stop en cierta parte del
+proceso de comunicación. Se pudo ver que lo que ocurría era que la rutina de interrupción del ADC
+(que se ejecuta frecuentemente a lo largo de la ejecución del programa) se ejecutaba mientras
+ocurría la comunicación I2C, la cual es bastante sensible a la temporización de las señales
+involucradas (I2C\_SCL e I2C\_SDA), y por lo tanto se interrumpía de manera inesperada y provocaba
+el problema observado. Esto se arregló deshabilitando las interrupciones a nivel global al entrar a
+las funciones de i2c de lectura y escritura, y volviendolas a habilitar al final de las mismas.
+
+Otro problema observado fue que originalmente la condición de alto nivel de sonido se activaba
+aplicando pulsos de sonido muy cortos (considerablemente menores a 1 segundo), lo cual se debía a
+que se promediaban las muestras del último segundo capturado y el efecto de pulsos cortos se
+mantenía a largo plazo, generando activaciones incorrectas. Esto se solucionó incluyendo un buffer
+de aciertos, el cual contiene valor booleanos correspondientes al último segundo, lo cual permite
+verificar si el nivel de sonido efectivamente se mantuvo alto a lo largo de dicho segundo y así
+activar la condición de sonido de la manera esperada.
+
+Finalmente, un problema menor encontrado corresponde a que a veces el botón de usuario se detecta dos
+veces en un mismo presionado, por lo que la lámpara conmuta dos veces su estado de luz y por lo
+tanto regresa al estado original antes de presionar el botón. Este comportamiento ocurre de manera
+aleatoria y se debe a que se detectan dos interrupciones en una misma acción. Debido al comportamiento
+errático de este error, ya que muchas veces no ocurre pero otras sí, no fue posible encontrar una
+solución sistemática al mismo. La causa más probable de esta doble activación corresponde a que la
+señal de entrada al pin digital detecta en ciertas ocasiones dos flancos negativos debido a la
+vibración del botón al presionarlo, generando las dos interrupciones mencionadas.
 
 
 \newpage
 %-------------------------------
 \section{Posibles Mejoras}
 %-------------------------------
-
+Una de las posibles mejoras para el sistema implementado consiste en lograr resolver la doble
+activación del botón de control manual, de manera que se logren ignorar posteriores interrupciones
+del botón que se encuentren relativamente cerca de una primera interrupción generada por el mismo.
 
 \newpage
 %----------------------
