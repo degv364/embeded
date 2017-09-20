@@ -106,10 +106,84 @@ producto al mercado.
 \section{Configuración de periféricos}
 
 \subsection{Timer}
+Para el conteo del tiempo se utiliza el módulo Timer32\_1, el cual se configura para generar una
+determinada cantidad de interrupciones por segundo (definido en TIME\_INTERRUPTS\_PER\_SECOND). Para
+esto se utiliza el modo periódico (TIMER32\_PERIODIC\_MODE) para poder determinar el valor máximo
+desde el cual se genera la cuenta regresiva hacia 0, y así establecer la cantidad de interrupciones
+deseada en función de dicho valor máximo y la frecuencia del timer, la cual se obtiene de preescalar
+por 16 (TIMER32\_PRESCALER\_16) el MCLK (que se encuentra operando a 3 MHz). También, se configura
+el Timer en modo continuo, de manera que una vez el conteo llega a 0 el mismo se vuelve a reiniciar
+de manera automática. A parte de esto se deben activar las interrupciones, las cuales se generan
+cuando el valor de conteo llega a 0.
 
-\subsection{Sensor de luz (i2c)}
+En este caso, las interrupciones se utilizan para incrementar un contador por software que lleva una
+medición del tiempo transcurrido, en donde la cantidad de interrupciones por segundo determina la
+precisión de la escala de tiempo.
 
-\subsection{ADC}
+
+\subsection{Sensor de luz con I2C}
+Para enviar la configuración del sensor de luz al OPT3001 se utiliza el protocolo I2C, en donde la
+funcionalidad requerida se establece mediante la escritura del registro de 16 bits llamado
+\texttt{Configuration Register (01h)}. Para la solución implementada se aplicó la configuración de
+rango de escala completa automático, de forma que el sensor se adapta al rango de los valores
+medidos de manera dinámica para dar una mejor precisión. Además, se establece que el tiempo de
+conversión sea de 100 ms, tal que se pudiera tener un nuevo resultado tan rápido como fuera posible
+para el sensor. Se utiliza también el modo de conversión continua, para que el sensor constantemente
+se encuentre capturando nuevas mediciones. Todo esto implica escribir en dicho registro el valor
+\texttt{0xC410}.
+
+Por otra parte, a pesar de que el sensor de luz (OPT3001) permite generar interrupciones para
+detectar si los valores de medición se encuentran en un rango válido, estas no se emplean en el diseño.
+
+Con respecto al protocolo I2C, fue necesario configurar los pines P6.5 como I2C\_SCL, y P6.4 como
+I2C\_SDA, los cuales se encuentran conectados al sensor de luz. Además, se utiliza MCLK como reloj
+para la interfaz I2C y se configura una tasa de datos de 400 Kbps.  
+
+\subsection{Micrófono con ADC}
+Con respecto a la configuración del módulo ADC, en primer lugar se configura el MCLK como el reloj
+para el mismo, el cual opera a 3 MHz. Esto permite que el proceso de conversión analógico-digital se
+pueda llevar a cabo con suficiente rapidez. Por otra parte, se utiliza el modo de una sola muestra
+(\textit{Single Sample Mode}) tal que los resultados de la conversión siempre se encuentren en el
+registro \texttt{MEM0}. Para obtener las mediciones del micrófono se configura el pin al cual este
+se encuentra conectado (P4.3) con la función alternativa terciaria, de manera que este se pueda
+utilizar como una entrada para el ADC, la cual corresponde a la entrada A10. Además, se establece el
+modo de repetición (\textit{Repeat Mode}), tal que no sea necesario activar la bandera de
+habilitación de conversión (\texttt{ADC14ENC}) para volver a iniciar otra conversión, si no que esta
+se envía una sola vez y el módulo permite procesar nuevas muestras de manera automática, al enviar la
+señal de muestreo y conversión (\texttt{SAMPCON}).
+
+Con respecto a la señal de muestreo, esta se establece mediante el TimerA0, de forma que el proceso
+de muestreo ocurre de manera automática por hardware en lugar de requerir una activación por
+software mediante la bandera \texttt{ADC14SC}. En este sentido, se configura el TimerA0 con el reloj
+\texttt{ACLK}, el cual es alimentado con la fuente \texttt{REFO}, de forma que se opera a una
+frecuencia de 32 KHz y en donde no se utiliza preescalado. Este timer se configura para operar en
+\textit{Up Mode}, en el cual se cuenta hacia arriba y se puede configurar el valor máximo de conteo
+mediante el registro \texttt{CCR0}, después del cual se reinicia el conteo a 0. Se deshabilitan las
+interrupciones de este módulo que se activan al contar hacia (CCIFG) y desde (TAIFG) \texttt{CCR0},
+ya que estas no son requeridas para la interacción con el ADC. 
+
+La señal de muestreo se genera a partir de una salida del TimerA0 (\texttt{OUT1}), la cual se puede
+considerar de tipo PWM y se establece según el valor del registro \texttt{CCR1} (Capture Compare
+Register 1) y el modo \textit{Set/Reset}. Este registro se configura tal que tiene el mismo valor
+que el valor máximo de conteo (\texttt{CCR0}), de manera que la señal se mantiene en bajo hasta
+llegar exactamente al último valor de conteo, y se mantiene en alto solamente durante dicho número
+(un ciclo del TimerA0, ACLK), volviendo a estar en bajo en el siguiente ciclo, en el cual se regresa
+al valor de conteo de 0. Esto se hace así porque permite establecer la frecuencia de muestreo
+mediante el valor máximo de conteo, y porque esta señal debe estar en alto durante un tiempo
+reducido (debe ser menor a $420~\mu s$, en este caso es $1/ACLK \approx 30.5~\mu s$ ), en el cual se
+lleva a cabo el muestreo de la entrada analógica.
+
+
+\subsection{GPIOs}
+Los GPIOs (General Purpose Input Output) se emplean tanto para las salidas de los LEDs como para la
+entrada del botón. En el caso de los LEDs, se configuran los pines correspondientes como salidas, y
+se controlan según la lógica del programa. 
+
+Para el funcionamiento del botón, se configura el pin correspondiente como entrada y se habilita la
+interrupción en la transición de alto a bajo en el valor de entrada. De esta forma, cuando se
+presiona el botón (normalmente en alto) se genera un pulso negativo que activa la interrupción, lo
+cual permite detectar cuando el usuario utiliza el control manual. 
+
 
 %--------------------------------
 \section{Implementación}
