@@ -116,11 +116,6 @@ el Timer en modo continuo, de manera que una vez el conteo llega a 0 el mismo se
 de manera automática. A parte de esto se deben activar las interrupciones, las cuales se generan
 cuando el valor de conteo llega a 0.
 
-En este caso, las interrupciones se utilizan para incrementar un contador por software que lleva una
-medición del tiempo transcurrido, en donde la cantidad de interrupciones por segundo determina la
-precisión de la escala de tiempo.
-
-
 \subsection{Sensor de luz con I2C}
 Para enviar la configuración del sensor de luz al OPT3001 se utiliza el protocolo I2C, en donde la
 funcionalidad requerida se establece mediante la escritura del registro de 16 bits llamado
@@ -181,7 +176,7 @@ se controlan según la lógica del programa.
 
 Para el funcionamiento del botón, se configura el pin correspondiente como entrada y se habilita la
 interrupción en la transición de alto a bajo en el valor de entrada. De esta forma, cuando se
-presiona el botón (normalmente en alto) se genera un pulso negativo que activa la interrupción, lo
+presiona el botón (normalmente en alto) se genera un pulso en bajo que activa la interrupción, lo
 cual permite detectar cuando el usuario utiliza el control manual. 
 
 
@@ -214,40 +209,103 @@ necesario crear el \textbf{struct de sensores} que se explica más adelante.
 
 \subsection{Código dependiente del hardware (HD)}
 
+\subsubsection{GPIOs}
+Para la implementación del manejo de los GPIOs se implementaron las clases \texttt{OutputGPIO} e
+\texttt{InputGPIO}, las cuales son derivadas de la clase \texttt{GPIO} y corresponden a
+abstracciones sobre DriverLib. La clase \texttt{GPIO} permite contener la información sobre el
+puerto de entrada/salida y el grupo de pines que controla el objeto. En el constructor de la clase
+se selecciona el puerto, el pin y el modo (o función). 
+
+La clase \texttt{OutputGPIO} permite configurar los pines como salidas y brinda la
+funcionalidad básica para hacer set, reset y toggle de manera más abstracta (por ejemplo
+led.toggle()). Por otra parte, la clase \texttt{InputGPIO} le permite a los pines ser configurados
+como entradas, para leer su valor o para establecer interrupciones en determinados flancos de la
+señal de entrada, mediante métodos de configuración.
+
+
 \subsubsection{Lámparas}
-Para facilitar el desarrollo relacionado con GPIO, se crea una clase con el mismo nombre. Es una
-capa de abstracción sobre driverlib, para ofrecerle un API más generalizado a la parte que es
-independiente del hardware. OutputGPIO es una clase qeu hereda de GPIO y se refiere exclusivamente a
-pines de salida.
+Las lámparas son controlador mediante la clase \texttt{LampHandler}, la cual se encarga de abstraer
+el problema de la cantidad de lámparas habilitadas, y proporcionarle un API a la máquina de estados
+que esconde esta complejidad. A la hora de inicializar la clase se decide la cantidad de lámparas
+habilitadas, pero cabe destacar que se diseñó para que se pueda cambiar esta cantidad en cualquier
+momento durante la ejecución.
 
-En el constructor de la clase  se selecciona el puerto, el pin y el modo (o función). EN caso que
-nos e especifique, se utiliza salida digital. Además se implementan 3 métodos: set, reset y
-toggle. Set se encarga de poner el pin en High, reset de ponerlo en Low, y toggle de conmutar al
-estado opuesto al actual.
+Por dentro se instancian tres objetos de tipo \texttt{OutputGPIO}, uno para cada lámpara. y se
+controlan con los métodos (de LampHandler) lamps\_on, lamps\_off, lamps\_toggle, y
+lamps\_alive\_sequence. Todos los métodos son evidentes a partir de lo expuesto anteriormente,
+excepto por el último. Este se encarga de encender y apagar la lámparas para mostrar la secuencia de
+inicialización.
 
-Se creó una clase extra: LampHandler. Esta clase se encarga de abstraer el problema de la cantidad
-de lámparas habilitadas, y proporcionarle un API a la máquina de estados que esconde esta
-complejidad. A la hora de inicializar la clase se decide la cantidad de lámparas habilitadas, pero
-cabe destacar que se diseñó para que se pueda cambiar esta cantidad en cualquier momento durante la
-ejecución.
-
-Por dentro se instancian tres objetos de tipo OutputGPIO, uno para cada lámpara. y se controlan con
-los métodos (de LampHandler) lamps\_on, lamps\_off, lamps\_toggle, y lamps\_alive\_sequence. Todos los
-métodos son evidentes a partir de lo expuesto anteriormente, excepto por el último. Este se encarga
-de encender y apagar la lámparas para mostrar la secuencia de inicialización. 
-
+ 
 \subsubsection{Botón de Control}
-% FIXME: hablar de InputGPIO
-% FIXME: explicar interrupcion
-% FIXME: talvez hablar del problema de detección doble?
+Para implementar el botón de control se utiliza un objeto de tipo \texttt{InputGPIO}, el cual
+permite configurar la interrupción que genera el botón en un GPIO para el control manual del
+usuario. En esta interrupción del botón, se establece una bandera (sensors.control\_button) que
+posteriormente es utilizada para detectar que se requiere responder a un control manual dentro del
+main loop.
 
-\subsubsection{Sensor de Luz}
-% FIXME: Configuración e i2c
-\subsubsection{Micrófono}
-% FIXME: configuración, ADC, Timer
+\subsubsection{Timer}
+Para el funcionamiento de la medición de tiempo se implementó la clase \texttt{Timer}, la cual
+permite configurar el módulo Timer32 para generar una determinada cantidad de interrupciones por
+segundo, tal como se discutión en la sección de configuración de periféricos. De esta manera, el
+constructor de la clase recibe el módulo Timer32 que se desea configurar (1 o 2) y la cantidad de
+interrupciones deseada. Además, los métodos start y stop permiten respectivamente iniciar o detener
+el conteo y por lo tanto la generación de interrupciones, las cuales se deben previamente activar
+mediante el método enableInterrupt. 
+
+En este caso, las interrupciones se utilizan para incrementar un contador por software
+(sensors.time) que lleva una medición del tiempo transcurrido, en donde la cantidad de
+interrupciones por segundo determina la precisión de la escala de tiempo.
+
+\subsubsection{Sensor de Luz con I2C}
+Para implementar el sensor de luz se creo la clase \texttt{LightSensor}, la cual mediante el
+protocolo I2C configura en el constructor el comportamiento indicado previamente para el
+sensor. Este constructor recibe el modo de configuración, permitiendo elegir entre un muestreo 100
+ms o de 800 ms. Además, permite leer el valor obtenido del registro \texttt{Result} del sensor en
+unidades de Lux, para lo cual se toma el contenido de este registro y se operan los valor de
+fracción (bits [11:0]) y de exponente (bits [15:12]) para generar el resultado adecuado. Es
+importante destacar que para facilitar el procesamiento de estos datos se aproximó el resultado en
+Lux aplicando un desplazamiento extra de 6 bits a la derecha (factor de $0.0156$) en lugar de
+multiplicar por el factor de $0.01$ en la ecuación $Lux = 0.01 \cdot 2^{E[3:0]} \cdot R[11:0]$, de
+manera que no fuera necesario aplicar aritmética de punto flotante. Esta aproximación es válida
+porque en esta aplicación solo se requiere establecer un threshold para el nivel de luz entre día y
+noche, de manera que no es necesario tener el valor exacto en medido en Lux.
+
+Para el funcionamiento del I2C se utilizaron las rutinas de DriverLib que permiten comunicación
+tanto de escritura como de lectura mediante esta interfaz de datos. De esta manera se implementó el
+namespace \texttt{comm} y dentro del mismo el namespace \texttt{i2c} para encapsular las funciones
+relacionadas con este protocolo. Dentro de dichas funciones se encuentra init, la cual establece al
+MSP432 como el maestro de la comunicación y configura los pines para I2C, la tasa de datos, el reloj
+de operación de la interfaz, entre otros. También, la función setSlave permite establecer la
+dirección del dispositivo al cual se desea establecer la comunicación. 
+
+Por otra parte, para la transferencia de datos propiamente se tienen las funciones de escritura
+write8, write16 y de lectura read8 y read16, permitiendo leer y escribir a registros de 1 o 2
+bytes. Estas funciones internamente llaman a las rutinas de DriverLib, tales como SendSingleByte,
+ReceiveSingleByte, ReceiveMultiByte, entre otras, para cumplir con los diagramas de temporización
+del protocolo I2C. En el caso de las funciones de escritura, estas reciben como parámetros el dato a
+escribir y la dirección del registro destino, mientras que las de lectura solo reciben la dirección
+del registro fuente y retornan el valor leído del mismo.
 
 
+\subsubsection{Micrófono con ADC}
+Para manejar este módulo y su configuración se creó la clase \texttt{MicrophoneADC}, la cual recibe
+como parámetros en su constructor la cantidad de muestras por segundo que se requieren para el
+micrófono así como el registro de ADC en donde se almacenarán las muestras capturadas. El método
+config, permite reconfigurar el comportamiento establecido en el constructor de ser necesario en la
+ejecución del programa. El constructor y el método config se encargan de implementar la
+configuración descrita previamente, la cual involucra el ADC, los GPIOs con sus funciones
+alternativas correspondientes y el TimerA0.
 
+Por otra parte, el método start permite iniciar la conversión del ADC, y el método stop
+detenerla. Además, el método read permite recuperar por software el valor actual de la última
+muestra almacenada en el registro del ADC.
+
+Además de esta clase, parte de la funcionalidad a nivel de hardware para el micrófono se encuentra
+en la rutina de atención a interrupción (ISR) del ADC (ADC14\_IRQHandler), en la cual se agrega una
+muestra al buffer del micrófono, el cual internamente sí corresponde a código independiente del
+hardware (HI). Esta rutina se activa cuando se escribe un nuevo valor al registro del ADC
+configurado, lo cual permite capturar cada una de las muestras generadas.
 
 \subsection{Código independiente del hardware (HI)}
 
@@ -323,10 +381,11 @@ $P$ se refiere al promedio.
 El segundo fifo se utiliza para identificar si se cumple la condición necesaria de intensidad sonora
 para encender la lámpara, en este solo se contemplan las muestras del último segundo.  Cada vez que
 entra una muestra nueva, se compara con el promedio actual de los cinco segundos, y en caso de ser
-mayor al umbral definido, se guarda como un acierto. Cuando todos los valores en el fifo son
-aciertos se sabe que se cumple la condición. No se hace una simple comparación de promedios porque
-experimentalmente se descubrió que era muy fácil activar la lámpara, lo que aumentaba los falsos
-positivos. Luego de agregar este fifo extra se observó un mejor comportamiento.
+mayor al umbral definido, se guarda como un acierto. Cuando un determinado porcentaje de valores en
+este fifo son aciertos se sabe que se cumple la condición de activación por sonido. No se
+hace una simple comparación de promedios porque experimentalmente se descubrió que era muy fácil
+activar la lámpara, lo que aumentaba los falsos positivos. Luego de agregar este fifo extra se
+observó un mejor comportamiento en la activación de la lámpara.
 
 \section{Máquina de estados}
 
@@ -371,7 +430,7 @@ En la figura \ref{fig:state_machine} se muestra el diagrama de flujo de la máqu
 %-------------------------------
 \section{Problemas encontrados}
 %-------------------------------
-
+% FIXME: talvez hablar del problema de detección doble?
 
 
 \newpage
