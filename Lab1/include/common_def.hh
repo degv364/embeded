@@ -22,7 +22,8 @@
 
 /*Percentage of samples SOUND_THRESHOLD_PERCENT higher than
   mean in last second required for microphone loud condition */
-#define SOUND_LOUD_SAMPLES_PERCENT 95
+// This changed after revision. Less strict.
+#define SOUND_LOUD_SAMPLES_PERCENT 60
 
 //Sound percentage higher than mean to consider some sample loud
 #define SOUND_THRESHOLD_PERCENT 10.0

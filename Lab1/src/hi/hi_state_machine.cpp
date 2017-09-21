@@ -74,7 +74,12 @@ return_e Hi_state_machine::handle_sensors(hi_sensor_t* input_sensor_data)
 
     case HI_STATE_ALIVE_SEQ:
         rt = lamp_handler.lamps_alive_sequence(LAMP_ALIVE_SEQ_WAIT_CYCLES);
-        state_ = HI_STATE_OFF;
+	if (light_sensor){
+	  state_ = HI_STATE_ON;
+	}
+	else {
+	  state_ = HI_STATE_OFF;
+	}
         rt = RETURN_OK;
         break;
 
