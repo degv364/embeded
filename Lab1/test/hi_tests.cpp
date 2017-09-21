@@ -82,14 +82,14 @@ namespace
         sensor.control_button = true;
         sensor.time = 50;
         st->handle_sensors(&sensor);
-        EXPECT_EQ(HI_STATE_MANUAL_CONTROL, st->get_state());
+        EXPECT_EQ(HI_STATE_MANUAL_ON, st->get_state());
         EXPECT_EQ(0, sensor.time);
 
         // button released no timeout
         sensor.control_button = false;
         sensor.time = TIME_WAIT_COUNT-1;
         st->handle_sensors(&sensor);
-        EXPECT_EQ(HI_STATE_MANUAL_CONTROL, st->get_state());
+        EXPECT_EQ(HI_STATE_MANUAL_ON, st->get_state());
         EXPECT_TRUE(lamp_handler.is_lamp_on());
 
         // timeout
