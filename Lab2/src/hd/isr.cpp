@@ -30,7 +30,7 @@
 #include "hi/hi_utils.hh"
 
 /*Variables defined in other files*/
-
+extern volatile uint64_t g_SystemTicks;
 
 /*Interrupt Service Routines (ISR) Definition*/
 extern "C"
@@ -56,7 +56,7 @@ void T32_INT1_IRQHandler(void)
     __disable_irq();
 
     periph::Timer::cleanIRQ(TIMER32_0_BASE);
-    //FIXME: Implement T32 ISR
+    g_SystemTicks++;
 
     __enable_irq();
 }

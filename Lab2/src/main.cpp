@@ -51,30 +51,37 @@
  *
  ******************************************************************************/
 
-/* Standard Includes */
+// Standard Includes
 #include <stdint.h>
 #include <stdbool.h>
-#include "msp.h"
+#include <msp.h>
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
-/* Project Includes */
+//----- Project Includes -----
+// Common definitions
 #include "common_def.hh"
-/* Hardware independent (hi) */
+// Hardware independent (hi)
 #include "hi/hi_def.hh"
+#include "hi/scheduler.hh"
+#include "hi/task.hh"
 #include "hi/hi_utils.hh"
-/* Hardware dependent (hd) */
+// Hardware dependent (hd)
 #include "hd/periph.hh"
 
 
-//Global object declarations
+//----- Global object declarations -----
 
 //Hardware dependent (hd)
 periph::Timer timer(TIMER32_0_BASE, TIME_INTERRUPTS_PER_SECOND);
 
 //Hardware independent (hi)
+uint8_t Task::m_u8NextTaskID = 0;    // - Init task ID
+volatile uint64_t g_SystemTicks = 0; // - The system counter.
+Scheduler g_MainScheduler;           // - Instantiate a Scheduler
 
+//----- Static main functions -----
 
-static return_e hardware_init(void)
+static return_e HardwareInit(void)
 {
     //Stop Watchdog timer
     MAP_WDT_A_holdTimer();
@@ -89,21 +96,27 @@ static return_e hardware_init(void)
     return RETURN_OK;
 }
 
+//----- Main program -----
 
 int main(void)
 {
     return_e rt;
 
     //Initialize hardware peripherals
-    rt = hardware_init();
+    rt = HardwareInit();
     if (rt != RETURN_OK) return 1;
 
-    //Main loop counter
-    uint64_t count = 0;
+    g_MainScheduler.setup();
+
 
     while (1)
     {
-        count++;
+        if(g_SystemTicks != g_MainScheduler.m_u64ticks)
+        {
+            //- Only execute the tasks if one tick has passed.
+            g_MainScheduler.m_u64ticks = g_SystemTicks;
+            g_MainScheduler.run();
+        }
     }
 
     return 0;
