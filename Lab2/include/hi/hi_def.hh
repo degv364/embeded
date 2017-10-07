@@ -24,6 +24,18 @@
 #ifndef HI_DEF_H_
 #define HI_DEF_H_
 
+// Priorities
+typedef enum priority_e
+{
+  NONE = 0,
+  VERY_LOW,
+  LOW,
+  MEDIUM,
+  HIGH,
+  VERY_HIGH,
+  CRITICAL
+} priority_e;
+
 // States
 typedef enum hi_state_e
 {
