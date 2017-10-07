@@ -108,7 +108,8 @@ int main(void)
 
     g_MainScheduler.setup();
 
-
+    // Prepare schedule before first iteration.
+    g_MainScheduler.PostAmble();
     while (1)
     {
         if(g_SystemTicks != g_MainScheduler.m_u64ticks)
