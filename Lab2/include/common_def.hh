@@ -68,6 +68,10 @@
 #define MAX_SAMPLES (ADC_SAMPLES_PER_SECOND * (MEAN_SECONDS + 1))
 
 
+#define NUMBER_OF_SLOTS 255
+
+#define MAX_TASKS_PER_FRAME 63
+
 //Return values
 typedef enum return_e
 {

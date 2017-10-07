@@ -116,6 +116,7 @@ int main(void)
             //- Only execute the tasks if one tick has passed.
             g_MainScheduler.m_u64ticks = g_SystemTicks;
             g_MainScheduler.run();
+	    g_MainScheduler.PostAmble();
         }
     }
 
