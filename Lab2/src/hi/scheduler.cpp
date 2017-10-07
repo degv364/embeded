@@ -3,7 +3,6 @@
 // - Scheduler constructor
 Scheduler::Scheduler()
 {
-    m_u8OpenSlots = static_cast<uint8_t>(NUMBER_OF_SLOTS);
     m_u8NextSlot = 0;
     for (int index = 0; index < NUMBER_OF_SLOTS; index++)
     {
@@ -13,26 +12,46 @@ Scheduler::Scheduler()
     return;
 }
 // - The attach function, inserts the task into the schedule slots.
-return_e Scheduler::attach(Task * i_ToAttach, uint64_t i_u64TickInterval)
+return_e Scheduler::attach(Task * i_ToAttach)
 {
-    return_e l_eErrorCode = RETURN_OK;
-    st_TaskInfo l_st_StructToAttach;
+    st_TaskInfo l_stTempTask;
+    priority_e l_eCurrentPriority;
+    priority_e l_ePrevPriority;
 
-    l_st_StructToAttach.pToAttach = i_ToAttach;
+    if (i_ToAttach == 0){
+      return RETURN_BAD_PARAM;
+    }
+    // Initialize struct
+    l_stTempTask.pToAttach = i_ToAttach;
+    l_stTempTask.bExecute = false;
     // FIXME: assign a random integer from 0 to tick_interval
-    l_st_StructToAttach.u64ticks = this->m_u64ticks;
+    l_stTempTask.u64ticks = this->m_u64ticks;
 
-    if ((m_u8OpenSlots > 0) && (m_u8NextSlot < NUMBER_OF_SLOTS))
-    {
-        m_aSchedule[m_u8NextSlot] = l_st_StructToAttach;
-        m_u8OpenSlots--;
-        m_u8NextSlot++;
+    // Check if there is space available
+    if (m_u8NextSlot >= NUMBER_OF_SLOTS){
+      return RETURN_FAIL;
     }
-    else
-    {
-        l_eErrorCode = RETURN_OK;
+    // Atach task to the end
+    m_aSchedule[m_u8NextSlot] = l_stTempTask;
+    
+    // switch places until it is sorted.
+    for (uint8_t l_u8Slot=m_u8NextSlot; l_u8Slot >0; l_u8Slot--){
+      l_eCurrentPriority =  m_aSchedule[m_u8NextSlot].pToAttach->GetTaskPriority();
+      l_ePrevPriority = m_aSchedule[m_u8NextSlot-1].pToAttach->GetTaskPriority();
+      if (l_ePrevPriority < l_eCurrentPriority){
+	// switch with previous task
+	l_stTempTask = m_aSchedule[m_u8NextSlot-1];
+	m_aSchedule[m_u8NextSlot-1] = m_aSchedule[m_u8NextSlot];
+	m_aSchedule[m_u8NextSlot] = l_stTempTask;
+      }
+      else{
+	// Has been sorted
+	break;
+      }
     }
-    return l_eErrorCode;
+
+    m_u8NextSlot++;
+    return RETURN_OK;
 }
 // - Execute the current schedule
 return_e Scheduler::run(void)
@@ -90,14 +109,6 @@ return_e Scheduler::setup(void)
     return l_eReturnCode;
 }
 
-return_e Scheduler::CalculateNextSchedule(void)
-{
-    return RETURN_OK;
-}
-return_e Scheduler::SortScheduleByPriority(Task * i_pSchedule)
-{
-    return (RETURN_OK);
-}
 
 return_e Scheduler::UpdateTasksTicks(void)
 {
@@ -185,6 +196,7 @@ return_e Scheduler::HandleInternalMessages(void)
             l_bContinue = false;
         }
     }
+    return RETURN_OK;
 }
 
 return_e Scheduler::PostAmble(void)

@@ -27,21 +27,17 @@ class Scheduler
 public:
     Scheduler();
     uint64_t m_u64ticks;
-    return_e attach(Task * i_ToAttach, uint64_t i_u64TickInterval);
+    return_e attach(Task * i_ToAttach);
     return_e run(void);
     return_e PostAmble(void);
     return_e setup(void);
     return_e AddInternalMesage(message_t i_stNewMessage);
 private:
     MessageQueue InternalMessageQueue; // Messages for the scheduler
-    uint8_t m_u8OpenSlots; // - Available slots
     uint8_t m_u8NextSlot;  // - Next available slot
     st_TaskInfo m_aSchedule[NUMBER_OF_SLOTS]; // - Current schedule to be executed. THis should be
     // - sorted by priority.
-    return_e CalculateNextSchedule(void); // - Calculate next schedule tasks (not implemented)
-    return_e SortScheduleByPriority(Task * i_pSchedule); // - Sorts a schedule based on priority
-    // - (not implemented)
-
+  
     /**
      * Updates the ticks for each task in the schedule. Also finds which Periodical tasks
      * should be executed in the next frame.
