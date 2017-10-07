@@ -104,7 +104,8 @@ int main(void)
 
     //Initialize hardware peripherals
     rt = HardwareInit();
-    if (rt != RETURN_OK) return 1;
+    if (rt != RETURN_OK)
+        return 1;
 
     g_MainScheduler.setup();
 
@@ -112,12 +113,12 @@ int main(void)
     g_MainScheduler.PostAmble();
     while (1)
     {
-        if(g_SystemTicks != g_MainScheduler.m_u64ticks)
+        if (g_SystemTicks != g_MainScheduler.m_u64ticks)
         {
             //- Only execute the tasks if one tick has passed.
             g_MainScheduler.m_u64ticks = g_SystemTicks;
             g_MainScheduler.run();
-	    g_MainScheduler.PostAmble();
+            g_MainScheduler.PostAmble();
         }
     }
 

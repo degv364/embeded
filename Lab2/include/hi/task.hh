@@ -3,25 +3,98 @@
 
 #include "msp.h"
 #include "hi_def.hh"
+#include "common_def.hh"
 
 #define NO_ERR 0
 #define RET_ERR 1
 
 class Task
 {
-	public:
-		Task();
-		uint8_t m_u8TaskID;
-		virtual uint8_t     run(void){return(0);};
-		virtual uint8_t     setup(void){return(0);};
-		bool                IsTaskFinished(void){return m_bIsFinished;};
-		priority_e          GetTaskPriority(void) {return m_ePriority;};
-		void                SetTaskPriority(priority_e i_eNewPriority){m_ePriority = i_eNewPriority;};
-	private:
-	   static uint8_t m_u8NextTaskID;
-	   priority_e m_ePriority;
-	protected:
-	   bool m_bIsFinished;
+
+private:
+    static uint8_t m_u8NextTaskID;
+    task_name_e m_eTaskName; // Unique task identifier
+    priority_e m_ePriority;     // Task priority
+    task_type_e m_eTaskType;    // Task type
+    uint64_t m_u64TickInterval; // Period of execution for periodic tasks
+    bool m_bExecutionCondition; // ExecutionCondition for One shot tasks
+
+protected:
+    bool m_bIsFinished;
+
+public:
+    Task();
+    uint8_t m_u8TaskID;
+    virtual return_e run(void)
+    {
+        return (RETURN_OK);
+    }
+    ;
+    virtual return_e setup(void)
+    {
+        return (RETURN_OK);
+    }
+    ;
+    bool IsTaskFinished(void)
+    {
+        return m_bIsFinished;
+    }
+    ;
+
+    // Gets
+    priority_e GetTaskPriority(void)
+    {
+        return m_ePriority;
+    }
+    ;
+    task_type_e GetTaskType(void)
+    {
+        return m_eTaskType;
+    }
+    ;
+    uint64_t GetTaskTickInterval(void)
+    {
+        return m_u64TickInterval;
+    }
+    ;
+    bool GetTaskExecutionCondition(void)
+    {
+        return m_bExecutionCondition;
+    }
+    ;
+    task_name_e GetTaskName(void)
+    {
+        return m_eTaskName;
+    }
+    ;
+
+    // Sets
+    void SetTaskPriority(priority_e i_eNewPriority)
+    {
+        m_ePriority = i_eNewPriority;
+    }
+    ;
+    void SetTaskType(task_type_e i_eNewTaskType)
+    {
+        m_eTaskType = i_eNewTaskType;
+    }
+    ;
+    void SetTaskTickInterval(uint64_t i_u64NewTickInterval)
+    {
+        m_u64TickInterval = i_u64NewTickInterval;
+    }
+    ;
+    void SetTaskExecutionCondition(bool i_bNewExecutionCondition)
+    {
+        m_bExecutionCondition = i_bNewExecutionCondition;
+    }
+    ;
+    void SetTaskName(task_name_e i_eNewTaskName)
+    {
+        m_eTaskName = i_eNewTaskName;
+    }
+    ;
+
 };
 
 #endif /* TASK_HPP_ */

@@ -24,16 +24,38 @@
 #ifndef HI_DEF_H_
 #define HI_DEF_H_
 
+// User defined. Every task has a unique name. Used for Messages
+typedef enum task_name_e
+{
+    SCHEDULER = 0, // Messages to or from scheduler
+    UNDEFINED_NAME //Always last name. For error handling
+} task_name_e;
+
+// User defined message_types
+typedef enum message_type_e
+{
+    ADD_TO_EXECUTION = 0, // Add a task to execution queue (one shot tasks)
+    UNDEFINED_TYPE // Always last type. For error handling
+} message_type_e;
+
+typedef struct message_t
+{
+    task_name_e sender; // Who sends the message
+    task_name_e receiver; // Who should receive the message
+    message_type_e message_type; // Message type
+    uint8_t length; // Length of the message
+    uint32_t* data; // Pointer to the passed data
+} message_t;
+
+typedef enum task_type_e
+{
+    PERIODICAL = 0, ONE_SHOT, N_SHOT,
+} task_type_e;
+
 // Priorities
 typedef enum priority_e
 {
-  NONE = 0,
-  VERY_LOW,
-  LOW,
-  MEDIUM,
-  HIGH,
-  VERY_HIGH,
-  CRITICAL
+    NONE = 0, VERY_LOW, LOW, MEDIUM, HIGH, VERY_HIGH, CRITICAL
 } priority_e;
 
 // States

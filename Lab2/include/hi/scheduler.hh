@@ -10,15 +10,16 @@
 #include "hi/hi_def.hh"
 #include "task.hh"
 #include "common_def.hh"
+#include "message_queue.hh"
 
 
 
 // - This structure defines the Task Information
-struct st_TaskInfo {
-	Task * pToAttach; // - Pointer to the Task
-	uint64_t u64TickInterval; // - How often the task is executed (period)
-	uint64_t u64ticks; // - Current tick count
-	uint64_t u64TickIntervalInitValue; // - Initial tick value (phase)
+struct st_TaskInfo
+{
+    Task * pToAttach; // - Pointer to the Task
+    uint64_t u64ticks; // - Current tick count
+    bool bExecute; // True if the task should be executed
 };
 
 class Scheduler
@@ -28,22 +29,30 @@ public:
     uint64_t m_u64ticks;
     return_e attach(Task * i_ToAttach, uint64_t i_u64TickInterval);
     return_e run(void);
-  return_e PostAmble(void);
+    return_e PostAmble(void);
     return_e setup(void);
+    return_e AddInternalMesage(message_t i_stNewMessage);
 private:
+    MessageQueue InternalMessageQueue; // Messages for the scheduler
     uint8_t m_u8OpenSlots; // - Available slots
     uint8_t m_u8NextSlot;  // - Next available slot
     st_TaskInfo m_aSchedule[NUMBER_OF_SLOTS]; // - Current schedule to be executed. THis should be
-					      // - sorted by priority.
-    st_TaskInfo m_aNextSchedule[NUMBER_OF_SLOTS]; // - Next schedule to be executed (not
-						  // - implemented)
-  st_TaskInfo* m_aTaskToExecute[MAX_TASKS_PER_FRAME]; // array with sorted tasks for execution
+    // - sorted by priority.
     return_e CalculateNextSchedule(void); // - Calculate next schedule tasks (not implemented)
     return_e SortScheduleByPriority(Task * i_pSchedule); // - Sorts a schedule based on priority
-							 // - (not implemented)
-  return_e UpdateTasksTicks(void); // - Updates timming info
+    // - (not implemented)
+
+    /**
+     * Updates the ticks for each task in the schedule. Also finds which Periodical tasks
+     * should be executed in the next frame.
+     */
+    return_e UpdateTasksTicks(void);
+    /**
+     * Handles the messages sent to the Schedule. In particular sets tasks to be executen with ADD_TO_EXECUTION
+     * message.
+     */
+    return_e HandleInternalMessages(void);
+    return_e FindTaskWithName(task_name_e i_eName, st_TaskInfo* o_stTaskInfo);
 };
-
-
 
 #endif /* TASKS_SCHEDULER_HPP_ */
