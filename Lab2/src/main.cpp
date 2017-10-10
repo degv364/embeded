@@ -55,6 +55,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <msp.h>
+#include <ti/grlib/grlib.h>
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
 //----- Project Includes -----

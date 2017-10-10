@@ -17,29 +17,17 @@
 
  **/
 
-#ifndef INCLUDE_PERIPH_H_
-#define INCLUDE_PERIPH_H_
 
-/* TI Includes */
-#include <ti/devices/msp432p4xx/driverlib/driverlib.h>
-#include <ti/grlib/grlib.h>
+#ifndef INCLUDE_HD_ACCEL_ADC_HH_
+#define INCLUDE_HD_ACCEL_ADC_HH_
 
-/* Standard Includes */
-#include <assert.h>
-#include <stdint.h>
+#include "hd/periph.hh"
 
-/* Internal Includes */
-#include "common_def.hh"
-#include "hd/hd_def.hh"
-#include "hd/comm.hh"
+namespace periph
+{
 
-/* Periph Includes */
-#include "hd/gpio.hh"
-#include "hd/timer.hh"
-#include "hd/accel_adc.hh"
 
-/* LCD Driver Includes */
-#include "lcd/Crystalfontz128x128_ST7735.hh"
-#include "lcd/HAL_MSP_EXP432P401R_Crystalfontz128x128_ST7735.hh"
+}
 
-#endif /* INCLUDE_PERIPH_H_ */
+
+#endif /* INCLUDE_HD_ACCEL_ADC_HH_ */
