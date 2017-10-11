@@ -17,29 +17,23 @@
 
  **/
 
-#ifndef INCLUDE_PERIPH_H_
-#define INCLUDE_PERIPH_H_
+#ifndef INCLUDE_HI_LCD_HORIZON_HH_
+#define INCLUDE_HI_LCD_HORIZON_HH_
 
-/* TI Includes */
-#include <ti/devices/msp432p4xx/driverlib/driverlib.h>
-#include <ti/grlib/grlib.h>
+#include "hd/periph.hh"
 
-/* Standard Includes */
-#include <assert.h>
-#include <stdint.h>
+class LcdHorizon {
+public:
+    LcdHorizon(void);
+    void Setup(void);
+    void InitialDraw(uint16_t i_u16InitialHorizonLevelY);
+    void UpdateDraw(uint16_t i_u16NewHorizonLevelY);
 
-/* Internal Includes */
-#include "common_def.hh"
-#include "hd/hd_def.hh"
-#include "hd/comm.hh"
+private:
+    Graphics_Context m_sContext;
+    uint16_t m_u16HorizonLevelY;
+    Graphics_Rectangle m_stUpdateRect;
+};
 
-/* Periph Includes */
-#include "hd/gpio.hh"
-#include "hd/timer.hh"
-#include "hd/accel_adc.hh"
 
-/* LCD Driver Includes */
-#include "lcd_driver/Crystalfontz128x128_ST7735.hh"
-#include "lcd_driver/HAL_MSP_EXP432P401R_Crystalfontz128x128_ST7735.hh"
-
-#endif /* INCLUDE_PERIPH_H_ */
+#endif /* INCLUDE_HI_LCD_HORIZON_HH_ */

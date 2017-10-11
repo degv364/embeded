@@ -72,6 +72,7 @@
 								<option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_6.0.linkerID.MAP_FILE.1346155691" name="Write a map file (-Map)" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_6.0.linkerID.MAP_FILE" useByScannerDiscovery="false" value="&quot;${ProjName}.map&quot;" valueType="string"/>
 								<option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_6.0.linkerID.LIBRARY.816757832" name="Libraries (-l, --library)" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_6.0.linkerID.LIBRARY" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="${COM_TI_SIMPLELINK_MSP432_SDK_LIBRARIES}"/>
+									<listOptionValue builtIn="false" value="&quot;:grlib.a&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;supc++&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;:display.am4fg&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;:drivers_msp432p401x.am4fg&quot;"/>
@@ -84,6 +85,7 @@
 								</option>
 								<option id="com.ti.ccstudio.buildDefinitions.MSP432_GNU_6.0.linkerID.SEARCH_PATH.40741906" name="Library search path (-L, --library-path)" superClass="com.ti.ccstudio.buildDefinitions.MSP432_GNU_6.0.linkerID.SEARCH_PATH" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${COM_TI_SIMPLELINK_MSP432_SDK_LIBRARY_PATH}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${COM_TI_SIMPLELINK_MSP432_SDK_INSTALL_DIR}/source/ti/grlib/gcc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${COM_TI_SIMPLELINK_MSP432_SDK_INSTALL_DIR}/source/ti/display/lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${COM_TI_SIMPLELINK_MSP432_SDK_INSTALL_DIR}/source/ti/drivers/lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${COM_TI_SIMPLELINK_MSP432_SDK_INSTALL_DIR}/source/third_party/fatfs/lib&quot;"/>

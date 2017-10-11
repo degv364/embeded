@@ -61,13 +61,17 @@
 //----- Project Includes -----
 // Common definitions
 #include "common_def.hh"
+
 // Hardware independent (hi)
 #include "hi/hi_def.hh"
 #include "hi/scheduler.hh"
 #include "hi/task.hh"
 #include "hi/hi_utils.hh"
+#include "hi/lcd_horizon.hh"
+
 // Hardware dependent (hd)
 #include "hd/periph.hh"
+
 
 
 //----- Global object declarations -----
@@ -79,6 +83,8 @@ periph::Timer timer(TIMER32_0_BASE, TIME_INTERRUPTS_PER_SECOND);
 uint8_t Task::m_u8NextTaskID = 0;    // - Init task ID
 volatile uint64_t g_SystemTicks = 0; // - The system counter.
 Scheduler g_MainScheduler;           // - Instantiate a Scheduler
+LcdHorizon g_LcdHorizon;   //FIXME: Migrate to LCD Task
+
 
 //----- Static main functions -----
 
@@ -86,6 +92,17 @@ static return_e HardwareInit(void)
 {
     //Stop Watchdog timer
     MAP_WDT_A_holdTimer();
+
+    /* Initializes Clock System */
+    MAP_CS_setDCOCenteredFrequency(CS_DCO_FREQUENCY_48);
+    MAP_CS_initClockSignal(CS_MCLK, CS_DCOCLK_SELECT, CS_CLOCK_DIVIDER_1);
+    MAP_CS_initClockSignal(CS_HSMCLK, CS_DCOCLK_SELECT, CS_CLOCK_DIVIDER_1);
+    MAP_CS_initClockSignal(CS_SMCLK, CS_DCOCLK_SELECT, CS_CLOCK_DIVIDER_1);
+    MAP_CS_initClockSignal(CS_ACLK, CS_REFOCLK_SELECT, CS_CLOCK_DIVIDER_1);
+
+
+    //FIXME: Migrate to LCD Task setup
+    g_LcdHorizon.Setup();
 
     //Timer32 configuration
     timer.enableInterrupt();
@@ -95,6 +112,19 @@ static return_e HardwareInit(void)
     MAP_Interrupt_enableMaster();
 
     return RETURN_OK;
+}
+
+
+static void testLCDHorizonY(void)
+{
+    g_LcdHorizon.InitialDraw(40);
+
+    uint16_t l_aHorizonPos[10] = {50,70,40,100,0,80,20,30,127,63};
+
+    for(int pos=0; pos<10; pos++){
+        g_LcdHorizon.UpdateDraw(l_aHorizonPos[pos]);
+        for(int i=0; i<1000000; i++);
+    }
 }
 
 //----- Main program -----
@@ -109,6 +139,7 @@ int main(void)
 
     g_MainScheduler.setup();
 
+    testLCDHorizonY();
 
     while (1)
     {
