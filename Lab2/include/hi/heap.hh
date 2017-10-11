@@ -17,30 +17,33 @@
 
  **/
 
-#ifndef COMMON_DEF_H_
-#define COMMON_DEF_H_
+#include "common_def.hh"
+#include "hi_def.hh"
 
-//Number of Timer32 interrupts (software counts) per second
-#define TIME_INTERRUPTS_PER_SECOND 10
+#define HEAP_SIZE 1024 // 4KB
+#define MAP_SIZE 32    // One bit per uint32
 
-//ADC number of samples per second
-#define ACCEL_ADC_SAMPLES_PER_SECOND 150
+#ifndef HEAP_
+#define HEAP_
 
 
-#define NUMBER_OF_SLOTS 255
+class Heap{
+private:
+  uint32_t m_aData[HEAP_SIZE];
+  // Not implemented for release one!
+  //uint32_t m_aAllocatedMap[32];
+  uint32_t m_u32LastAdded;
 
-#define MAX_TASKS_PER_FRAME 63
-
-#define MAX_SCHEDULER_INTERNAL_MESSAGES 5
-
-//Return values
-typedef enum return_e
-{
-    RETURN_OK = 0,     // Execution successful
-    RETURN_FAIL,       // Execution failed
-    RETURN_CRITICAL,   // Critical fail
-    RETURN_BAD_PARAM,   // Execution failed due to invalid parameters
-    RETURN_NO_SPACE    //Not enough space in structure
-} return_e;
+public:
+  Heap(void);
+  // Allocate memory, return OK if found space
+  return_e Allocate(uint8_t i_u8Size, uint32_t* o_u32HeapPointer);
+  // Frees memory
+  /* Not implemented for fisrt release!
+  return_e Free( uint8_t i_u8Size, uint32_t* i_u32HeapPointer);
+  // Returns amount of available memory in bytes
+  return_e GetFreeSpace(uint32_t* o_u32FreeSpace);
+  */
+};
 
 #endif
