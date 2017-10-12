@@ -28,7 +28,11 @@
 typedef enum task_name_e
 {
     SCHEDULER = 0, // Messages to or from scheduler
-    UNDEFINED_NAME //Always last name. For error handling
+    IRQ_ALLOCATOR, // Allocates heap memory for interrupts
+    ACCEL_HANDLER, // takes accel data transxforms into horizon
+    LCD_TRIGGER,   // periodic task for triggering lcd
+    LCD_DRAWER,    // Draws a section of the lcd
+    LAST_TASK      //Always last name. 
 } task_name_e;
 
 // User defined message_types

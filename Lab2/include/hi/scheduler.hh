@@ -35,7 +35,7 @@ public:
 private:
     MessageQueue InternalMessageQueue; // Messages for the scheduler
     uint8_t m_u8NextSlot;  // - Next available slot
-    st_TaskInfo m_aSchedule[NUMBER_OF_SLOTS]; // - Current schedule to be executed. THis should be
+    st_TaskInfo m_aSchedule[LAST_TASK]; // - Current schedule to be executed. THis should be
     // - sorted by priority.
   
     /**
