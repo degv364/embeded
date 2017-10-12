@@ -42,7 +42,7 @@ void LcdHorizon::InitialDraw(uint16_t i_u16InitialHorizonLevelY)
     m_u16HorizonLevelY = i_u16InitialHorizonLevelY;
 
     //Draw sky
-    Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_CYAN);
+    Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_DEEP_SKY_BLUE);
     m_stUpdateRect = {0,0,127,m_u16HorizonLevelY};
     Graphics_fillRectangle(&m_sContext, &m_stUpdateRect);
 
@@ -55,7 +55,7 @@ void LcdHorizon::InitialDraw(uint16_t i_u16InitialHorizonLevelY)
 void LcdHorizon::UpdateDraw(uint16_t i_u16NewHorizonLevelY)
 {
     if (i_u16NewHorizonLevelY-m_u16HorizonLevelY >= 0) {
-        Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_CYAN);
+        Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_DEEP_SKY_BLUE);
         m_stUpdateRect = {0,m_u16HorizonLevelY,127,i_u16NewHorizonLevelY};
         //(*g_sCrystalfontz128x128_funcs.pfnRectFill)(&g_sCrystalfontz128x128, &m_stUpdateRect, 15000);
         Graphics_fillRectangle(&m_sContext, &m_stUpdateRect);

@@ -19,4 +19,74 @@
 
 #include "hd/periph.hh"
 
+periph::AccelADC::AccelADC(uint16_t i_u16SamplesPerSecond) :
+    m_SamplingTimer(TIMER32_1_BASE, i_u16SamplesPerSecond)
+{
+}
+
+
+void periph::AccelADC::Setup(void)
+{
+    // Configures Pin 4.0, 4.2, and 6.1 as ADC input
+    MAP_GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P4, GPIO_PIN0 | GPIO_PIN2,
+                                                   GPIO_TERTIARY_MODULE_FUNCTION);
+    MAP_GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P6, GPIO_PIN1,
+                                                   GPIO_TERTIARY_MODULE_FUNCTION);
+
+    // Init ADC
+    MAP_ADC14_enableModule();
+    MAP_ADC14_initModule(ADC_CLOCKSOURCE_MCLK, ADC_PREDIVIDER_4, ADC_DIVIDER_4, 0);
+    //MAP_ADC14_initModule(ADC_CLOCKSOURCE_ADCOSC, ADC_PREDIVIDER_64, ADC_DIVIDER_8, 0);
+
+    MAP_ADC14_setResultFormat(ADC_SIGNED_BINARY);
+
+    /* Configuring ADC Memory (ADC_MEM0 - ADC_MEM2 (A11, A13, A14)  with no repeat)
+         * with internal 2.5v reference */
+    MAP_ADC14_configureMultiSequenceMode(ADC_MEM0, ADC_MEM2, false); //No repeat mode
+
+    MAP_ADC14_configureConversionMemory(ADC_MEM0,
+            ADC_VREFPOS_AVCC_VREFNEG_VSS,
+            ADC_INPUT_A14, ADC_NONDIFFERENTIAL_INPUTS); //P6.1, X
+
+    MAP_ADC14_configureConversionMemory(ADC_MEM1,
+            ADC_VREFPOS_AVCC_VREFNEG_VSS,
+            ADC_INPUT_A13, ADC_NONDIFFERENTIAL_INPUTS); //P4.0, Y
+
+    MAP_ADC14_configureConversionMemory(ADC_MEM2,
+            ADC_VREFPOS_AVCC_VREFNEG_VSS,
+            ADC_INPUT_A11, ADC_NONDIFFERENTIAL_INPUTS); //P4.2, Z
+
+    /* Enabling the interrupt when a conversion on channel 2 (end of sequence)
+     *  is complete and enabling conversions */
+    MAP_ADC14_enableInterrupt(ADC_INT2);
+
+    //Enable Sampling Timer32 Interrupts
+    m_SamplingTimer.enableInterrupt();
+
+}
+
+void periph::AccelADC::Start(void)
+{
+    MAP_ADC14_enableConversion();
+    MAP_Interrupt_enableInterrupt(INT_ADC14);
+    m_SamplingTimer.start();
+}
+
+
+void periph::AccelADC::Stop(void)
+{
+    MAP_ADC14_disableConversion();
+    MAP_Interrupt_disableInterrupt(INT_ADC14);
+    m_SamplingTimer.stop();
+}
+
+
+bool periph::AccelADC::CheckAndCleanIRQ(uint32_t ADC_MEM_Interrupt)
+{
+    uint64_t status = MAP_ADC14_getEnabledInterruptStatus();
+    MAP_ADC14_clearInterruptFlag(status);
+
+    return (status & ADC_MEM_Interrupt);
+}
+
 

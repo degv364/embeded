@@ -26,6 +26,25 @@
 namespace periph
 {
 
+class AccelADC {
+public:
+    AccelADC(uint16_t i_u16SamplesPerSecond);
+
+    void Setup(void);
+
+    //Start the ADC periodic sampling
+    void Start(void);
+
+    //Halts the ADC module
+    void Stop(void);
+
+    /* Check if there is a pending interrupt request from some ADC
+     * memory position register and clean the interrupt flag
+     */
+    static bool CheckAndCleanIRQ(uint32_t ADC_MEM_Interrupt);
+private:
+    Timer m_SamplingTimer;
+};
 
 }
 

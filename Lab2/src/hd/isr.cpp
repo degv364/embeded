@@ -27,28 +27,18 @@
 #include "common_def.hh"
 #include "hd/periph.hh"
 #include "hi/hi_def.hh"
-#include "hi/hi_utils.hh"
 
 /*Variables defined in other files*/
 extern volatile uint64_t g_SystemTicks;
+
+//FIXME: Remove after testing ADC config
+extern volatile int16_t resultsBuffer[3];
 
 /*Interrupt Service Routines (ISR) Definition*/
 extern "C"
 {
 
-/* ISR that manages the microphone reading. Stores the current
- * ADC sample (after some processing) in the microphone circular
- * buffer for later analysis
- */
-void ADC14_IRQHandler(void)
-{
-    __disable_irq();
-    //FIXME: Implement ADC ISR
-
-    __enable_irq();
-}
-
-/* ISR activated by Timer32 for time measurement through the
+/* ISR activated by Timer32-1 for time measurement through the
  * software timer update
 */
 void T32_INT1_IRQHandler(void)
@@ -57,6 +47,38 @@ void T32_INT1_IRQHandler(void)
 
     periph::Timer::cleanIRQ(TIMER32_0_BASE);
     g_SystemTicks++;
+
+    __enable_irq();
+}
+
+
+/* ISR activated by Timer32-2 for ADC sampling frequency
+*/
+void T32_INT2_IRQHandler(void)
+{
+    __disable_irq();
+
+    periph::Timer::cleanIRQ(TIMER32_1_BASE);
+    //FIXME: Implement ADC Timer ISR
+    MAP_ADC14_toggleConversionTrigger();
+
+    __enable_irq();
+}
+
+/* ISR that manages the ADC Accelerometer reading
+ * sampling frequency
+*/
+void ADC14_IRQHandler(void)
+{
+    __disable_irq();
+    //FIXME: Implement ADC ISR
+
+    if (periph::AccelADC::CheckAndCleanIRQ(ADC_INT2))
+    {
+        resultsBuffer[0] = ADC14_getResult(ADC_MEM0);
+        resultsBuffer[1] = ADC14_getResult(ADC_MEM1);
+        resultsBuffer[2] = ADC14_getResult(ADC_MEM2);
+    }
 
     __enable_irq();
 }

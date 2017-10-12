@@ -54,6 +54,7 @@
 // Standard Includes
 #include <stdint.h>
 #include <stdbool.h>
+#include <math.h>
 #include <msp.h>
 #include <ti/grlib/grlib.h>
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
@@ -66,7 +67,6 @@
 #include "hi/hi_def.hh"
 #include "hi/scheduler.hh"
 #include "hi/task.hh"
-#include "hi/hi_utils.hh"
 #include "hi/lcd_horizon.hh"
 
 // Hardware dependent (hd)
@@ -83,8 +83,16 @@ periph::Timer timer(TIMER32_0_BASE, TIME_INTERRUPTS_PER_SECOND);
 uint8_t Task::m_u8NextTaskID = 0;    // - Init task ID
 volatile uint64_t g_SystemTicks = 0; // - The system counter.
 Scheduler g_MainScheduler;           // - Instantiate a Scheduler
-LcdHorizon g_LcdHorizon;   //FIXME: Migrate to LCD Task
 
+
+//FIXME: Migrate to LCD Task
+LcdHorizon g_LcdHorizon;
+
+//FIXME: Remove after testing ADC config
+volatile int16_t resultsBuffer[3];
+
+//FIXME: Migrate after testing ADC config
+periph::AccelADC g_AccelADC(ACCEL_ADC_SAMPLES_PER_SECOND);
 
 //----- Static main functions -----
 
@@ -100,6 +108,12 @@ static return_e HardwareInit(void)
     MAP_CS_initClockSignal(CS_SMCLK, CS_DCOCLK_SELECT, CS_CLOCK_DIVIDER_1);
     MAP_CS_initClockSignal(CS_ACLK, CS_REFOCLK_SELECT, CS_CLOCK_DIVIDER_1);
 
+    //Enable FPU unit
+    MAP_FPU_enableModule();
+
+    //Initialize Accelerometer ADC sampling
+    g_AccelADC.Setup();
+    g_AccelADC.Start();
 
     //FIXME: Migrate to LCD Task setup
     g_LcdHorizon.Setup();
@@ -114,18 +128,17 @@ static return_e HardwareInit(void)
     return RETURN_OK;
 }
 
+static inline float calcPitchAngle(void){
+    float gx = resultsBuffer[0];
+    float gy = -resultsBuffer[1];
+    float gz = resultsBuffer[2];
 
-static void testLCDHorizonY(void)
-{
-    g_LcdHorizon.InitialDraw(40);
-
-    uint16_t l_aHorizonPos[10] = {50,70,40,100,0,80,20,30,127,63};
-
-    for(int pos=0; pos<10; pos++){
-        g_LcdHorizon.UpdateDraw(l_aHorizonPos[pos]);
-        for(int i=0; i<1000000; i++);
-    }
+    float result = atan(gy/sqrt((gx*gx)+(gz*gz)))*(180.0f/M_PI);
+    //float result = atan2(gy,sqrt((gx*gx)+(gz*gz)))*(180.0f/M_PI);
+    result = max(min(result, 90.0f),-90.0f);
+    return result;
 }
+
 
 //----- Main program -----
 
@@ -139,16 +152,24 @@ int main(void)
 
     g_MainScheduler.setup();
 
-    testLCDHorizonY();
+    //Initial LCD Horizon Draw
+    uint16_t l_u16HorizonY =  (uint16_t) 63.0*((calcPitchAngle()/90.0) + 1.0);
+    g_LcdHorizon.InitialDraw(l_u16HorizonY);
+
+    float angle;
 
     while (1)
     {
-        if(g_SystemTicks != g_MainScheduler.m_u64ticks)
-        {
-            //- Only execute the tasks if one tick has passed.
-            g_MainScheduler.m_u64ticks = g_SystemTicks;
-            g_MainScheduler.run();
-        }
+        angle = calcPitchAngle();
+        l_u16HorizonY = (uint16_t) 63.0*((angle/90.0) + 1.0);
+        g_LcdHorizon.UpdateDraw(l_u16HorizonY);
+
+//        if(g_SystemTicks != g_MainScheduler.m_u64ticks)
+//        {
+//            //- Only execute the tasks if one tick has passed.
+//            g_MainScheduler.m_u64ticks = g_SystemTicks;
+//            g_MainScheduler.run();
+//        }
     }
 
     return 0;
