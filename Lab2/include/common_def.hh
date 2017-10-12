@@ -27,6 +27,12 @@
 #define ACCEL_ADC_SAMPLES_PER_SECOND 150
 
 
+#define NUMBER_OF_SLOTS 255
+
+#define MAX_TASKS_PER_FRAME 63
+
+#define MAX_SCHEDULER_INTERNAL_MESSAGES 5
+
 //Return values
 typedef enum return_e
 {

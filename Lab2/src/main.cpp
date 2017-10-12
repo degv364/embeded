@@ -128,13 +128,14 @@ static return_e HardwareInit(void)
     return RETURN_OK;
 }
 
+
+//FIXME: This should be located in Angle Calculation Task
 static inline float calcPitchAngle(void){
     float gx = resultsBuffer[0];
     float gy = -resultsBuffer[1];
     float gz = resultsBuffer[2];
 
     float result = atan(gy/sqrt((gx*gx)+(gz*gz)))*(180.0f/M_PI);
-    //float result = atan2(gy,sqrt((gx*gx)+(gz*gz)))*(180.0f/M_PI);
     result = max(min(result, 90.0f),-90.0f);
     return result;
 }
@@ -148,9 +149,13 @@ int main(void)
 
     //Initialize hardware peripherals
     rt = HardwareInit();
-    if (rt != RETURN_OK) return 1;
+    if (rt != RETURN_OK)
+        return 1;
 
     g_MainScheduler.setup();
+
+    // Prepare schedule before first iteration.
+    g_MainScheduler.PostAmble();
 
     //Initial LCD Horizon Draw
     uint16_t l_u16HorizonY =  (uint16_t) 63.0*((calcPitchAngle()/90.0) + 1.0);
@@ -164,12 +169,13 @@ int main(void)
         l_u16HorizonY = (uint16_t) 63.0*((angle/90.0) + 1.0);
         g_LcdHorizon.UpdateDraw(l_u16HorizonY);
 
-//        if(g_SystemTicks != g_MainScheduler.m_u64ticks)
-//        {
-//            //- Only execute the tasks if one tick has passed.
-//            g_MainScheduler.m_u64ticks = g_SystemTicks;
-//            g_MainScheduler.run();
-//        }
+        if (g_SystemTicks != g_MainScheduler.m_u64ticks)
+        {
+            //- Only execute the tasks if one tick has passed.
+            g_MainScheduler.m_u64ticks = g_SystemTicks;
+            g_MainScheduler.run();
+            g_MainScheduler.PostAmble();
+        }
     }
 
     return 0;
