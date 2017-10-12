@@ -46,6 +46,7 @@ void T32_INT1_IRQHandler(void)
     __disable_irq();
 
     periph::Timer::cleanIRQ(TIMER32_0_BASE);
+    //FIXME: Check if frame is finished
     g_SystemTicks++;
 
     __enable_irq();
@@ -59,7 +60,6 @@ void T32_INT2_IRQHandler(void)
     __disable_irq();
 
     periph::Timer::cleanIRQ(TIMER32_1_BASE);
-    //FIXME: Implement ADC Timer ISR
     MAP_ADC14_toggleConversionTrigger();
 
     __enable_irq();
