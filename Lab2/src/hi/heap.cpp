@@ -17,30 +17,21 @@
 
  **/
 
-#ifndef COMMON_DEF_H_
-#define COMMON_DEF_H_
+#include "hi/heap.hh"
 
-//Number of Timer32 interrupts (software counts) per second
-#define TIME_INTERRUPTS_PER_SECOND 10
+Heap::Heap(void){
+  m_u32LastAdded = 0;
+}
 
-//ADC number of samples per second
-#define ACCEL_ADC_SAMPLES_PER_SECOND 150
+return_e
+Heap::Allocate(uint8_t i_u8Size, uint32_t* o_u32HeapPointer){
+  // Check if there is enough space
+  if (m_u32LastAdded + (uint32_t) i_u8Size > HEAP_SIZE){
+    return RETURN_NO_SPACE;
+  }
+  // There is space available
+  o_u32HeapPointer = m_aData+m_u32LastAdded+(uint32_t)i_u8Size;
+  return RETURN_OK;
+}
 
 
-#define NUMBER_OF_SLOTS 255
-
-#define MAX_TASKS_PER_FRAME 63
-
-#define MAX_SCHEDULER_INTERNAL_MESSAGES 5
-
-//Return values
-typedef enum return_e
-{
-    RETURN_OK = 0,     // Execution successful
-    RETURN_FAIL,       // Execution failed
-    RETURN_CRITICAL,   // Critical fail
-    RETURN_BAD_PARAM,   // Execution failed due to invalid parameters
-    RETURN_NO_SPACE    //Not enough space in structure
-} return_e;
-
-#endif

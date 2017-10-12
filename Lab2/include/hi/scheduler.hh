@@ -11,6 +11,7 @@
 #include "task.hh"
 #include "common_def.hh"
 #include "message_queue.hh"
+#include "heap.hh"
 
 
 
@@ -27,6 +28,7 @@ class Scheduler
 public:
     Scheduler();
     uint64_t m_u64ticks;
+  Heap m_InternalHeap;
     return_e attach(Task * i_ToAttach);
     return_e run(void);
     return_e PostAmble(void);
@@ -35,7 +37,7 @@ public:
 private:
     MessageQueue InternalMessageQueue; // Messages for the scheduler
     uint8_t m_u8NextSlot;  // - Next available slot
-    st_TaskInfo m_aSchedule[NUMBER_OF_SLOTS]; // - Current schedule to be executed. THis should be
+    st_TaskInfo m_aSchedule[LAST_TASK]; // - Current schedule to be executed. THis should be
     // - sorted by priority.
   
     /**
