@@ -14,7 +14,6 @@ class Task
 private:
     static uint8_t m_u8NextTaskID;
     task_name_e m_eTaskName; // Unique task identifier
-    priority_e m_ePriority;     // Task priority
     task_type_e m_eTaskType;    // Task type
     uint64_t m_u64TickInterval; // Period of execution for periodic tasks
     bool m_bExecutionCondition; // ExecutionCondition for One shot tasks
@@ -42,11 +41,6 @@ public:
     ;
 
     // Gets
-    priority_e GetTaskPriority(void)
-    {
-        return m_ePriority;
-    }
-    ;
     task_type_e GetTaskType(void)
     {
         return m_eTaskType;
@@ -69,11 +63,6 @@ public:
     ;
 
     // Sets
-    void SetTaskPriority(priority_e i_eNewPriority)
-    {
-        m_ePriority = i_eNewPriority;
-    }
-    ;
     void SetTaskType(task_type_e i_eNewTaskType)
     {
         m_eTaskType = i_eNewTaskType;

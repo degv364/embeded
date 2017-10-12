@@ -11,6 +11,7 @@
 #include "task.hh"
 #include "common_def.hh"
 #include "message_queue.hh"
+#include "heap.hh"
 
 
 
@@ -27,6 +28,7 @@ class Scheduler
 public:
     Scheduler();
     uint64_t m_u64ticks;
+  Heap m_InternalHeap;
     return_e attach(Task * i_ToAttach);
     return_e run(void);
     return_e PostAmble(void);

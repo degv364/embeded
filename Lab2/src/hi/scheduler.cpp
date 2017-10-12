@@ -9,15 +9,13 @@ Scheduler::Scheduler()
         m_aSchedule[index].pToAttach = (uintptr_t) 0; // Init to an invalid pointer
     }
     InternalMessageQueue = MessageQueue();
+    m_InternalHeap = Heap();
     return;
 }
 // - The attach function, inserts the task into the schedule slots.
 return_e Scheduler::attach(Task * i_ToAttach)
 {
-    st_TaskInfo l_stTempTask;
-    priority_e l_eCurrentPriority;
-    priority_e l_ePrevPriority;
-
+  st_TaskInfo l_stTempTask;
     if (i_ToAttach == 0){
       return RETURN_BAD_PARAM;
     }
@@ -27,30 +25,8 @@ return_e Scheduler::attach(Task * i_ToAttach)
     // FIXME: assign a random integer from 0 to tick_interval
     l_stTempTask.u64ticks = this->m_u64ticks;
 
-    // Check if there is space available
-    if (m_u8NextSlot >= NUMBER_OF_SLOTS){
-      return RETURN_FAIL;
-    }
-    // Atach task to the end
-    m_aSchedule[m_u8NextSlot] = l_stTempTask;
-    
-    // switch places until it is sorted.
-    for (uint8_t l_u8Slot=m_u8NextSlot; l_u8Slot >0; l_u8Slot--){
-      l_eCurrentPriority =  m_aSchedule[m_u8NextSlot].pToAttach->GetTaskPriority();
-      l_ePrevPriority = m_aSchedule[m_u8NextSlot-1].pToAttach->GetTaskPriority();
-      if (l_ePrevPriority < l_eCurrentPriority){
-	// switch with previous task
-	l_stTempTask = m_aSchedule[m_u8NextSlot-1];
-	m_aSchedule[m_u8NextSlot-1] = m_aSchedule[m_u8NextSlot];
-	m_aSchedule[m_u8NextSlot] = l_stTempTask;
-      }
-      else{
-	// Has been sorted
-	break;
-      }
-    }
-
-    m_u8NextSlot++;
+    // Attach task
+    m_aSchedule[l_stTempTask.pToAttach->GetTaskName()] = l_stTempTask;
     return RETURN_OK;
 }
 // - Execute the current schedule
@@ -59,7 +35,7 @@ return_e Scheduler::run(void)
     return_e rt = RETURN_OK;
     uint8_t l_u8ExecutedTasks = 0;
     // Execute all tasks marked for execution.
-    for (uint8_t l_u8Slot = 0; l_u8Slot < NUMBER_OF_SLOTS; l_u8Slot++)
+    for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++)
     {
         if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0))
         {
@@ -92,27 +68,24 @@ return_e Scheduler::run(void)
 // - Execute the setup function for all tasks
 return_e Scheduler::setup(void)
 {
-    int l_iNextTaskSlot = 0U;
-    Task * l_pNextTask = (uintptr_t) 0;
     return_e l_eReturnCode = RETURN_OK;
 
-    while (l_iNextTaskSlot < NUMBER_OF_SLOTS)
-    {
-        l_pNextTask =
-                static_cast<Task *>(m_aSchedule[l_iNextTaskSlot].pToAttach);
-        if (l_pNextTask != ((uintptr_t) 0))
+    for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++){
+       if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0))
         {
-            l_pNextTask->setup();
-        }
-        l_iNextTaskSlot++;
+	  l_eReturnCode = m_aSchedule[l_u8Slot].pToAttach->setup();
+	  if (l_eReturnCode != RETURN_OK){
+	    return l_eReturnCode;
+	  }
+	}
     }
-    return l_eReturnCode;
+    return RETURN_OK;
 }
 
 
 return_e Scheduler::UpdateTasksTicks(void)
 {
-    for (uint8_t l_u8Slot = 0; l_u8Slot < NUMBER_OF_SLOTS; l_u8Slot++)
+    for (uint8_t l_u8Slot = 0; l_u8Slot < LAST_TASK; l_u8Slot++)
     {
         if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0))
         {
@@ -138,19 +111,11 @@ return_e Scheduler::UpdateTasksTicks(void)
 return_e Scheduler::FindTaskWithName(task_name_e i_eName,
                                      st_TaskInfo* o_stTaskInfo)
 {
-    for (uint8_t l_u8Slot = 0; l_u8Slot < NUMBER_OF_SLOTS; l_u8Slot++)
-    {
-        if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0))
-        {
-            if (m_aSchedule[l_u8Slot].pToAttach->GetTaskName() == i_eName)
-            {
-                o_stTaskInfo = &m_aSchedule[l_u8Slot];
-                return RETURN_OK;
-            }
-        }
-    }
-    // No task was found to have that name.
+  if (i_eName >= LAST_TASK){
     return RETURN_FAIL;
+  }
+  o_stTaskInfo = &m_aSchedule[i_eName];
+  return RETURN_OK;
 }
 
 return_e Scheduler::HandleInternalMessages(void)
@@ -170,22 +135,21 @@ return_e Scheduler::HandleInternalMessages(void)
             case ADD_TO_EXECUTION:
                 // Get the name of the task to execute
                 l_eCurrentTaskName = (task_name_e) *l_stCurrentMessage.data;
-                rt = this->FindTaskWithName(l_eCurrentTaskName,
-                                            &l_stCurrentTask);
-                if (rt != RETURN_OK)
-                {
-                    // no task was found
-                    return RETURN_FAIL;
-                }
+		if (l_eCurrentTaskName >= LAST_TASK){
+		  return RETURN_FAIL;
+		}
+		l_stCurrentTask = m_aSchedule[l_eCurrentTaskName];
+		// Check the task is valid
+		if (l_stCurrentTask.pToAttach == ((uintptr_t) 0)){
+		  return RETURN_FAIL;
+		}
+		// Add execution flag
                 if (l_stCurrentTask.pToAttach->GetTaskType() == ONE_SHOT)
                 {
                     l_stCurrentTask.bExecute = true;
                 }
-                else
-                {
-                    // Trying to execute a task that is not triggered by a message.
-                    return RETURN_FAIL;
-                }
+		// Trying to execute a task that is not triggered by a message.
+		return RETURN_FAIL;
             default:
                 // Unhandled message type
                 return RETURN_FAIL;

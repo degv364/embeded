@@ -25,6 +25,7 @@
 #define HI_DEF_H_
 
 // User defined. Every task has a unique name. Used for Messages
+// Order defines priority
 typedef enum task_name_e
 {
     SCHEDULER = 0, // Messages to or from scheduler
@@ -56,11 +57,6 @@ typedef enum task_type_e
     PERIODICAL = 0, ONE_SHOT, N_SHOT,
 } task_type_e;
 
-// Priorities
-typedef enum priority_e
-{
-    NONE = 0, VERY_LOW, LOW, MEDIUM, HIGH, VERY_HIGH, CRITICAL
-} priority_e;
 
 // States
 typedef enum hi_state_e
