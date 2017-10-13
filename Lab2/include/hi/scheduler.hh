@@ -50,6 +50,11 @@ private:
      * message.
      */
     return_e HandleInternalMessages(void);
+  /**
+   * Message trafic
+   */
+  return_e HandleExternalMessages(void);
+  
     return_e FindTaskWithName(task_name_e i_eName, st_TaskInfo* o_stTaskInfo);
 };
 

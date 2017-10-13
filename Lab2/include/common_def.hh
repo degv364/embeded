@@ -40,6 +40,7 @@ typedef enum return_e
     RETURN_FAIL,       // Execution failed
     RETURN_CRITICAL,   // Critical fail
     RETURN_BAD_PARAM,   // Execution failed due to invalid parameters
+    RETURN_EMPTY,       // Structurte is empty
     RETURN_NO_SPACE    //Not enough space in structure
 } return_e;
 

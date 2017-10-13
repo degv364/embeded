@@ -163,9 +163,52 @@ return_e Scheduler::HandleInternalMessages(void)
     return RETURN_OK;
 }
 
+return_e Scheduler::HandleExternalMessages(void){
+  message_t l_stTempMessage;
+  return_e rt;
+  for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++){
+    if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0)){
+      //Repeat until outgoing queue is empty
+      rt = m_aSchedule[l_u8Slot].pToAttach->PopMessage(&l_stTempMessage);
+      while (rt != RETURN_EMPTY){
+	// Check for fails (not empty)
+	if (rt != RETURN_OK){
+	  return rt;
+	}
+	// Check if the message is for the scheduler
+	if (l_stTempMessage.receiver == SCHEDULER){
+	  rt = InternalMessageQueue.AddMessage(l_stTempMessage);
+	  if (rt != RETURN_OK){
+	    return rt;
+	  }
+	}
+	// Send to the specific task
+	rt =  m_aSchedule[l_stTempMessage.receiver].pToAttach->ReceiveMessage(l_stTempMessage);
+	if (rt != RETURN_OK){
+	  return rt;
+	}
+	// Get next message
+	rt = m_aSchedule[l_u8Slot].pToAttach->PopMessage(&l_stTempMessage);
+      }
+    }
+  }
+  return RETURN_OK;
+}
+
 return_e Scheduler::PostAmble(void)
 {
-    this->HandleInternalMessages(); // Side Effect of updating execution of One shot tasks
-    this->UpdateTasksTicks(); // Side Effect of updating execution of Periodical tasks
-    return RETURN_OK;
+  return_e rt;
+  rt = this->HandleExternalMessages(); // Side effect of populating internal message queue
+  if(rt != RETURN_OK){
+    return rt;
+  }
+  this->HandleInternalMessages(); // Side Effect of updating execution of One shot tasks
+  if(rt != RETURN_OK){
+    return rt;
+  }
+  this->UpdateTasksTicks(); // Side Effect of updating execution of Periodical tasks
+  if(rt != RETURN_OK){
+    return rt;
+  }
+  return RETURN_OK;
 }
