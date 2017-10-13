@@ -73,7 +73,7 @@ return_e Scheduler::setup(void)
     for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++){
        if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0))
         {
-	  l_eReturnCode = m_aSchedule[l_u8Slot].pToAttach->setup();
+	  l_eReturnCode = m_aSchedule[l_u8Slot].pToAttach->setup(&m_InternalHeap);
 	  if (l_eReturnCode != RETURN_OK){
 	    return l_eReturnCode;
 	  }
@@ -85,7 +85,7 @@ return_e Scheduler::setup(void)
 
 return_e Scheduler::UpdateTasksTicks(void)
 {
-    for (uint8_t l_u8Slot = 0; l_u8Slot < LAST_TASK; l_u8Slot++)
+    for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++)
     {
         if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0))
         {

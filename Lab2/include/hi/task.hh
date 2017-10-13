@@ -5,6 +5,7 @@
 #include "hi_def.hh"
 #include "common_def.hh"
 #include "message_queue.hh"
+#include "heap.hh"
 
 class Task
 {
@@ -25,7 +26,8 @@ protected:
 public:
     Task();
     virtual return_e run(void){return (RETURN_OK);};
-    virtual return_e setup(void){return (RETURN_OK);};
+  // Receives a pointer to the heap for memory allocation
+    virtual return_e setup(Heap* i_Heap){return (RETURN_OK);};
     bool IsTaskFinished(void){return m_bIsFinished;};
 
   // Scheduler will put messages here, for the task to handle

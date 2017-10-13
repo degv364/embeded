@@ -28,16 +28,18 @@ class Scheduler
 public:
     Scheduler();
     uint64_t m_u64ticks;
+  // Public member, so that one can call its methods directly. Also, to make its
+  // address accesible for interruption callbacks
   Heap m_InternalHeap;
     return_e attach(Task * i_ToAttach);
     return_e run(void);
     return_e PostAmble(void);
     return_e setup(void);
-    return_e AddInternalMesage(message_t i_stNewMessage);
+  
 private:
     MessageQueue InternalMessageQueue; // Messages for the scheduler
     uint8_t m_u8NextSlot;  // - Next available slot
-    st_TaskInfo m_aSchedule[LAST_TASK]; // - Current schedule to be executed. THis should be
+    st_TaskInfo m_aSchedule[LAST_TASK]; // - Current schedule to be executed. This is
     // - sorted by priority.
   
     /**
@@ -51,7 +53,7 @@ private:
      */
     return_e HandleInternalMessages(void);
   /**
-   * Message trafic
+   * Message traffic
    */
   return_e HandleExternalMessages(void);
   
