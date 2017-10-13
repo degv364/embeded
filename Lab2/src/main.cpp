@@ -80,7 +80,6 @@
 periph::Timer timer(TIMER32_0_BASE, TIME_INTERRUPTS_PER_SECOND);
 
 //Hardware independent (hi)
-uint8_t Task::m_u8NextTaskID = 0;    // - Init task ID
 volatile uint64_t g_SystemTicks = 0; // - The system counter.
 Scheduler g_MainScheduler;           // - Instantiate a Scheduler
 
