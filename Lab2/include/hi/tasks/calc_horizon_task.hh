@@ -20,8 +20,10 @@
 #ifndef INCLUDE_HI_TASKS_CALC_HORIZON_TASK_HH_
 #define INCLUDE_HI_TASKS_CALC_HORIZON_TASK_HH_
 
+#include <math.h>
 #include "hd/periph.hh"
 #include "hi/hi_def.hh"
+#include "hi/task.hh"
 
 class CalcHorizonTask : public Task
 {

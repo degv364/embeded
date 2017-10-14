@@ -5,7 +5,7 @@
 #include "hi/hi_def.hh"
 
 //FIXME: find a better way to choose size, maybe inheritance?
-#define MESSAGE_QUEUE_SIZE 15
+#define MESSAGE_QUEUE_SIZE 5
 
 class MessageQueue
 {
@@ -19,8 +19,6 @@ public:
     return_e AddMessage(message_t i_stNewMessage);
     return_e PopMessage(message_t* o_stPopMessage);
     return_e ReadMessage(message_t* o_stReadMessage);
-
 };
-
 
 #endif

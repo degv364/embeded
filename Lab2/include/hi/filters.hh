@@ -17,37 +17,27 @@
 
  **/
 
-#include "hi/tasks/calc_horizon_task.hh"
+// Various filters
 
-CalcHorizonTask::CalcHorizonTask(void) :
-    m_AccelADC(ACCEL_ADC_SAMPLES_PER_SECOND)
-{
-    Task::SetTaskName(CALC_HORIZON);
-    Task::SetTaskType(ONE_SHOT);
-    m_stLastAccel = {0,0,0};
-}
+#include "common_def.hh"
+#include "hi_def.hh"
 
-return_e CalcHorizonTask::setup(void)
-{
-    m_AccelADC.Setup();
-    m_AccelADC.Start();
-}
+#ifndef FILTERS_
+#define FILTERS_
 
+class MeanFilter{
+private:
+  uint16_t m_aValuesBuffer[MEAN_FILTER_BUFFER_SIZE];
+  uint8_t m_u8Index;
+  uint16_t m_u16OperationsDone;
+  float m_fFilteredResult;
+  bool m_bSetup;
 
-return_e CalcHorizonTask::run(void)
-{
-    uint16_t l_u16HorizonY = (uint16_t) 63.0*((CalcPitchAngle()/90.0) + 1.0);
-    //FIXME: Send horizon level in message to LcdDrawTask
+public:
+  MeanFilter();
+  return_e Setup(uint16_t i_u16InitialValue);
+  return_e AddValue(uint16_t i_u16NewValue);
+  return_e GetFilteredValue(uint16_t* o_u16FilteredValue);
+};
 
-    Task::m_bIsFinished = true;
-}
-
-
-inline float CalcHorizonTask::CalcPitchAngle(void){
-    float gy = m_stLastAccel.y;
-    float gx2 = m_stLastAccel.x * m_stLastAccel.x;
-    float gz2 = m_stLastAccel.z * m_stLastAccel.z;
-
-    float result = atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
-    return max(min(result, 90.0f),-90.0f);
-}
+#endif

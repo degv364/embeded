@@ -17,37 +17,19 @@
 
  **/
 
-#include "hi/tasks/calc_horizon_task.hh"
+#ifndef IRQ_ALLOCATOR_TASK
+#define IRQ_ALLOCATOR_TASK
 
-CalcHorizonTask::CalcHorizonTask(void) :
-    m_AccelADC(ACCEL_ADC_SAMPLES_PER_SECOND)
-{
-    Task::SetTaskName(CALC_HORIZON);
-    Task::SetTaskType(ONE_SHOT);
-    m_stLastAccel = {0,0,0};
-}
+#include "hi/task.hh"
 
-return_e CalcHorizonTask::setup(void)
-{
-    m_AccelADC.Setup();
-    m_AccelADC.Start();
-}
+class IRQAllocator : public Task{
+public:
+  // FIXME: check if we need to define a constructor
+  //IRQAllocator();
+  virtual return_e setup(Heap* i_Heap);
+  // FIXME: check if we need to define a run method
+  //virtual return_e run(void);
+};
 
 
-return_e CalcHorizonTask::run(void)
-{
-    uint16_t l_u16HorizonY = (uint16_t) 63.0*((CalcPitchAngle()/90.0) + 1.0);
-    //FIXME: Send horizon level in message to LcdDrawTask
-
-    Task::m_bIsFinished = true;
-}
-
-
-inline float CalcHorizonTask::CalcPitchAngle(void){
-    float gy = m_stLastAccel.y;
-    float gx2 = m_stLastAccel.x * m_stLastAccel.x;
-    float gz2 = m_stLastAccel.z * m_stLastAccel.z;
-
-    float result = atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
-    return max(min(result, 90.0f),-90.0f);
-}
+#endif

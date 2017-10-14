@@ -40,6 +40,7 @@ typedef enum task_name_e
 typedef enum message_type_e
 {
     ADD_TO_EXECUTION = 0, // Add a task to execution queue (one shot tasks)
+    ACCEL_DATA,    // Message with message data
     UNDEFINED_TYPE // Always last type. For error handling
 } message_type_e;
 

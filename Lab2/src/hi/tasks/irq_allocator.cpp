@@ -17,37 +17,20 @@
 
  **/
 
-#include "hi/tasks/calc_horizon_task.hh"
+#include "hi/tasks/irq_allocator.hh"
 
-CalcHorizonTask::CalcHorizonTask(void) :
-    m_AccelADC(ACCEL_ADC_SAMPLES_PER_SECOND)
-{
-    Task::SetTaskName(CALC_HORIZON);
-    Task::SetTaskType(ONE_SHOT);
-    m_stLastAccel = {0,0,0};
-}
+// Heap pointer for irq
+extern uint32_t* g_pIrqHeap;
 
-return_e CalcHorizonTask::setup(void)
-{
-    m_AccelADC.Setup();
-    m_AccelADC.Start();
-}
-
-
-return_e CalcHorizonTask::run(void)
-{
-    uint16_t l_u16HorizonY = (uint16_t) 63.0*((CalcPitchAngle()/90.0) + 1.0);
-    //FIXME: Send horizon level in message to LcdDrawTask
-
-    Task::m_bIsFinished = true;
-}
-
-
-inline float CalcHorizonTask::CalcPitchAngle(void){
-    float gy = m_stLastAccel.y;
-    float gx2 = m_stLastAccel.x * m_stLastAccel.x;
-    float gz2 = m_stLastAccel.z * m_stLastAccel.z;
-
-    float result = atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
-    return max(min(result, 90.0f),-90.0f);
+return_e IRQAllocator::setup(Heap* i_Heap){
+  uint32_t* l_u32Ignored;
+  this->SetTaskName(IRQ_ALLOCATOR);
+  this->SetTaskType(ONE_SHOT);
+  this->SetTaskExecutionCondition(false);
+  this->SetTaskTickInterval(0);
+  i_Heap->Allocate(ADC14_IRQHANDLER_MEM_SIZE, &g_pIrqHeap);
+  if (l_u32Ignored == 0){
+    return RETURN_FAIL;
+  }
+  return RETURN_OK;
 }

@@ -37,7 +37,7 @@ private:
 public:
   Heap(void);
   // Allocate memory, return OK if found space
-  return_e Allocate(uint8_t i_u8Size, uint32_t* o_u32HeapPointer);
+  return_e Allocate(uint8_t i_u8Size, uint32_t** o_u32HeapPointer);
   // Frees memory
   /* Not implemented for fisrt release!
   return_e Free( uint8_t i_u8Size, uint32_t* i_u32HeapPointer);
