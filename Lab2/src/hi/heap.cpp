@@ -24,13 +24,13 @@ Heap::Heap(void){
 }
 
 return_e
-Heap::Allocate(uint8_t i_u8Size, uint32_t* o_u32HeapPointer){
+Heap::Allocate(uint8_t i_u8Size, uint32_t** o_u32HeapPointer){
   // Check if there is enough space
   if (m_u32LastAdded + (uint32_t) i_u8Size > HEAP_SIZE){
     return RETURN_NO_SPACE;
   }
   // There is space available
-  o_u32HeapPointer = m_aData+m_u32LastAdded+(uint32_t)i_u8Size;
+  *o_u32HeapPointer = m_aData+m_u32LastAdded+(uint32_t)i_u8Size;
   return RETURN_OK;
 }
 

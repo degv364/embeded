@@ -212,3 +212,10 @@ return_e Scheduler::PostAmble(void)
   }
   return RETURN_OK;
 }
+
+
+// FIXME: this is a hack. See header file for more info
+return_e
+Scheduler::AddInternalMessage(message_t  i_NewMessage){
+  return InternalMessageQueue.AddMessage(i_NewMessage);
+}

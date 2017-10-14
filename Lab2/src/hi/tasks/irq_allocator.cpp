@@ -17,34 +17,20 @@
 
  **/
 
-#ifndef COMMON_DEF_H_
-#define COMMON_DEF_H_
+#include "hi/tasks/irq_allocator.hh"
 
-//Number of Timer32 interrupts (software counts) per second
-#define TIME_INTERRUPTS_PER_SECOND 10
+// Heap pointer for irq
+extern uint32_t* g_pIrqHeap;
 
-//ADC number of samples per second
-#define ACCEL_ADC_SAMPLES_PER_SECOND 150
-
-
-#define NUMBER_OF_SLOTS 255
-
-#define MAX_TASKS_PER_FRAME 63
-
-#define MAX_SCHEDULER_INTERNAL_MESSAGES 5
-
-// One for each accel result. One for execution message
-#define ADC14_IRQHANDLER_MEM_SIZE 4
-
-//Return values
-typedef enum return_e
-{
-    RETURN_OK = 0,     // Execution successful
-    RETURN_FAIL,       // Execution failed
-    RETURN_CRITICAL,   // Critical fail
-    RETURN_BAD_PARAM,   // Execution failed due to invalid parameters
-    RETURN_EMPTY,       // Structurte is empty
-    RETURN_NO_SPACE    //Not enough space in structure
-} return_e;
-
-#endif
+return_e IRQAllocator::setup(Heap* i_Heap){
+  uint32_t* l_u32Ignored;
+  this->SetTaskName(IRQ_ALLOCATOR);
+  this->SetTaskType(ONE_SHOT);
+  this->SetTaskExecutionCondition(false);
+  this->SetTaskTickInterval(0);
+  i_Heap->Allocate(ADC14_IRQHANDLER_MEM_SIZE, &g_pIrqHeap);
+  if (l_u32Ignored == 0){
+    return RETURN_FAIL;
+  }
+  return RETURN_OK;
+}

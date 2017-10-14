@@ -17,34 +17,19 @@
 
  **/
 
-#ifndef COMMON_DEF_H_
-#define COMMON_DEF_H_
+#ifndef IRQ_ALLOCATOR_TASK
+#define IRQ_ALLOCATOR_TASK
 
-//Number of Timer32 interrupts (software counts) per second
-#define TIME_INTERRUPTS_PER_SECOND 10
+#include "hi/task.hh"
 
-//ADC number of samples per second
-#define ACCEL_ADC_SAMPLES_PER_SECOND 150
+class IRQAllocator : public Task{
+public:
+  // FIXME: check if we need to define a constructor
+  //IRQAllocator();
+  virtual return_e setup(Heap* i_Heap);
+  // FIXME: check if we need to define a run method
+  //virtual return_e run(void);
+};
 
-
-#define NUMBER_OF_SLOTS 255
-
-#define MAX_TASKS_PER_FRAME 63
-
-#define MAX_SCHEDULER_INTERNAL_MESSAGES 5
-
-// One for each accel result. One for execution message
-#define ADC14_IRQHANDLER_MEM_SIZE 4
-
-//Return values
-typedef enum return_e
-{
-    RETURN_OK = 0,     // Execution successful
-    RETURN_FAIL,       // Execution failed
-    RETURN_CRITICAL,   // Critical fail
-    RETURN_BAD_PARAM,   // Execution failed due to invalid parameters
-    RETURN_EMPTY,       // Structurte is empty
-    RETURN_NO_SPACE    //Not enough space in structure
-} return_e;
 
 #endif

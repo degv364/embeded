@@ -27,12 +27,20 @@
 #include "common_def.hh"
 #include "hd/periph.hh"
 #include "hi/hi_def.hh"
+#include "hi/scheduler.hh"
+
+
+/*Global Main Scheduler*/
+extern Scheduler g_MainScheduler;
 
 /*Variables defined in other files*/
 extern volatile uint64_t g_SystemTicks;
 
 //FIXME: Remove after testing ADC config
 extern volatile int16_t resultsBuffer[3];
+
+// Heap pinter for irq
+extern uint32_t* g_pIrqHeap;
 
 /*Interrupt Service Routines (ISR) Definition*/
 extern "C"
@@ -75,9 +83,21 @@ void ADC14_IRQHandler(void)
 
     if (periph::AccelADC::CheckAndCleanIRQ(ADC_INT2))
     {
-        resultsBuffer[0] = ADC14_getResult(ADC_MEM0);
-        resultsBuffer[1] = ADC14_getResult(ADC_MEM1);
-        resultsBuffer[2] = ADC14_getResult(ADC_MEM2);
+      // FIXME: This remains for legacy. Once tasks are implemented, we should remove this.
+      resultsBuffer[0] = ADC14_getResult(ADC_MEM0);
+      resultsBuffer[1] = ADC14_getResult(ADC_MEM1);
+      resultsBuffer[2] = ADC14_getResult(ADC_MEM2);
+      // Create message with accel data
+      *(g_pIrqHeap)   = (uint32_t) resultsBuffer[0];
+      *(g_pIrqHeap+1) = (uint32_t) resultsBuffer[1];
+      *(g_pIrqHeap+2) = (uint32_t) resultsBuffer[2];
+      message_t l_stAccelDataMessage = {IRQ_ALLOCATOR, ACCEL_HANDLER, ACCEL_DATA, 3, g_pIrqHeap};
+      // Create execution message
+      *(g_pIrqHeap+3) = (uint32_t) ACCEL_HANDLER;
+      message_t l_stExecuteHandler = {IRQ_ALLOCATOR, SCHEDULER, ADD_TO_EXECUTION, 1, g_pIrqHeap+3};
+      // Add messages direclty to scheduler
+      g_MainScheduler.AddInternalMessage(l_stExecuteHandler);
+      g_MainScheduler.AddInternalMessage(l_stAccelDataMessage);
     }
 
     __enable_irq();

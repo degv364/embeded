@@ -68,6 +68,7 @@
 #include "hi/scheduler.hh"
 #include "hi/task.hh"
 #include "hi/lcd_horizon.hh"
+#include "hi/tasks/irq_allocator.hh"
 
 // Hardware dependent (hd)
 #include "hd/periph.hh"
@@ -82,6 +83,9 @@ periph::Timer timer(TIMER32_0_BASE, TIME_INTERRUPTS_PER_SECOND);
 //Hardware independent (hi)
 volatile uint64_t g_SystemTicks = 0; // - The system counter.
 Scheduler g_MainScheduler;           // - Instantiate a Scheduler
+
+// Pointer to the heap for interruptions
+uint32_t* g_pIrqHeap; //Not volatile since pointer doesnt change, its data does
 
 
 //FIXME: Migrate to LCD Task
@@ -145,11 +149,16 @@ static inline float calcPitchAngle(void){
 int main(void)
 {
     return_e rt;
+    // Initialize tasks
+    IRQAllocator IRQAllocatorTask = IRQAllocator();
 
     //Initialize hardware peripherals
     rt = HardwareInit();
     if (rt != RETURN_OK)
         return 1;
+
+    //Attach and set up tasks
+    g_MainScheduler.attach(&IRQAllocatorTask);
 
     g_MainScheduler.setup();
 
