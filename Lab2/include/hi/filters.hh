@@ -17,40 +17,27 @@
 
  **/
 
-#ifndef COMMON_DEF_H_
-#define COMMON_DEF_H_
+// Various filters
 
-//Number of Timer32 interrupts (software counts) per second
-#define TIME_INTERRUPTS_PER_SECOND 10
+#include "common_def.hh"
+#include "hi_def.hh"
 
-//ADC number of samples per second
-#define ACCEL_ADC_SAMPLES_PER_SECOND 150
+#ifndef FILTERS_
+#define FILTERS_
 
+class MeanFilter{
+private:
+  uint16_t m_aValuesBuffer[MEAN_FILTER_BUFFER_SIZE];
+  uint8_t m_u8Index;
+  uint16_t m_u16OperationsDone;
+  float m_fFilteredResult;
+  bool m_bSetup;
 
-#define NUMBER_OF_SLOTS 255
-
-#define MAX_TASKS_PER_FRAME 63
-
-#define MAX_SCHEDULER_INTERNAL_MESSAGES 5
-
-// One for each accel result. One for execution message
-#define ADC14_IRQHANDLER_MEM_SIZE 4
-
-// Size of filter buffers
-#define MEAN_FILTER_BUFFER_SIZE 10
-// Recalibration period
-#define MEAN_FILTER_CALIBRATION_PERIOD 65535
-
-//Return values
-typedef enum return_e
-{
-    RETURN_OK = 0,     // Execution successful
-    RETURN_FAIL,       // Execution failed
-    RETURN_CRITICAL,   // Critical fail
-    RETURN_BAD_PARAM,   // Execution failed due to invalid parameters
-    RETURN_EMPTY,       // Structurte is empty
-    RETURN_INVALID_VALUE,//Function cant return a valid value yet
-    RETURN_NO_SPACE    //Not enough space in structure
-} return_e;
+public:
+  MeanFilter();
+  return_e Setup(uint16_t i_u16InitialValue);
+  return_e AddValue(uint16_t i_u16NewValue);
+  return_e GetFilteredValue(uint16_t* o_u16FilteredValue);
+};
 
 #endif

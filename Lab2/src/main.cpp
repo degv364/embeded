@@ -69,6 +69,7 @@
 #include "hi/task.hh"
 #include "hi/lcd_horizon.hh"
 #include "hi/tasks/irq_allocator.hh"
+#include "hi/filters.hh"
 
 // Hardware dependent (hd)
 #include "hd/periph.hh"
@@ -149,6 +150,10 @@ static inline float calcPitchAngle(void){
 int main(void)
 {
     return_e rt;
+    // filter
+    MeanFilter LCDFilter = MeanFilter();
+    uint16_t l_u16FilteredHorizon;
+    
     // Initialize tasks
     IRQAllocator IRQAllocatorTask = IRQAllocator();
 
@@ -167,7 +172,9 @@ int main(void)
 
     //Initial LCD Horizon Draw
     uint16_t l_u16HorizonY =  (uint16_t) 63.0*((calcPitchAngle()/90.0) + 1.0);
-    g_LcdHorizon.InitialDraw(l_u16HorizonY);
+    LCDFilter.Setup(l_u16HorizonY);
+    LCDFilter.GetFilteredValue(&l_u16FilteredHorizon);
+    g_LcdHorizon.InitialDraw(l_u16FilteredHorizon);
 
     float angle;
 
@@ -175,7 +182,9 @@ int main(void)
     {
         angle = calcPitchAngle();
         l_u16HorizonY = (uint16_t) 63.0*((angle/90.0) + 1.0);
-        g_LcdHorizon.UpdateDraw(l_u16HorizonY);
+	LCDFilter.AddValue(l_u16HorizonY);
+	LCDFilter.GetFilteredValue(&l_u16FilteredHorizon);
+        g_LcdHorizon.UpdateDraw(l_u16FilteredHorizon);
 
         if (g_SystemTicks != g_MainScheduler.m_u64ticks)
         {
