@@ -67,7 +67,7 @@
 #include "hi/hi_def.hh"
 #include "hi/scheduler.hh"
 #include "hi/task.hh"
-#include "hi/lcd_horizon.hh"
+#include "hi/tasks/lcd_horizon.hh"
 
 // Hardware dependent (hd)
 #include "hd/periph.hh"
@@ -89,10 +89,10 @@ Scheduler g_MainScheduler;           // - Instantiate a Scheduler
 LcdHorizon g_LcdHorizon;
 
 //FIXME: Remove after testing ADC config
-volatile int16_t resultsBuffer[3];
+//volatile int16_t resultsBuffer[3];
 
 //FIXME: Migrate after testing ADC config
-periph::AccelADC g_AccelADC(ACCEL_ADC_SAMPLES_PER_SECOND);
+//periph::AccelADC g_AccelADC(ACCEL_ADC_SAMPLES_PER_SECOND);
 
 //----- Static main functions -----
 
@@ -112,7 +112,7 @@ static return_e HardwareInit(void)
     MAP_FPU_enableModule();
 
     //Initialize Accelerometer ADC sampling
-    g_AccelADC.Setup();
+    //g_AccelADC.Setup();
     g_AccelADC.Start();
 
     //FIXME: Migrate to LCD Task setup
@@ -128,17 +128,17 @@ static return_e HardwareInit(void)
     return RETURN_OK;
 }
 
-
-//FIXME: This should be located in Angle Calculation Task
-static inline float calcPitchAngle(void){
-    float gx = resultsBuffer[0];
-    float gy = -resultsBuffer[1];
-    float gz = resultsBuffer[2];
-
-    float result = atan(gy/sqrt((gx*gx)+(gz*gz)))*(180.0f/M_PI);
-    result = max(min(result, 90.0f),-90.0f);
-    return result;
-}
+//
+////FIXME: This should be located in Angle Calculation Task
+//static inline float calcPitchAngle(void){
+//    float gx = resultsBuffer[0];
+//    float gy = -resultsBuffer[1];
+//    float gz = resultsBuffer[2];
+//
+//    float result = atan(gy/sqrt((gx*gx)+(gz*gz)))*(180.0f/M_PI);
+//    result = max(min(result, 90.0f),-90.0f);
+//    return result;
+//}
 
 
 //----- Main program -----
@@ -158,15 +158,15 @@ int main(void)
     g_MainScheduler.PostAmble();
 
     //Initial LCD Horizon Draw
-    uint16_t l_u16HorizonY =  (uint16_t) 63.0*((calcPitchAngle()/90.0) + 1.0);
+    //uint16_t l_u16HorizonY =  (uint16_t) 63.0*((calcPitchAngle()/90.0) + 1.0);
     g_LcdHorizon.InitialDraw(l_u16HorizonY);
 
     float angle;
 
     while (1)
     {
-        angle = calcPitchAngle();
-        l_u16HorizonY = (uint16_t) 63.0*((angle/90.0) + 1.0);
+        //angle = calcPitchAngle();
+        //l_u16HorizonY = (uint16_t) 63.0*((angle/90.0) + 1.0);
         g_LcdHorizon.UpdateDraw(l_u16HorizonY);
 
         if (g_SystemTicks != g_MainScheduler.m_u64ticks)

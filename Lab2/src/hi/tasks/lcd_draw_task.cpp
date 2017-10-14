@@ -17,44 +17,5 @@
 
  **/
 
-#ifndef TESTING
-#include <stdint.h>
-#endif
 
-#ifndef HI_DEF_H_
-#define HI_DEF_H_
 
-// User defined. Every task has a unique name. Used for Messages
-// Order defines priority
-typedef enum task_name_e
-{
-    SCHEDULER = 0, // Messages to or from scheduler
-    IRQ_ALLOCATOR, // Allocates heap memory for interrupts
-    CALC_HORIZON, // takes accel data transxforms into horizon
-    LCD_TRIGGER,   // periodic task for triggering lcd
-    LCD_DRAW,    // Draws a section of the lcd
-    LAST_TASK      //Always last name. 
-} task_name_e;
-
-// User defined message_types
-typedef enum message_type_e
-{
-    ADD_TO_EXECUTION = 0, // Add a task to execution queue (one shot tasks)
-    UNDEFINED_TYPE // Always last type. For error handling
-} message_type_e;
-
-typedef struct message_t
-{
-    task_name_e sender; // Who sends the message
-    task_name_e receiver; // Who should receive the message
-    message_type_e message_type; // Message type
-    uint8_t length; // Length of the message
-    uint32_t* data; // Pointer to the passed data
-} message_t;
-
-typedef enum task_type_e
-{
-    PERIODICAL = 0, ONE_SHOT, N_SHOT,
-} task_type_e;
-
-#endif

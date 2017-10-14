@@ -17,44 +17,37 @@
 
  **/
 
-#ifndef TESTING
-#include <stdint.h>
-#endif
+#include "hi/tasks/calc_horizon_task.hh"
 
-#ifndef HI_DEF_H_
-#define HI_DEF_H_
-
-// User defined. Every task has a unique name. Used for Messages
-// Order defines priority
-typedef enum task_name_e
+CalcHorizonTask::CalcHorizonTask(void) :
+    m_AccelADC(ACCEL_ADC_SAMPLES_PER_SECOND);
 {
-    SCHEDULER = 0, // Messages to or from scheduler
-    IRQ_ALLOCATOR, // Allocates heap memory for interrupts
-    CALC_HORIZON, // takes accel data transxforms into horizon
-    LCD_TRIGGER,   // periodic task for triggering lcd
-    LCD_DRAW,    // Draws a section of the lcd
-    LAST_TASK      //Always last name. 
-} task_name_e;
+    SetTaskName(CALC_HORIZON);
+    SetTaskType(ONE_SHOT);
+    m_stLastAccel = {0,0,0};
+}
 
-// User defined message_types
-typedef enum message_type_e
+return_e CalcHorizonTask::setup(void)
 {
-    ADD_TO_EXECUTION = 0, // Add a task to execution queue (one shot tasks)
-    UNDEFINED_TYPE // Always last type. For error handling
-} message_type_e;
+    m_AccelADC.Setup();
+    m_AccelADC.Start();
+}
 
-typedef struct message_t
+
+return_e CalcHorizonTask::run(void)
 {
-    task_name_e sender; // Who sends the message
-    task_name_e receiver; // Who should receive the message
-    message_type_e message_type; // Message type
-    uint8_t length; // Length of the message
-    uint32_t* data; // Pointer to the passed data
-} message_t;
+    uint16_t l_u16HorizonY = (uint16_t) 63.0*((CalcPitchAngle()/90.0) + 1.0);
+    //FIXME: Send horizon level in message to LcdDrawTask
 
-typedef enum task_type_e
-{
-    PERIODICAL = 0, ONE_SHOT, N_SHOT,
-} task_type_e;
+    m_bIsFinished = true;
+}
 
-#endif
+
+inline float CalcHorizonTask::CalcPitchAngle(void){
+    float gy = m_stLastAccel.y;
+    float gx2 = m_stLastAccel.x * m_stLastAccel.x;
+    float gz2 = m_stLastAccel.z * m_stLastAccel.z;
+
+    float result = atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
+    return max(min(result, 90.0f),-90.0f);
+}

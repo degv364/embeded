@@ -17,7 +17,7 @@
 
  **/
 
-#include "hi/lcd_horizon.hh"
+#include "hi/tasks/lcd_horizon.hh"
 
 LcdHorizon::LcdHorizon(void)
 {

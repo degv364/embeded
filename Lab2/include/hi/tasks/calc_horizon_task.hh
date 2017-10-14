@@ -17,44 +17,31 @@
 
  **/
 
-#ifndef TESTING
-#include <stdint.h>
-#endif
+#ifndef INCLUDE_HI_TASKS_CALC_HORIZON_TASK_HH_
+#define INCLUDE_HI_TASKS_CALC_HORIZON_TASK_HH_
 
-#ifndef HI_DEF_H_
-#define HI_DEF_H_
+#include "hd/periph.hh"
+#include "hi/hi_def.hh"
 
-// User defined. Every task has a unique name. Used for Messages
-// Order defines priority
-typedef enum task_name_e
+class CalcHorizonTask : public Task
 {
-    SCHEDULER = 0, // Messages to or from scheduler
-    IRQ_ALLOCATOR, // Allocates heap memory for interrupts
-    CALC_HORIZON, // takes accel data transxforms into horizon
-    LCD_TRIGGER,   // periodic task for triggering lcd
-    LCD_DRAW,    // Draws a section of the lcd
-    LAST_TASK      //Always last name. 
-} task_name_e;
+public:
+    CalcHorizonTask(void);
+    return_e run(void);
+    return_e setup(void);
+    float CalcPitchAngle(void);
+private:
+    struct AccelAxes {
+        int16_t x;
+        int16_t y;
+        int16_t z;
+    };
 
-// User defined message_types
-typedef enum message_type_e
-{
-    ADD_TO_EXECUTION = 0, // Add a task to execution queue (one shot tasks)
-    UNDEFINED_TYPE // Always last type. For error handling
-} message_type_e;
+    AccelAxes m_stLastAccel;
+    periph::AccelADC m_AccelADC;
 
-typedef struct message_t
-{
-    task_name_e sender; // Who sends the message
-    task_name_e receiver; // Who should receive the message
-    message_type_e message_type; // Message type
-    uint8_t length; // Length of the message
-    uint32_t* data; // Pointer to the passed data
-} message_t;
+};
 
-typedef enum task_type_e
-{
-    PERIODICAL = 0, ONE_SHOT, N_SHOT,
-} task_type_e;
 
-#endif
+
+#endif /* INCLUDE_HI_TASKS_CALC_HORIZON_TASK_HH_ */
