@@ -33,11 +33,6 @@ public:
     virtual return_e setup(Heap* i_Heap){return (RETURN_OK);}
     bool IsTaskFinished(void){return m_bIsFinished;}
 
-    // Scheduler will put messages here, for the task to handle
-    return_e ReceiveMessage(message_t i_stNewMessage);
-    // Scheduler will take messages from here
-    return_e PopMessage(message_t* o_stMessage);
-
     // Gets
     task_type_e GetTaskType(void){return m_eTaskType;}
     uint64_t GetTaskTickInterval(void){return m_u64TickInterval;}

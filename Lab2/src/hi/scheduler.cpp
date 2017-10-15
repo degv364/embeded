@@ -112,24 +112,23 @@ return_e Scheduler::UpdateTasksTimingAndFinishedState(void)
     {
         if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0))
         {
+	  if (m_aSchedule[l_u8Slot].pToAttach->GetTaskType() == ISR_HANDLER){
+	    // beacuse one does not know when an interrupt hapens. Set that it is always executing. 
             m_aSchedule[l_u8Slot].pToAttach->SetFinishedState(false);
-
-            if (m_aSchedule[l_u8Slot].pToAttach->GetTaskType() == PERIODICAL)
+	  }
+	  
+	  if (m_aSchedule[l_u8Slot].pToAttach->GetTaskType() == PERIODICAL)
             {
-                m_aSchedule[l_u8Slot].u64ticks++;
-                if (m_aSchedule[l_u8Slot].u64ticks
-                        >= m_aSchedule[l_u8Slot].pToAttach->GetTaskTickInterval())
+	      m_aSchedule[l_u8Slot].u64ticks++;
+	      if (m_aSchedule[l_u8Slot].u64ticks
+		  >= m_aSchedule[l_u8Slot].pToAttach->GetTaskTickInterval())
                 {
-                    m_aSchedule[l_u8Slot].bExecute = true;
+		  m_aSchedule[l_u8Slot].bExecute = true;
                 }
             }
         }
-        else
-        {
-            return RETURN_OK;
-        }
     }
-
+    
     return RETURN_OK;
 }
 
@@ -186,6 +185,8 @@ return_e Scheduler::HandleInternalMessages(void)
                 return RETURN_FAIL;
             }
         }
+	else
+	  return rt;
 
         rt = InternalMessageQueue.PopMessage(&l_stCurrentMessage);
     }
@@ -204,7 +205,7 @@ return_e Scheduler::HandleExternalMessages(void){
   {
       if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0)){
       //Repeat until outgoing queue is empty
-      rt = m_aSchedule[l_u8Slot].pToAttach->PopMessage(&l_stTempMessage);
+      rt = m_aSchedule[l_u8Slot].pToAttach->Outgoing.PopMessage(&l_stTempMessage);
       while (rt != RETURN_EMPTY)
       {
           // Check for fails (not empty)
@@ -220,13 +221,13 @@ return_e Scheduler::HandleExternalMessages(void){
           }
           else {
               // Send to the specific task
-              rt =  m_aSchedule[l_stTempMessage.receiver].pToAttach->ReceiveMessage(l_stTempMessage);
+              rt =  m_aSchedule[l_stTempMessage.receiver].pToAttach->Incoming.AddMessage(l_stTempMessage);
               if (rt != RETURN_OK){
                   return rt;
               }
           }
           // Get next message
-          rt = m_aSchedule[l_u8Slot].pToAttach->PopMessage(&l_stTempMessage);
+          rt = m_aSchedule[l_u8Slot].pToAttach->Outgoing.PopMessage(&l_stTempMessage);
       }
     }
   }
