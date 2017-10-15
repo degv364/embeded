@@ -190,3 +190,57 @@ Quaternion::Reciprocal(void){
   l_oQ.m_aData[J]=-m_aData[J]/(l_fNorm*l_fNorm);
   l_oQ.m_aData[K]=-m_aData[K]/(l_fNorm*l_fNorm);
 }
+
+
+// Constructor from Euler angles
+void inline
+Quaternion::AssignFromEuler(float i_fRoll, float i_fPitch, float i_fYaw){
+    // Compute trigonometric functions only once. 
+  float l_fCR = (float) cos(0.5f*i_fRoll);
+  float l_fSR = (float) sin(0.5f*i_fRoll);
+  float l_fCP = (float) cos(0.5f*i_fPitch);
+  float l_fSP = (float) sin(0.5f*i_fPitch);
+  float l_fCY = (float) cos(0.5f*i_fYaw);
+  float l_fSY = (float) sin(0.5f*i_fYaw);
+
+  m_aData[R] = l_fCR * l_fCP * l_fCY + l_fSR * l_fSP * l_fSY;
+  
+  m_aData[I] = l_fCY * l_fSR * l_fCP - l_fSY * l_fCR * l_fSP;
+  m_aData[J] = l_fCY * l_fCR * l_fSP + l_fSY * l_fSR * l_fCP;
+  m_aData[K] = l_fSY * l_fCR * l_fCP - l_fCY * l_fSR * l_fSP;
+}
+
+Quaternion::Quaternion(EulerAngle_t i_stEulerAngle){
+  AssignFromEuler(i_stEulerAngle.m_fRoll, i_stEulerAngle.m_fPitch, i_stEulerAngle.m_fYaw);
+}
+
+
+Quaternion::Quaternion(float i_fRoll, float i_fPitch, float i_fYaw){
+  AssignFromEuler(i_fRoll, i_fPitch, i_fYaw);
+}
+
+// Get Euler Angles
+EulerAngle_t
+Quaternion::GetEuler(void){
+  EulerAngle_t o_stEulerAngle;
+  // Roll------------------------------------------------------------------------
+  float l_fSR = 2.0f        * (m_aData[R] * m_aData[I] + m_aData[J] * m_aData[K]);
+  float l_fCR = 1.0f - 2.0f * (m_aData[I] * m_aData[I] + m_aData[J] * m_aData[J]);
+  o_stEulerAngle.m_fRoll = (float) atan2(l_fSR, l_fCR);
+  //Pitch------------------------------------------------------------------------
+  float l_fSP = 2.0f * (m_aData[R] * m_aData[J] - m_aData[K] * m_aData[I]);
+  if (fabs(l_fSP) >=1.0f){
+    // just in case there are any accumulated rounding errors
+    o_stEulerAngle.m_fPitch = copysign(0.5f*M_PI, l_fSP);
+  }
+  else{
+    o_stEulerAngle.m_fPitch = (float) asin(l_fSP);
+  }
+  //Yaw--------------------------------------------------------------------------
+  float l_fSY = 2.0f        * (m_aData[R] * m_aData[K] + m_aData[I] * m_aData[J]);
+  float l_fCY = 1.0f - 2.0f * (m_aData[J] * m_aData[J] + m_aData[K] * m_aData[K]);
+  o_stEulerAngle.m_fYaw = (float) atan2(l_fSY, l_fCY);
+
+  return o_stEulerAngle;
+}
+

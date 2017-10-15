@@ -27,8 +27,16 @@
 #define J 2
 #define K 3
 
+typedef struct EulerAngle_t
+{
+  float m_fRoll;
+  float m_fPitch;
+  float m_fYaw;
+} EulerAngle_t;
+
 class Quaternion{
 private:
+  void inline AssignFromEuler(float i_fRoll, float i_fPitch, float i_fYaw);
 public:
   // Is this considered a magic number?
   // If yes, then FIXME, use a define
@@ -36,6 +44,8 @@ public:
   float m_aData[4];
   
   Quaternion();
+  Quaternion(EulerAngle_t i_stEulerAngle);
+  Quaternion(float i_fRoll, float i_fPitch, float i_fYaw);
 
   // Assign
   Quaternion& operator=(const Quaternion& i_Q);
@@ -65,6 +75,8 @@ public:
   Quaternion Unit(void);
   // Reciprocal  q*rec = 1
   Quaternion Reciprocal(void);
+  // Euler ANgles
+  EulerAngle_t GetEuler(void);
 };
 
 
