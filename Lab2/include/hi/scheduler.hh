@@ -35,10 +35,6 @@ public:
     return_e run(void);
     return_e PostAmble(void);
     return_e setup(void);
-
-  // FIXME: this method is public to be able to add messages from the interrupts
-  // should have a better way of doing this
-  //return_e AddInternalMessage(message_t i_NewMessage);
   
 private:
     MessageQueue InternalMessageQueue; // Messages for the scheduler

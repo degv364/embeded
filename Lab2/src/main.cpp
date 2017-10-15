@@ -71,11 +71,10 @@
 #include "hi/task.hh"
 #include "hi/tasks/adc_irq_task.hh"
 #include "hi/tasks/calc_horizon_task.hh"
-#include "hi/tasks/lcd_horizon.hh"
+#include "hi/tasks/lcd_draw_task.hh"
 
 //----- Hardware dependent (hd) -----
 #include "hd/periph.hh"
-
 
 
 //----- Global object declarations -----
@@ -108,9 +107,6 @@ static return_e HardwareInit(void)
     //Enable FPU unit
     MAP_FPU_enableModule();
 
-    //FIXME: Migrate to LCD Task setup
-    //g_LcdHorizon.Setup();
-
     //Timer32 configuration
     timer.enableInterrupt();
     timer.start();
@@ -136,11 +132,13 @@ int main(void)
         return 1;
 
     // Define tasks
-    CalcHorizonTask l_CalcHorizon;
+    CalcHorizonTask l_CalcHorizonTask;
+    LcdDrawTask l_LcdDrawTask;
 
     // Attach and set up tasks
     g_MainScheduler.attach(&g_AdcIRQTask);
-    g_MainScheduler.attach(&l_CalcHorizon);
+    g_MainScheduler.attach(&l_CalcHorizonTask);
+    g_MainScheduler.attach(&l_LcdDrawTask);
 
     // Setup tasks
     g_MainScheduler.setup();
@@ -151,14 +149,12 @@ int main(void)
     //FIXME: Integrate with calc_horizon_task
     //LCDFilter.Setup(l_u16HorizonY);
     //LCDFilter.GetFilteredValue(&l_u16FilteredHorizon);
-    //g_LcdHorizon.InitialDraw(l_u16FilteredHorizon);
 
     while (1)
     {
         //FIXME: Integrate with calc_horizon_task
         //LCDFilter.AddValue(l_u16HorizonY);
         //LCDFilter.GetFilteredValue(&l_u16FilteredHorizon);
-        //g_LcdHorizon.UpdateDraw(l_u16FilteredHorizon);
 
         if (g_SystemTicks != g_MainScheduler.m_u64ticks)
         {

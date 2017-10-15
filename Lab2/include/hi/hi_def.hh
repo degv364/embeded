@@ -31,7 +31,7 @@ typedef enum task_name_e
     SCHEDULER = 0, // Messages to or from scheduler
     ADC_IRQ, // Allocates heap memory for interrupts
     CALC_HORIZON,  // takes accel data transforms into horizon
-    LCD_TRIGGER,   // periodic task for triggering lcd
+    //LCD_TRIGGER,   // periodic task for triggering lcd
     LCD_DRAW,      // Draws a section of the lcd
     LAST_TASK      // Always last name
 } task_name_e;
@@ -56,7 +56,7 @@ typedef struct message_t
 
 typedef enum task_type_e
 {
-    PERIODICAL = 0, ONE_SHOT, N_SHOT,
+    PERIODICAL = 0, ONE_SHOT, N_SHOT
 } task_type_e;
 
 #endif

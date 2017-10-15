@@ -21,7 +21,30 @@
 #ifndef INCLUDE_HI_TASKS_LCD_DRAW_TASK_HH_
 #define INCLUDE_HI_TASKS_LCD_DRAW_TASK_HH_
 
+#include "hd/periph.hh"
+#include "hi/hi_def.hh"
+#include "hi/task.hh"
 
+class LcdDrawTask : public Task
+{
+public:
+    LcdDrawTask(void);
+    virtual return_e run(void);
+    virtual return_e setup(Heap* i_Heap);
+
+private:
+    void InitialDraw(uint16_t i_u16InitialHorizonLevelY);
+    void UpdateDraw(uint16_t i_u16NewHorizonLevelY);
+
+    Graphics_Context m_sContext;
+    uint16_t m_u16HorizonLevelY;
+    Graphics_Rectangle m_stUpdateRect;
+    bool m_bIsFirstDraw;
+
+    static constexpr uint8_t TICKS_INTERVAL = 5;
+    static constexpr uint8_t HEAP_MEM_SIZE = 1;
+    uint32_t* m_pHeapMem;
+};
 
 
 

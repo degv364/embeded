@@ -34,6 +34,7 @@ return_e CalcHorizonTask::setup(Heap* i_Heap)
     Task::SetTaskExecutionCondition(false);
     this->SetTaskTickInterval(0);
 
+    //Messages memory allocation
     rt = i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
 
     return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
@@ -47,9 +48,9 @@ return_e CalcHorizonTask::run(void)
     rt = Task::Incoming.PopMessage(&l_stInputMessage);
     while(rt != RETURN_EMPTY){
         if (l_stInputMessage.message_type == ACCEL_DATA) {
-            m_stLastAccel.x = (uint16_t) l_stInputMessage.data[0];
-            m_stLastAccel.y = (uint16_t) l_stInputMessage.data[1];
-            m_stLastAccel.z = (uint16_t) l_stInputMessage.data[2];
+            m_stLastAccel.x = (int16_t) l_stInputMessage.data[0];
+            m_stLastAccel.y = (int16_t) l_stInputMessage.data[1];
+            m_stLastAccel.z = (int16_t) l_stInputMessage.data[2];
         }
         rt = Task::Incoming.PopMessage(&l_stInputMessage);
     }
@@ -69,9 +70,13 @@ return_e CalcHorizonTask::run(void)
 }
 
 inline float CalcHorizonTask::CalcPitchAngle(void){
-    float gy = m_stLastAccel.y;
+
+    //Flipped axes to achieve correct horizon orientation
+    float gy = -m_stLastAccel.z;
     float gx2 = m_stLastAccel.x * m_stLastAccel.x;
-    float gz2 = m_stLastAccel.z * m_stLastAccel.z;
+    float gz2 = m_stLastAccel.y * m_stLastAccel.y;
+    //float sign = (m_stLastAccel.y < 0) ? 1 : -1;
+    //float result = sign * atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
 
     float result = atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
     return max(min(result, 90.0f),-90.0f);
