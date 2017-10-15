@@ -29,8 +29,8 @@ class CalcHorizonTask : public Task
 {
 public:
     CalcHorizonTask(void);
-    return_e run(void);
-    return_e setup(void);
+    virtual return_e run(void);
+    virtual return_e setup(Heap* i_Heap);
     float CalcPitchAngle(void);
 private:
     struct AccelAxes {
@@ -39,9 +39,11 @@ private:
         int16_t z;
     };
 
-    AccelAxes m_stLastAccel;
-    periph::AccelADC m_AccelADC;
+    static constexpr uint8_t HEAP_MEM_SIZE = 1;
 
+    periph::AccelADC m_AccelADC;
+    AccelAxes m_stLastAccel;
+    uint32_t* m_pHeapMem;
 };
 
 

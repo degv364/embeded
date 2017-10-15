@@ -27,21 +27,43 @@ CalcHorizonTask::CalcHorizonTask(void) :
     m_stLastAccel = {0,0,0};
 }
 
-return_e CalcHorizonTask::setup(void)
+return_e CalcHorizonTask::setup(Heap* i_Heap)
 {
     m_AccelADC.Setup();
     m_AccelADC.Start();
+    i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
 }
-
 
 return_e CalcHorizonTask::run(void)
 {
+    return_e rt;
+    message_t l_stInputMessage;
+
+    // Get most recent message from Incoming Queue
+    rt = RETURN_OK;
+    while (rt != RETURN_EMPTY)
+    {
+        rt = Task::Incoming.PopMessage(&l_stInputMessage);
+        if (l_stInputMessage.message_type == ACCEL_DATA) {
+            m_stLastAccel.x = (uint16_t) l_stInputMessage.data[0];
+            m_stLastAccel.y = (uint16_t) l_stInputMessage.data[1];
+            m_stLastAccel.z = (uint16_t) l_stInputMessage.data[2];
+        }
+    }
+
     uint16_t l_u16HorizonY = (uint16_t) 63.0*((CalcPitchAngle()/90.0) + 1.0);
-    //FIXME: Send horizon level in message to LcdDrawTask
+    m_pHeapMem[0] = (uint32_t) l_u16HorizonY;
+
+    message_t l_stHorizonMessage = {CALC_HORIZON,
+                                    LCD_DRAW,
+                                    HORIZON_PARAMS,
+                                    HEAP_MEM_SIZE,
+                                    m_pHeapMem};
+
+    Task::Outgoing.AddMessage(l_stHorizonMessage);
 
     Task::m_bIsFinished = true;
 }
-
 
 inline float CalcHorizonTask::CalcPitchAngle(void){
     float gy = m_stLastAccel.y;

@@ -28,15 +28,15 @@ class Scheduler
 public:
     Scheduler();
     uint64_t m_u64ticks;
-  // Public member, so that one can call its methods directly. Also, to make its
-  // address accesible for interruption callbacks
-  Heap m_InternalHeap;
+    // Public member, so that one can call its methods directly. Also, to make its
+    // address accesible for interruption callbacks
+    Heap m_InternalHeap;
     return_e attach(Task * i_ToAttach);
     return_e run(void);
     return_e PostAmble(void);
     return_e setup(void);
 
-  // FIXME: this method is public to be able to ad messages from the interrupts
+  // FIXME: this method is public to be able to add messages from the interrupts
   // should have a better way of doing this
   return_e AddInternalMessage(message_t i_NewMessage);
   

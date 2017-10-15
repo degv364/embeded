@@ -16,24 +16,25 @@ private:
     uint64_t m_u64TickInterval; // Period of execution for periodic tasks
     bool m_bExecutionCondition; // ExecutionCondition for One shot tasks
 
-    // Messages
-  MessageQueue Incoming;
-  MessageQueue Outgoing;
 
 protected:
     bool m_bIsFinished;
 
+   // Messages
+   MessageQueue Incoming;
+   MessageQueue Outgoing;
+
 public:
     Task();
     virtual return_e run(void){return (RETURN_OK);};
-  // Receives a pointer to the heap for memory allocation
+    // Receives a pointer to the heap for memory allocation
     virtual return_e setup(Heap* i_Heap){return (RETURN_OK);};
     bool IsTaskFinished(void){return m_bIsFinished;};
 
-  // Scheduler will put messages here, for the task to handle
-  return_e ReceiveMessage(message_t i_stNewMessage);
-  // Scheduler will take messages from here
-  return_e PopMessage(message_t* o_stMessage);
+    // Scheduler will put messages here, for the task to handle
+    return_e ReceiveMessage(message_t i_stNewMessage);
+    // Scheduler will take messages from here
+    return_e PopMessage(message_t* o_stMessage);
 
     // Gets
     task_type_e GetTaskType(void){return m_eTaskType;};

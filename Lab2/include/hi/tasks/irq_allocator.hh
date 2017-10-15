@@ -21,6 +21,7 @@
 #define IRQ_ALLOCATOR_TASK
 
 #include "hi/task.hh"
+#include "hi/heap.hh"
 
 class IRQAllocator : public Task{
 public:
@@ -31,5 +32,7 @@ public:
   //virtual return_e run(void);
 };
 
+//FIXME: Check if it is possible to move pIrqHeap to class member
+extern uint32_t* g_pIrqHeap;
 
 #endif

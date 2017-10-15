@@ -85,18 +85,9 @@ periph::Timer timer(TIMER32_0_BASE, TIME_INTERRUPTS_PER_SECOND);
 volatile uint64_t g_SystemTicks = 0; // - The system counter.
 Scheduler g_MainScheduler;           // - Instantiate a Scheduler
 
-// Pointer to the heap for interruptions
-uint32_t* g_pIrqHeap; //Not volatile since pointer doesnt change, its data does
-
-
 //FIXME: Migrate to LCD Task
 LcdHorizon g_LcdHorizon;
 
-//FIXME: Remove after testing ADC config
-volatile int16_t resultsBuffer[3];
-
-//FIXME: Migrate after testing ADC config
-//periph::AccelADC g_AccelADC(ACCEL_ADC_SAMPLES_PER_SECOND);
 
 //----- Static main functions -----
 
@@ -115,10 +106,6 @@ static return_e HardwareInit(void)
     //Enable FPU unit
     MAP_FPU_enableModule();
 
-    //Initialize Accelerometer ADC sampling
-    //g_AccelADC.Setup();
-    //g_AccelADC.Start();
-
     //FIXME: Migrate to LCD Task setup
     g_LcdHorizon.Setup();
 
@@ -131,19 +118,6 @@ static return_e HardwareInit(void)
 
     return RETURN_OK;
 }
-
-//
-////FIXME: This should be located in Angle Calculation Task
-//static inline float calcPitchAngle(void){
-//    float gx = resultsBuffer[0];
-//    float gy = -resultsBuffer[1];
-//    float gz = resultsBuffer[2];
-//
-//    float result = atan(gy/sqrt((gx*gx)+(gz*gz)))*(180.0f/M_PI);
-//    result = max(min(result, 90.0f),-90.0f);
-//    return result;
-//}
-
 
 //----- Main program -----
 

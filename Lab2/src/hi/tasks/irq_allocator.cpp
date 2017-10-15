@@ -20,7 +20,7 @@
 #include "hi/tasks/irq_allocator.hh"
 
 // Heap pointer for irq
-extern uint32_t* g_pIrqHeap;
+uint32_t* g_pIrqHeap;
 
 return_e IRQAllocator::setup(Heap* i_Heap){
   uint32_t* l_u32Ignored;

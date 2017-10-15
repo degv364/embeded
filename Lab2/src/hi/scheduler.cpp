@@ -72,12 +72,12 @@ return_e Scheduler::setup(void)
 
     for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++){
        if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0))
-        {
-	  l_eReturnCode = m_aSchedule[l_u8Slot].pToAttach->setup(&m_InternalHeap);
-	  if (l_eReturnCode != RETURN_OK){
-	    return l_eReturnCode;
-	  }
-	}
+       {
+           l_eReturnCode = m_aSchedule[l_u8Slot].pToAttach->setup(&m_InternalHeap);
+           if (l_eReturnCode != RETURN_OK){
+               return l_eReturnCode;
+           }
+       }
     }
     return RETURN_OK;
 }
@@ -125,6 +125,7 @@ return_e Scheduler::HandleInternalMessages(void)
     task_name_e l_eCurrentTaskName;
     bool l_bContinue = true;
     return_e rt;
+
     while (l_bContinue)
     {
         rt = InternalMessageQueue.PopMessage(&l_stCurrentMessage);
@@ -132,27 +133,28 @@ return_e Scheduler::HandleInternalMessages(void)
         {
             switch (l_stCurrentMessage.message_type)
             {
-            case ADD_TO_EXECUTION:
-                // Get the name of the task to execute
-                l_eCurrentTaskName = (task_name_e) *l_stCurrentMessage.data;
-		if (l_eCurrentTaskName >= LAST_TASK){
-		  return RETURN_FAIL;
-		}
-		l_stCurrentTask = m_aSchedule[l_eCurrentTaskName];
-		// Check the task is valid
-		if (l_stCurrentTask.pToAttach == ((uintptr_t) 0)){
-		  return RETURN_FAIL;
-		}
-		// Add execution flag
-                if (l_stCurrentTask.pToAttach->GetTaskType() == ONE_SHOT)
-                {
-                    l_stCurrentTask.bExecute = true;
-                }
-		// Trying to execute a task that is not triggered by a message.
-		return RETURN_FAIL;
-            default:
-                // Unhandled message type
-                return RETURN_FAIL;
+                case ADD_TO_EXECUTION:
+                    // Get the name of the task to execute
+                    l_eCurrentTaskName = (task_name_e) *l_stCurrentMessage.data;
+                    if (l_eCurrentTaskName >= LAST_TASK){
+                        return RETURN_FAIL;
+                    }
+                    l_stCurrentTask = m_aSchedule[l_eCurrentTaskName];
+
+                    // Check the task is valid
+                    if (l_stCurrentTask.pToAttach == ((uintptr_t) 0)){
+                        return RETURN_FAIL;
+                    }
+                    // Add execution flag
+                    if (l_stCurrentTask.pToAttach->GetTaskType() == ONE_SHOT)
+                    {
+                        l_stCurrentTask.bExecute = true;
+                    }
+                    // Trying to execute a task that is not triggered by a message.
+                    return RETURN_FAIL;
+                default:
+                    // Unhandled message type
+                    return RETURN_FAIL;
             }
         }
         else
@@ -166,29 +168,32 @@ return_e Scheduler::HandleInternalMessages(void)
 return_e Scheduler::HandleExternalMessages(void){
   message_t l_stTempMessage;
   return_e rt;
-  for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++){
-    if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0)){
+
+  for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++)
+  {
+      if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0)){
       //Repeat until outgoing queue is empty
       rt = m_aSchedule[l_u8Slot].pToAttach->PopMessage(&l_stTempMessage);
-      while (rt != RETURN_EMPTY){
-	// Check for fails (not empty)
-	if (rt != RETURN_OK){
-	  return rt;
-	}
-	// Check if the message is for the scheduler
-	if (l_stTempMessage.receiver == SCHEDULER){
-	  rt = InternalMessageQueue.AddMessage(l_stTempMessage);
-	  if (rt != RETURN_OK){
-	    return rt;
-	  }
-	}
-	// Send to the specific task
-	rt =  m_aSchedule[l_stTempMessage.receiver].pToAttach->ReceiveMessage(l_stTempMessage);
-	if (rt != RETURN_OK){
-	  return rt;
-	}
-	// Get next message
-	rt = m_aSchedule[l_u8Slot].pToAttach->PopMessage(&l_stTempMessage);
+      while (rt != RETURN_EMPTY)
+      {
+          // Check for fails (not empty)
+          if (rt != RETURN_OK){
+              return rt;
+          }
+          // Check if the message is for the scheduler
+          if (l_stTempMessage.receiver == SCHEDULER){
+              rt = InternalMessageQueue.AddMessage(l_stTempMessage);
+              if (rt != RETURN_OK){
+                  return rt;
+              }
+          }
+          // Send to the specific task
+          rt =  m_aSchedule[l_stTempMessage.receiver].pToAttach->ReceiveMessage(l_stTempMessage);
+          if (rt != RETURN_OK){
+              return rt;
+          }
+          // Get next message
+          rt = m_aSchedule[l_u8Slot].pToAttach->PopMessage(&l_stTempMessage);
       }
     }
   }
