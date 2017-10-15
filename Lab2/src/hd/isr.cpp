@@ -82,7 +82,8 @@ void ADC14_IRQHandler(void)
 {
     __disable_irq();
 
-    if (periph::AccelADC::CheckAndCleanIRQ(ADC_INT2))
+    if (periph::AccelADC::CheckAndCleanIRQ(ADC_INT2)
+        && !g_AdcIRQTask.IsTaskFinished())
     {
       // Create message with accel data
       uint32_t* l_pHeapADC = g_AdcIRQTask.m_pHeapMem;
@@ -108,6 +109,9 @@ void ADC14_IRQHandler(void)
       // Send messages
       g_AdcIRQTask.Outgoing.AddMessage(l_stExecuteHandler);
       g_AdcIRQTask.Outgoing.AddMessage(l_stAccelDataMessage);
+
+      //Finished task handling for the current frame
+      g_AdcIRQTask.SetFinishedState(true);
     }
 
     __enable_irq();

@@ -21,7 +21,7 @@
 #define COMMON_DEF_H_
 
 //Scheduler tick count frequency
-#define TIME_INTERRUPTS_PER_SECOND 100
+#define TIME_INTERRUPTS_PER_SECOND 1
 
 //ADC number of samples per second
 #define ACCEL_ADC_SAMPLES_PER_SECOND 150

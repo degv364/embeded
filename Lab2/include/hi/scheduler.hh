@@ -50,7 +50,7 @@ private:
      * Updates the ticks for each task in the schedule. Also finds which Periodical tasks
      * should be executed in the next frame.
      */
-    return_e UpdateTasksTicks(void);
+    return_e UpdateTasksTimingAndFinishedState(void);
     /**
      * Handles the messages sent to the Schedule. In particular sets tasks to be executen with ADD_TO_EXECUTION
      * message.
@@ -60,7 +60,8 @@ private:
      * Message traffic
      */
     return_e HandleExternalMessages(void);
-  
+
+
     return_e FindTaskWithName(task_name_e i_eName, st_TaskInfo* o_stTaskInfo);
 };
 

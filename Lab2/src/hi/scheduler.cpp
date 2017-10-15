@@ -83,12 +83,14 @@ return_e Scheduler::setup(void)
 }
 
 
-return_e Scheduler::UpdateTasksTicks(void)
+return_e Scheduler::UpdateTasksTimingAndFinishedState(void)
 {
     for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++)
     {
         if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0))
         {
+            m_aSchedule[l_u8Slot].pToAttach->SetFinishedState(false);
+
             if (m_aSchedule[l_u8Slot].pToAttach->GetTaskType() == PERIODICAL)
             {
                 m_aSchedule[l_u8Slot].u64ticks++;
@@ -148,7 +150,6 @@ return_e Scheduler::HandleInternalMessages(void)
                 if (l_stCurrentTask->pToAttach->GetTaskType() == ONE_SHOT)
                 {
                     l_stCurrentTask->bExecute = true;
-                    //return RETURN_OK;
                 }
                 else {
                     // Trying to execute a not ONE_SHOT task (triggered by a message)
@@ -205,6 +206,7 @@ return_e Scheduler::HandleExternalMessages(void){
   return RETURN_OK;
 }
 
+
 return_e Scheduler::PostAmble(void)
 {
   return_e rt;
@@ -216,7 +218,7 @@ return_e Scheduler::PostAmble(void)
   if(rt != RETURN_OK){
     return rt;
   }
-  this->UpdateTasksTicks(); // Side Effect of updating execution of Periodical tasks
+  this->UpdateTasksTimingAndFinishedState(); // Side Effect of updating execution of Periodical tasks
   if(rt != RETURN_OK){
     return rt;
   }
