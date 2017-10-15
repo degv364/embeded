@@ -30,7 +30,10 @@ Heap::Allocate(uint8_t i_u8Size, uint32_t** o_u32HeapPointer){
     return RETURN_NO_SPACE;
   }
   // There is space available
-  *o_u32HeapPointer = m_aData+m_u32LastAdded+(uint32_t)i_u8Size;
+  //*o_u32HeapPointer = m_aData+m_u32LastAdded+(uint32_t)i_u8Size;
+  //FIXME:Check if this is the correct implementation
+  *o_u32HeapPointer = m_aData+m_u32LastAdded;
+  m_u32LastAdded += (uint32_t) i_u8Size;
   return RETURN_OK;
 }
 

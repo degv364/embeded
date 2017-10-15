@@ -63,15 +63,17 @@
 // Common definitions
 #include "common_def.hh"
 
-// Hardware independent (hi)
+//----- Hardware independent (hi) -----
 #include "hi/hi_def.hh"
 #include "hi/scheduler.hh"
-#include "hi/task.hh"
-#include "hi/tasks/lcd_horizon.hh"
-#include "hi/tasks/irq_allocator.hh"
 #include "hi/filters.hh"
+//Tasks related
+#include "hi/task.hh"
+#include "hi/tasks/adc_irq_task.hh"
+#include "hi/tasks/calc_horizon_task.hh"
+#include "hi/tasks/lcd_horizon.hh"
 
-// Hardware dependent (hd)
+//----- Hardware dependent (hd) -----
 #include "hd/periph.hh"
 
 
@@ -85,8 +87,8 @@ periph::Timer timer(TIMER32_0_BASE, TIME_INTERRUPTS_PER_SECOND);
 volatile uint64_t g_SystemTicks = 0; // - The system counter.
 Scheduler g_MainScheduler;           // - Instantiate a Scheduler
 
-//FIXME: Migrate to LCD Task
-LcdHorizon g_LcdHorizon;
+//IRQ related tasks (global for ISR access)
+AdcIRQTask g_AdcIRQTask;
 
 
 //----- Static main functions -----
@@ -107,7 +109,7 @@ static return_e HardwareInit(void)
     MAP_FPU_enableModule();
 
     //FIXME: Migrate to LCD Task setup
-    g_LcdHorizon.Setup();
+    //g_LcdHorizon.Setup();
 
     //Timer32 configuration
     timer.enableInterrupt();
@@ -125,40 +127,34 @@ int main(void)
 {
     return_e rt;
     // filter
-    MeanFilter LCDFilter = MeanFilter();
+    MeanFilter LCDFilter;
     uint16_t l_u16FilteredHorizon;
-    
-    // Initialize tasks
-    IRQAllocator IRQAllocatorTask = IRQAllocator();
 
     //Initialize hardware peripherals
     rt = HardwareInit();
     if (rt != RETURN_OK)
         return 1;
 
-    //Attach and set up tasks
-    g_MainScheduler.attach(&IRQAllocatorTask);
+    // Define tasks
+    CalcHorizonTask l_CalcHorizon;
 
+    // Attach and set up tasks
+    g_MainScheduler.attach(&g_AdcIRQTask);
+    g_MainScheduler.attach(&l_CalcHorizon);
+
+    // Setup tasks
     g_MainScheduler.setup();
 
     // Prepare schedule before first iteration.
     g_MainScheduler.PostAmble();
-
-    //Initial LCD Horizon Draw
-    //uint16_t l_u16HorizonY =  (uint16_t) 63.0*((calcPitchAngle()/90.0) + 1.0);
 
     //FIXME: Integrate with calc_horizon_task
     //LCDFilter.Setup(l_u16HorizonY);
     //LCDFilter.GetFilteredValue(&l_u16FilteredHorizon);
     //g_LcdHorizon.InitialDraw(l_u16FilteredHorizon);
 
-    float angle;
-
     while (1)
     {
-        //angle = calcPitchAngle();
-        //l_u16HorizonY = (uint16_t) 63.0*((angle/90.0) + 1.0);
-
         //FIXME: Integrate with calc_horizon_task
         //LCDFilter.AddValue(l_u16HorizonY);
         //LCDFilter.GetFilteredValue(&l_u16FilteredHorizon);

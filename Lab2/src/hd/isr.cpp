@@ -18,6 +18,7 @@
  **/
 
 /* Standard Includes */
+
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -28,13 +29,20 @@
 #include "hd/periph.hh"
 #include "hi/hi_def.hh"
 #include "hi/scheduler.hh"
-#include "hi/tasks/irq_allocator.hh"
 
-/*Global Main Scheduler*/
-extern Scheduler g_MainScheduler;
+// Tasks
+#include "hi/tasks/adc_irq_task.hh"
 
 /*Variables defined in other files*/
+
+extern AdcIRQTask g_AdcIRQTask;
+
+// Global Main Scheduler
+extern Scheduler g_MainScheduler;
+
+//Global Tick Counter
 extern volatile uint64_t g_SystemTicks;
+
 
 /*Interrupt Service Routines (ISR) Definition*/
 extern "C"
@@ -73,32 +81,33 @@ void T32_INT2_IRQHandler(void)
 void ADC14_IRQHandler(void)
 {
     __disable_irq();
-    //FIXME: Implement ADC ISR
 
     if (periph::AccelADC::CheckAndCleanIRQ(ADC_INT2))
     {
       // Create message with accel data
-      g_pIrqHeap[0] = (uint32_t) ADC14_getResult(ADC_MEM0);
-      g_pIrqHeap[1] = (uint32_t) ADC14_getResult(ADC_MEM1);
-      g_pIrqHeap[2] = (uint32_t) ADC14_getResult(ADC_MEM2);
+      uint32_t* l_pHeapADC = g_AdcIRQTask.m_pHeapMem;
 
-      message_t l_stAccelDataMessage = {IRQ_ALLOCATOR,
+      l_pHeapADC[0] = (uint32_t) ADC14_getResult(ADC_MEM0);
+      l_pHeapADC[1] = (uint32_t) ADC14_getResult(ADC_MEM1);
+      l_pHeapADC[2] = (uint32_t) ADC14_getResult(ADC_MEM2);
+
+      message_t l_stAccelDataMessage = {ADC_IRQ,
                                         CALC_HORIZON,
                                         ACCEL_DATA,
                                         3,
-                                        g_pIrqHeap};
+                                        l_pHeapADC};
       // Create execution message
-      g_pIrqHeap[3] = (uint32_t) CALC_HORIZON;
+      l_pHeapADC[3] = (uint32_t) CALC_HORIZON;
 
-      message_t l_stExecuteHandler = {IRQ_ALLOCATOR,
+      message_t l_stExecuteHandler = {ADC_IRQ,
                                       SCHEDULER,
                                       ADD_TO_EXECUTION,
                                       1,
-                                      &g_pIrqHeap[3]};
+                                      &l_pHeapADC[3]};
 
-      // Add messages directly to scheduler
-      g_MainScheduler.AddInternalMessage(l_stExecuteHandler);
-      g_MainScheduler.AddInternalMessage(l_stAccelDataMessage);
+      // Send messages
+      g_AdcIRQTask.Outgoing.AddMessage(l_stExecuteHandler);
+      g_AdcIRQTask.Outgoing.AddMessage(l_stAccelDataMessage);
     }
 
     __enable_irq();

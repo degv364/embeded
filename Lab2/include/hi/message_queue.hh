@@ -3,6 +3,7 @@
 
 #include "common_def.hh"
 #include "hi/hi_def.hh"
+#include "msp.h"
 
 //FIXME: find a better way to choose size, maybe inheritance?
 #define MESSAGE_QUEUE_SIZE 5

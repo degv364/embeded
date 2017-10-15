@@ -17,22 +17,25 @@
 
  **/
 
-#ifndef IRQ_ALLOCATOR_TASK
-#define IRQ_ALLOCATOR_TASK
+#ifndef ADC_IRQ_TASK
+#define ADC_IRQ_TASK
 
 #include "hi/task.hh"
 #include "hi/heap.hh"
+#include "hd/periph.hh"
 
-class IRQAllocator : public Task{
+class AdcIRQTask : public Task{
 public:
-  // FIXME: check if we need to define a constructor
-  //IRQAllocator();
-  virtual return_e setup(Heap* i_Heap);
-  // FIXME: check if we need to define a run method
-  //virtual return_e run(void);
-};
+    AdcIRQTask(void);
+    virtual return_e setup(Heap* i_Heap);
 
-//FIXME: Check if it is possible to move pIrqHeap to class member
-extern uint32_t* g_pIrqHeap;
+    uint32_t* m_pHeapMem;
+
+private:
+    periph::AccelADC m_AccelADC;
+
+    // One for each accel axis result. One for execution message
+    static constexpr uint8_t HEAP_MEM_SIZE = 4;
+};
 
 #endif

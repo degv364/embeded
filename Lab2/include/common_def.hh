@@ -20,8 +20,8 @@
 #ifndef COMMON_DEF_H_
 #define COMMON_DEF_H_
 
-//Number of Timer32 interrupts (software counts) per second
-#define TIME_INTERRUPTS_PER_SECOND 10
+//Scheduler tick count frequency
+#define TIME_INTERRUPTS_PER_SECOND 100
 
 //ADC number of samples per second
 #define ACCEL_ADC_SAMPLES_PER_SECOND 150
@@ -33,8 +33,6 @@
 
 #define MAX_SCHEDULER_INTERNAL_MESSAGES 5
 
-// One for each accel result. One for execution message
-#define ADC14_IRQHANDLER_MEM_SIZE 4
 
 // Size of filter buffers
 #define MEAN_FILTER_BUFFER_SIZE 10

@@ -41,7 +41,6 @@ private:
 
     static constexpr uint8_t HEAP_MEM_SIZE = 1;
 
-    periph::AccelADC m_AccelADC;
     AccelAxes m_stLastAccel;
     uint32_t* m_pHeapMem;
 };

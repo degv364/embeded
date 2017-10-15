@@ -1,10 +1,9 @@
 #include "hi/task.hh"
 
-Task::Task()
+Task::Task() :
+    Incoming(), Outgoing()
 {
     m_bIsFinished = false;
-    Incoming = MessageQueue();
-    Outgoing = MessageQueue();
 }
 
 return_e

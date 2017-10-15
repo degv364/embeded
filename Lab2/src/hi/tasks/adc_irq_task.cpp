@@ -17,20 +17,29 @@
 
  **/
 
-#include "hi/tasks/irq_allocator.hh"
+#include "hi/tasks/adc_irq_task.hh"
 
-// Heap pointer for irq
-uint32_t* g_pIrqHeap;
+AdcIRQTask::AdcIRQTask(void) :
+    m_AccelADC(ACCEL_ADC_SAMPLES_PER_SECOND)
+{
+    this->SetTaskName(ADC_IRQ);
+    this->SetTaskType(ONE_SHOT);
+}
 
-return_e IRQAllocator::setup(Heap* i_Heap){
+
+return_e AdcIRQTask::setup(Heap* i_Heap){
   uint32_t* l_u32Ignored;
-  this->SetTaskName(IRQ_ALLOCATOR);
-  this->SetTaskType(ONE_SHOT);
+
   this->SetTaskExecutionCondition(false);
   this->SetTaskTickInterval(0);
-  i_Heap->Allocate(ADC14_IRQHANDLER_MEM_SIZE, &g_pIrqHeap);
+
+  i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
   if (l_u32Ignored == 0){
     return RETURN_FAIL;
   }
+
+  m_AccelADC.Setup();
+  m_AccelADC.Start();
+
   return RETURN_OK;
 }

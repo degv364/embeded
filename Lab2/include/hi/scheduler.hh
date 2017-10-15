@@ -38,7 +38,7 @@ public:
 
   // FIXME: this method is public to be able to add messages from the interrupts
   // should have a better way of doing this
-  return_e AddInternalMessage(message_t i_NewMessage);
+  //return_e AddInternalMessage(message_t i_NewMessage);
   
 private:
     MessageQueue InternalMessageQueue; // Messages for the scheduler
@@ -56,10 +56,10 @@ private:
      * message.
      */
     return_e HandleInternalMessages(void);
-  /**
-   * Message traffic
-   */
-  return_e HandleExternalMessages(void);
+    /**
+     * Message traffic
+     */
+    return_e HandleExternalMessages(void);
   
     return_e FindTaskWithName(task_name_e i_eName, st_TaskInfo* o_stTaskInfo);
 };

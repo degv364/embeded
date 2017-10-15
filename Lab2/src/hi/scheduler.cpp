@@ -121,49 +121,52 @@ return_e Scheduler::FindTaskWithName(task_name_e i_eName,
 return_e Scheduler::HandleInternalMessages(void)
 {
     message_t l_stCurrentMessage;
-    st_TaskInfo l_stCurrentTask;
+    st_TaskInfo* l_stCurrentTask;
     task_name_e l_eCurrentTaskName;
-    bool l_bContinue = true;
     return_e rt;
 
-    while (l_bContinue)
+    rt = InternalMessageQueue.PopMessage(&l_stCurrentMessage);
+    while (rt != RETURN_EMPTY)
     {
-        rt = InternalMessageQueue.PopMessage(&l_stCurrentMessage);
         if (rt == RETURN_OK)
         {
             switch (l_stCurrentMessage.message_type)
             {
-                case ADD_TO_EXECUTION:
-                    // Get the name of the task to execute
-                    l_eCurrentTaskName = (task_name_e) *l_stCurrentMessage.data;
-                    if (l_eCurrentTaskName >= LAST_TASK){
-                        return RETURN_FAIL;
-                    }
-                    l_stCurrentTask = m_aSchedule[l_eCurrentTaskName];
+            case ADD_TO_EXECUTION:
+                // Get the name of the task to execute
+                l_eCurrentTaskName = (task_name_e) *l_stCurrentMessage.data;
+                if (l_eCurrentTaskName >= LAST_TASK){
+                    return RETURN_FAIL;
+                }
+                l_stCurrentTask = &m_aSchedule[l_eCurrentTaskName];
 
-                    // Check the task is valid
-                    if (l_stCurrentTask.pToAttach == ((uintptr_t) 0)){
-                        return RETURN_FAIL;
-                    }
-                    // Add execution flag
-                    if (l_stCurrentTask.pToAttach->GetTaskType() == ONE_SHOT)
-                    {
-                        l_stCurrentTask.bExecute = true;
-                    }
-                    // Trying to execute a task that is not triggered by a message.
+                // Check the task is valid
+                if (l_stCurrentTask->pToAttach == ((uintptr_t) 0)){
                     return RETURN_FAIL;
-                default:
-                    // Unhandled message type
+                }
+                // Add execution flag
+                if (l_stCurrentTask->pToAttach->GetTaskType() == ONE_SHOT)
+                {
+                    l_stCurrentTask->bExecute = true;
+                    //return RETURN_OK;
+                }
+                else {
+                    // Trying to execute a not ONE_SHOT task (triggered by a message)
                     return RETURN_FAIL;
+                }
+                break;
+            default:
+                // Unhandled message type
+                return RETURN_FAIL;
             }
         }
-        else
-        {
-            l_bContinue = false;
-        }
+
+        rt = InternalMessageQueue.PopMessage(&l_stCurrentMessage);
     }
+
     return RETURN_OK;
 }
+
 
 return_e Scheduler::HandleExternalMessages(void){
   message_t l_stTempMessage;
@@ -187,10 +190,12 @@ return_e Scheduler::HandleExternalMessages(void){
                   return rt;
               }
           }
-          // Send to the specific task
-          rt =  m_aSchedule[l_stTempMessage.receiver].pToAttach->ReceiveMessage(l_stTempMessage);
-          if (rt != RETURN_OK){
-              return rt;
+          else {
+              // Send to the specific task
+              rt =  m_aSchedule[l_stTempMessage.receiver].pToAttach->ReceiveMessage(l_stTempMessage);
+              if (rt != RETURN_OK){
+                  return rt;
+              }
           }
           // Get next message
           rt = m_aSchedule[l_u8Slot].pToAttach->PopMessage(&l_stTempMessage);
@@ -220,7 +225,7 @@ return_e Scheduler::PostAmble(void)
 
 
 // FIXME: this is a hack. See header file for more info
-return_e
-Scheduler::AddInternalMessage(message_t  i_NewMessage){
-  return InternalMessageQueue.AddMessage(i_NewMessage);
-}
+//return_e
+//Scheduler::AddInternalMessage(message_t  i_NewMessage){
+//  return InternalMessageQueue.AddMessage(i_NewMessage);
+//}

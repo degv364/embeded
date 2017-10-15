@@ -20,12 +20,13 @@ private:
 protected:
     bool m_bIsFinished;
 
-   // Messages
-   MessageQueue Incoming;
-   MessageQueue Outgoing;
-
 public:
     Task();
+
+    // Messages
+    MessageQueue Incoming;
+    MessageQueue Outgoing;
+
     virtual return_e run(void){return (RETURN_OK);};
     // Receives a pointer to the heap for memory allocation
     virtual return_e setup(Heap* i_Heap){return (RETURN_OK);};

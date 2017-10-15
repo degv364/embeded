@@ -19,19 +19,24 @@
 
 #include "hi/tasks/calc_horizon_task.hh"
 
-CalcHorizonTask::CalcHorizonTask(void) :
-    m_AccelADC(ACCEL_ADC_SAMPLES_PER_SECOND)
+CalcHorizonTask::CalcHorizonTask(void)
 {
     Task::SetTaskName(CALC_HORIZON);
     Task::SetTaskType(ONE_SHOT);
+
     m_stLastAccel = {0,0,0};
 }
 
 return_e CalcHorizonTask::setup(Heap* i_Heap)
 {
-    m_AccelADC.Setup();
-    m_AccelADC.Start();
-    i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
+    return_e rt;
+
+    Task::SetTaskExecutionCondition(false);
+    this->SetTaskTickInterval(0);
+
+    rt = i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
+
+    return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
 }
 
 return_e CalcHorizonTask::run(void)
@@ -40,12 +45,14 @@ return_e CalcHorizonTask::run(void)
     message_t l_stInputMessage;
 
     rt = Task::Incoming.PopMessage(&l_stInputMessage);
-    if (l_stInputMessage.message_type == ACCEL_DATA) {
-        m_stLastAccel.x = (uint16_t) l_stInputMessage.data[0];
-        m_stLastAccel.y = (uint16_t) l_stInputMessage.data[1];
-        m_stLastAccel.z = (uint16_t) l_stInputMessage.data[2];
+    while(rt != RETURN_EMPTY){
+        if (l_stInputMessage.message_type == ACCEL_DATA) {
+            m_stLastAccel.x = (uint16_t) l_stInputMessage.data[0];
+            m_stLastAccel.y = (uint16_t) l_stInputMessage.data[1];
+            m_stLastAccel.z = (uint16_t) l_stInputMessage.data[2];
+        }
+        rt = Task::Incoming.PopMessage(&l_stInputMessage);
     }
-
     uint16_t l_u16HorizonY = (uint16_t) 63.0*((CalcPitchAngle()/90.0) + 1.0);
     m_pHeapMem[0] = (uint32_t) l_u16HorizonY;
 
@@ -55,9 +62,10 @@ return_e CalcHorizonTask::run(void)
                                     HEAP_MEM_SIZE,
                                     m_pHeapMem};
 
-    Task::Outgoing.AddMessage(l_stHorizonMessage);
+    rt = Task::Outgoing.AddMessage(l_stHorizonMessage);
 
     Task::m_bIsFinished = true;
+    return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
 }
 
 inline float CalcHorizonTask::CalcPitchAngle(void){
