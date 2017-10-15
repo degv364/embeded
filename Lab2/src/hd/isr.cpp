@@ -43,6 +43,12 @@ extern Scheduler g_MainScheduler;
 //Global Tick Counter
 extern volatile uint64_t g_SystemTicks;
 
+// Variable to know if frame is being executed
+extern volatile bool g_bDuringFrame;
+
+// Variable to determine timeout condition
+extern volatile bool g_bTimeoutCondition;
+
 
 /*Interrupt Service Routines (ISR) Definition*/
 extern "C"
@@ -56,7 +62,8 @@ void T32_INT1_IRQHandler(void)
     __disable_irq();
 
     periph::Timer::cleanIRQ(TIMER32_0_BASE);
-    //FIXME: Check if frame is finished
+    if (g_bDuringFrame)
+      g_bTimeoutCondition = true;
     g_SystemTicks++;
 
     __enable_irq();
