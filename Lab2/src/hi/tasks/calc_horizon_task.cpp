@@ -39,16 +39,11 @@ return_e CalcHorizonTask::run(void)
     return_e rt;
     message_t l_stInputMessage;
 
-    // Get most recent message from Incoming Queue
-    rt = RETURN_OK;
-    while (rt != RETURN_EMPTY)
-    {
-        rt = Task::Incoming.PopMessage(&l_stInputMessage);
-        if (l_stInputMessage.message_type == ACCEL_DATA) {
-            m_stLastAccel.x = (uint16_t) l_stInputMessage.data[0];
-            m_stLastAccel.y = (uint16_t) l_stInputMessage.data[1];
-            m_stLastAccel.z = (uint16_t) l_stInputMessage.data[2];
-        }
+    rt = Task::Incoming.PopMessage(&l_stInputMessage);
+    if (l_stInputMessage.message_type == ACCEL_DATA) {
+        m_stLastAccel.x = (uint16_t) l_stInputMessage.data[0];
+        m_stLastAccel.y = (uint16_t) l_stInputMessage.data[1];
+        m_stLastAccel.z = (uint16_t) l_stInputMessage.data[2];
     }
 
     uint16_t l_u16HorizonY = (uint16_t) 63.0*((CalcPitchAngle()/90.0) + 1.0);
