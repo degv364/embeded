@@ -29,7 +29,6 @@ LcdDrawTask::LcdDrawTask(void)
 
     m_u16HorizonLevelY = 63;
     m_u16NextHorizonLevelY = 63;
-    m_stUpdateRect = {0,0,0,0};
 }
 
 return_e LcdDrawTask::setup(Heap* i_Heap)
@@ -40,10 +39,6 @@ return_e LcdDrawTask::setup(Heap* i_Heap)
     Crystalfontz128x128_Init();
     // Set default screen orientation
     LCDSetOrientation();
-
-    // Initializes graphics context
-    Graphics_initContext(&m_sContext, &g_sCrystalfontz128x128, &g_sCrystalfontz128x128_funcs);
-    
 
     //Initializes tasks state booleans
     m_bIsFirstLcdDraw = true;

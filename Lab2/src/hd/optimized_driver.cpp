@@ -48,17 +48,18 @@ static inline void LCDWriteData(uint8_t i_u8Data){
 }
 
 void LCDSetOrientation(void){
-  //always set orientation up
-  LCDWriteData(CM_MADCTL_MX | CM_MADCTL_MY | CM_MADCTL_BGR);
+  //always set orientation down
+  LCDWriteCommand(CM_MADCTL);
+  LCDWriteData(CM_MADCTL_BGR);
 }
-
+#define LCD_ORIENTATION_DOWN  2
 static inline void LCDSetDrawFrame(uint16_t i_u16X0, uint16_t i_u16Y0, uint16_t i_u16X1, uint16_t i_u16Y1){
-  // adjust to orientation up
+  // adjust to orientation down
   
   i_u16X0 += 2;
-  i_u16Y0 += 3;
+  i_u16Y0 += 1;
   i_u16X1 += 2;
-  i_u16Y1 += 3;
+  i_u16Y1 += 1;
 
   // Send frame
   LCDWriteCommand(CM_CASET);

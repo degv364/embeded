@@ -39,9 +39,6 @@ private:
     void InitialDrawIteration(uint16_t i_u16CurrentIterationDeltaY);
     void UpdateDrawIteration(uint16_t i_u16CurrentIterationDeltaY);
 
-    Graphics_Context m_sContext;
-    Graphics_Rectangle m_stUpdateRect;
-
     uint16_t m_u16HorizonLevelY;     //Current HorizonLevelY
     uint16_t m_u16NextHorizonLevelY; //HorizonLevelY after the draw iteration chain
 
