@@ -17,7 +17,7 @@
 
  **/
 
-#include "hi/tasks/lcd_draw_task.hh"
+#include "tasks/lcd_draw_task.hh"
 
 LcdDrawTask::LcdDrawTask(void)
 {

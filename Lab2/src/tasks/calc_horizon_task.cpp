@@ -17,7 +17,7 @@
 
  **/
 
-#include "hi/tasks/calc_horizon_task.hh"
+#include "tasks/calc_horizon_task.hh"
 
 CalcHorizonTask::CalcHorizonTask(void)
 {

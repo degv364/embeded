@@ -17,7 +17,7 @@
 
  **/
 
-#include "hi/tasks/adc_irq_task.hh"
+#include "tasks/adc_irq_task.hh"
 
 AdcIRQTask::AdcIRQTask(void) :
     m_AccelADC(ACCEL_ADC_SAMPLES_PER_SECOND)

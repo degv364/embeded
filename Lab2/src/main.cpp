@@ -69,10 +69,10 @@
 #include "hi/filters.hh"
 //Tasks related
 #include "hi/task.hh"
-#include "hi/tasks/adc_irq_task.hh"
-#include "hi/tasks/calc_horizon_task.hh"
-#include "hi/tasks/lcd_issue_task.hh"
-#include "hi/tasks/lcd_draw_task.hh"
+#include "tasks/adc_irq_task.hh"
+#include "tasks/calc_horizon_task.hh"
+#include "tasks/lcd_issue_task.hh"
+#include "tasks/lcd_draw_task.hh"
 
 //----- Hardware dependent (hd) -----
 #include "hd/periph.hh"

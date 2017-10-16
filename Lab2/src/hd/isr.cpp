@@ -31,7 +31,7 @@
 #include "hi/scheduler.hh"
 
 // Tasks
-#include "hi/tasks/adc_irq_task.hh"
+#include "tasks/adc_irq_task.hh"
 
 /*Variables defined in other files*/
 

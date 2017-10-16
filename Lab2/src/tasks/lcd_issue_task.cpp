@@ -17,7 +17,7 @@
 
  **/
 
-#include "hi/tasks/lcd_issue_task.hh"
+#include "tasks/lcd_issue_task.hh"
 
 LcdIssueTask::LcdIssueTask(void)
 {
