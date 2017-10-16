@@ -21,7 +21,7 @@
 #define COMMON_DEF_H_
 
 //Scheduler tick count frequency
-#define TIME_INTERRUPTS_PER_SECOND 160
+#define TIME_TICKS_PER_SECOND 135
 
 //ADC number of samples per second
 #define ACCEL_ADC_SAMPLES_PER_SECOND 100
@@ -34,7 +34,7 @@
 
 
 // Size of filter buffers
-#define MEAN_FILTER_BUFFER_SIZE 10
+#define MEAN_FILTER_BUFFER_SIZE 4
 // Recalibration period
 #define MEAN_FILTER_CALIBRATION_PERIOD 65535
 

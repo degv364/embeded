@@ -37,9 +37,6 @@
 
 extern AdcIRQTask g_AdcIRQTask;
 
-// Global Main Scheduler
-extern Scheduler g_MainScheduler;
-
 //Global Tick Counter
 extern volatile uint64_t g_SystemTicks;
 

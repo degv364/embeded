@@ -24,8 +24,8 @@ LcdDrawTask::LcdDrawTask(void)
     Task::SetTaskName(LCD_DRAW);
     Task::SetTaskType(ONE_SHOT);
 
-    m_u16HorizonLevelY = 63; //0
-    m_u16NextHorizonLevelY = 63; //0
+    m_u16HorizonLevelY = 63;
+    m_u16NextHorizonLevelY = 63;
     m_stUpdateRect = {0,0,0,0};
 }
 
@@ -135,7 +135,6 @@ void LcdDrawTask::InitialDrawIteration(uint16_t i_u16CurrentIterationDeltaY)
     int16_t l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY + i_u16CurrentIterationDeltaY;
 
     if (m_u16CurrentHorizonIterLevelY < m_u16NextHorizonLevelY) {
-    //if (l_u16NextHorizonIterLevelY < m_u16NextHorizonLevelY) {
         //Draw sky
         Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_DEEP_SKY_BLUE);
     }
