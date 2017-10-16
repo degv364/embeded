@@ -35,7 +35,8 @@ return_e CalcHorizonTask::setup(Heap* i_Heap)
     this->SetTaskTickInterval(0);
 
     //Setup MeanFilter
-    m_LCDFilter.Setup(63);
+    m_LCDFilterPitch.Setup(63);
+    m_LCDFilterRoll.Setup(63);
 
     //Messages memory allocation
     rt = i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
@@ -58,13 +59,20 @@ return_e CalcHorizonTask::run(void)
         rt = Task::Incoming.PopMessage(&l_stInputMessage);
     }
     uint16_t l_u16HorizonY = (uint16_t) 63.0*((CalcPitchAngle()/90.0) + 1.0);
-    uint16_t l_u16FilteredHorizon;
+    int16_t l_i16HorizonSlope = (int16_t) CalcRollAngleSlope();
+    uint16_t l_u16FilteredHorizonPitch;
+    uint16_t l_u16FilteredHorizonSlope;
 
-    m_LCDFilter.AddValue(l_u16HorizonY);
-    m_LCDFilter.GetFilteredValue(&l_u16FilteredHorizon);
+    // Filter Pitch
+    m_LCDFilterPitch.AddValue(l_u16HorizonY);
+    m_LCDFilterPitch.GetFilteredValue(&l_u16FilteredHorizonPitch);
 
-    m_pHeapMem[0] = (uint32_t) l_u16FilteredHorizon;
-    //m_pHeapMem[0] = (uint32_t) l_u16HorizonY;
+    //Filter Roll
+    m_LCDFilterRoll.AddValue((uint16_t) (l_i16HorizonSlope+128));
+    m_LCDFilterRoll.GetFilteredValue(&l_u16FilteredHorizonSlope);
+
+    m_pHeapMem[0] = (uint32_t) l_u16FilteredHorizonPitch;
+    m_pHeapMem[1] = ((int32_t) l_u16FilteredHorizonSlope)-128;
 
     message_t l_stHorizonMessage = {CALC_HORIZON,
                                     LCD_ISSUE,
@@ -90,3 +98,15 @@ inline float CalcHorizonTask::CalcPitchAngle(void){
     float result = atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
     return max(min(result, 90.0f),-90.0f);
 }
+
+inline float CalcHorizonTask::CalcRollAngleSlope(void){
+
+    //Flipped axes to achieve correct horizon orientation
+    float gy = -m_stLastAccel.z;
+    float gz =  m_stLastAccel.y;
+    
+    float result = gy/gz;
+    
+    return max(min(result, 128.0f),-128.0f);
+}
+

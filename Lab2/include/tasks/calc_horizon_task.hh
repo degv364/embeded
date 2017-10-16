@@ -33,6 +33,7 @@ public:
     virtual return_e run(void);
     virtual return_e setup(Heap* i_Heap);
     float CalcPitchAngle(void);
+    float CalcRollAngleSlope(void);
 private:
     struct AccelAxes {
         int16_t x;
@@ -40,9 +41,10 @@ private:
         int16_t z;
     };
 
-    static constexpr uint8_t HEAP_MEM_SIZE = 1;
+    static constexpr uint8_t HEAP_MEM_SIZE = 2;
 
-    MeanFilter m_LCDFilter;
+    MeanFilter m_LCDFilterPitch;
+    MeanFilter m_LCDFilterRoll;
     AccelAxes m_stLastAccel;
     uint32_t* m_pHeapMem;
 };
