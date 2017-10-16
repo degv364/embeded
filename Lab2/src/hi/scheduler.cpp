@@ -106,33 +106,50 @@ return_e Scheduler::setup(void)
 }
 
 
-return_e Scheduler::UpdateTasksTimingAndFinishedState(void)
-{
-    for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++)
-    {
-        if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0))
-        {
-            if (m_aSchedule[l_u8Slot].pToAttach->GetTaskType() == ISR_HANDLER){
-                // because one does not know when an interrupt happens. Set that it is always executing.
-                m_aSchedule[l_u8Slot].pToAttach->SetFinishedState(false);
-            }
-	  
-            if (m_aSchedule[l_u8Slot].pToAttach->GetTaskType() == PERIODICAL)
-            {
-                m_aSchedule[l_u8Slot].u64ticks++;
-                if (m_aSchedule[l_u8Slot].u64ticks
-                    >= m_aSchedule[l_u8Slot].pToAttach->GetTaskTickInterval())
-                {
-                    m_aSchedule[l_u8Slot].bExecute = true;
-                }
-            }
-        }
+
+inline return_e Scheduler::HandleExternalMessages(uint8_t i_u8CurrentSlot){
+  return_e rt;
+  message_t l_stTempMessage;
+  rt = m_aSchedule[i_u8CurrentSlot].pToAttach->Outgoing.PopMessage(&l_stTempMessage);
+  while (rt != RETURN_EMPTY){
+    // Check for fails (not empty)
+    if (rt != RETURN_OK){
+      return rt;
     }
-    
-    return RETURN_OK;
+    // Check if the message is for the scheduler
+    if (l_stTempMessage.receiver == SCHEDULER){
+      rt = InternalMessageQueue.AddMessage(l_stTempMessage);
+      if (rt != RETURN_OK){
+	return rt;
+      }
+    }
+    else {
+      // Send to the specific task
+      rt =  m_aSchedule[l_stTempMessage.receiver].pToAttach->Incoming.AddMessage(l_stTempMessage);
+      if (rt != RETURN_OK){
+	return rt;
+      }
+    }
+    // Get next message
+    rt = m_aSchedule[i_u8CurrentSlot].pToAttach->Outgoing.PopMessage(&l_stTempMessage);
+  }
+  return RETURN_OK;
 }
 
-return_e Scheduler::FindTaskWithName(task_name_e i_eName,
+inline return_e Scheduler::HandleTimming(uint8_t i_u8CurrentSlot){
+  if (m_aSchedule[i_u8CurrentSlot].pToAttach->GetTaskType() == PERIODICAL){
+    m_aSchedule[i_u8CurrentSlot].u64ticks++;
+    if (m_aSchedule[i_u8CurrentSlot].u64ticks
+	>= m_aSchedule[i_u8CurrentSlot].pToAttach->GetTaskTickInterval())
+      {
+	m_aSchedule[i_u8CurrentSlot].bExecute = true;
+      }
+  }
+  return RETURN_OK;
+}
+
+
+inline return_e Scheduler::FindTaskWithName(task_name_e i_eName,
                                      st_TaskInfo* o_stTaskInfo)
 {
   if (i_eName >= LAST_TASK){
@@ -195,64 +212,34 @@ return_e Scheduler::HandleInternalMessages(void)
 }
 
 
-return_e Scheduler::HandleExternalMessages(void){
-  message_t l_stTempMessage;
-  return_e rt;
-  if (g_bTimeoutCondition)
-      return RETURN_TIMEOUT;
-
-  for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++)
-  {
-      if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0)){
-      //Repeat until outgoing queue is empty
-      rt = m_aSchedule[l_u8Slot].pToAttach->Outgoing.PopMessage(&l_stTempMessage);
-      while (rt != RETURN_EMPTY)
-      {
-          // Check for fails (not empty)
-          if (rt != RETURN_OK){
-              return rt;
-          }
-          // Check if the message is for the scheduler
-          if (l_stTempMessage.receiver == SCHEDULER){
-              rt = InternalMessageQueue.AddMessage(l_stTempMessage);
-              if (rt != RETURN_OK){
-                  return rt;
-              }
-          }
-          else {
-              // Send to the specific task
-              rt =  m_aSchedule[l_stTempMessage.receiver].pToAttach->Incoming.AddMessage(l_stTempMessage);
-              if (rt != RETURN_OK){
-                  return rt;
-              }
-          }
-          // Get next message
-          rt = m_aSchedule[l_u8Slot].pToAttach->Outgoing.PopMessage(&l_stTempMessage);
-      }
-    }
-  }
-  return RETURN_OK;
-}
-
 
 return_e Scheduler::PostAmble(void)
 {
   return_e rt;
-  if (g_bTimeoutCondition)
-      return RETURN_TIMEOUT;
-
-  rt = this->HandleExternalMessages(); // Side effect of populating internal message queue
-  if(rt != RETURN_OK){
-    return rt;
+  for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++){
+    if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0)){
+      // beacuse one does not know when an interrupt hapens. Set that it is always executing. 
+      if (m_aSchedule[l_u8Slot].pToAttach->GetTaskType() == ISR_HANDLER){
+	m_aSchedule[l_u8Slot].pToAttach->SetFinishedState(false);
+      }
+      rt = HandleExternalMessages(l_u8Slot); // Side effect of populating internal message queue
+      if(rt != RETURN_OK){
+	return rt;
+      }
+      rt = HandleTimming(l_u8Slot); // Side effect of udating timming for periodical tasks
+      if(rt != RETURN_OK){
+	return rt;
+      }
+    }
   }
+
   this->HandleInternalMessages(); // Side Effect of updating execution of One shot tasks
   if(rt != RETURN_OK){
     return rt;
   }
-  this->UpdateTasksTimingAndFinishedState(); // Side Effect of updating execution of Periodical tasks
-  if(rt != RETURN_OK){
-    return rt;
-  }
+  
+  if (g_bTimeoutCondition)
+    return RETURN_TIMEOUT;
   g_bDuringFrame = false;
   return RETURN_OK;
 }
