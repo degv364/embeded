@@ -21,10 +21,10 @@
 #define COMMON_DEF_H_
 
 //Scheduler tick count frequency
-#define TIME_TICKS_PER_SECOND 135
+#define TIME_TICKS_PER_SECOND 440 //150 //135
 
 //ADC number of samples per second
-#define ACCEL_ADC_SAMPLES_PER_SECOND 135
+#define ACCEL_ADC_SAMPLES_PER_SECOND 440 //150 //135
 
 #define NUMBER_OF_SLOTS 255
 

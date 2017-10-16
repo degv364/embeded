@@ -132,20 +132,15 @@ void LcdDrawTask::InitialDrawIteration(uint16_t i_u16CurrentIterationDeltaY)
 {
     uint16_t l_u16CurrentColor;
     uint16_t l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY + i_u16CurrentIterationDeltaY;
-    uint16_t l_u16HorizonBottom;
-    uint16_t l_u16HorizonTop;
-    if(m_u16CurrentHorizonIterLevelY<l_u16NextHorizonIterLevelY){
-      l_u16HorizonBottom = m_u16CurrentHorizonIterLevelY;
-      l_u16HorizonTop = l_u16NextHorizonIterLevelY;
-      l_u16CurrentColor = m_u16GroundColor;
+
+    if(m_u16CurrentHorizonIterLevelY<m_u16NextHorizonLevelY){
+        l_u16CurrentColor = m_u16SkyColor;
     }
     else{
-      l_u16HorizonBottom = l_u16NextHorizonIterLevelY;
-      l_u16HorizonTop = m_u16CurrentHorizonIterLevelY;
-      l_u16CurrentColor = m_u16SkyColor;
+        l_u16CurrentColor = m_u16GroundColor;
     }
     
-    LCDDrawCompleteHorizontalRect(l_u16HorizonBottom,l_u16HorizonTop, l_u16CurrentColor);
+    LCDDrawCompleteHorizontalRect(m_u16CurrentHorizonIterLevelY, l_u16NextHorizonIterLevelY, l_u16CurrentColor);
     m_u16CurrentHorizonIterLevelY = l_u16NextHorizonIterLevelY;
 }
 
@@ -159,15 +154,15 @@ void LcdDrawTask::UpdateDrawIteration(uint16_t i_u16CurrentIterationDeltaY)
 
     if ((int16_t)m_u16NextHorizonLevelY-(int16_t)m_u16HorizonLevelY >= 0) {
         l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY + i_u16CurrentIterationDeltaY;
-	l_u16HorizonBottom = l_u16NextHorizonIterLevelY;
-	l_u16HorizonTop = m_u16CurrentHorizonIterLevelY;
-	l_u16CurrentColor = m_u16GroundColor;
+        l_u16HorizonTop = l_u16NextHorizonIterLevelY;
+        l_u16HorizonBottom = m_u16CurrentHorizonIterLevelY;
+        l_u16CurrentColor = m_u16SkyColor;
     }
     else {
         l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY - i_u16CurrentIterationDeltaY;
-	l_u16HorizonBottom = m_u16CurrentHorizonIterLevelY;
-	l_u16HorizonTop = l_u16NextHorizonIterLevelY;
-	l_u16CurrentColor = m_u16SkyColor;
+        l_u16HorizonTop = m_u16CurrentHorizonIterLevelY;
+        l_u16HorizonBottom = l_u16NextHorizonIterLevelY;
+        l_u16CurrentColor = m_u16GroundColor;
     }
 
     LCDDrawCompleteHorizontalRect(l_u16HorizonBottom,l_u16HorizonTop, l_u16CurrentColor);
