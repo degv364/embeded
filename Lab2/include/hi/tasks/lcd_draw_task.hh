@@ -22,8 +22,10 @@
 #define INCLUDE_HI_TASKS_LCD_DRAW_TASK_HH_
 
 #include <stdlib.h>
+
 #include "hd/periph.hh"
-#include "hd/optimized_driver.hh"
+#include "hd/lcd_driver/optimized_driver.hh"
+
 #include "hi/hi_def.hh"
 #include "hi/task.hh"
 

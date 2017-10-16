@@ -18,7 +18,6 @@
  **/
 
 #include "hi/tasks/lcd_draw_task.hh"
-#include "hd/optimized_driver.hh"
 
 LcdDrawTask::LcdDrawTask(void)
 {

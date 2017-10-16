@@ -17,17 +17,16 @@
 
  **/
 
-
-#include "lcd_driver/HAL_MSP_EXP432P401R_Crystalfontz128x128_ST7735.hh"
-#include "lcd_driver/Crystalfontz128x128_ST7735.hh"
-#include <ti/grlib/grlib.h>
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 #include <stdint.h>
 
-#ifndef OPTIMIZED
-#define OPTIMIZED
+#include "hd/lcd_driver/HAL_MSP_EXP432P401R_Crystalfontz128x128_ST7735.hh"
+#include "hd/lcd_driver/Crystalfontz128x128_ST7735.hh"
 
-// Set default iorientation Up
+#ifndef INCLUDE_HD_LCD_DRIVER_OPTIMIZED_HH_
+#define INCLUDE_HD_LCD_DRIVER_OPTIMIZED_HH_
+
+// Set default orientation Up
 void LCDSetOrientation(void);
 /**
  * Draw a complete Filled Rectangle.
@@ -36,6 +35,7 @@ void LCDSetOrientation(void);
  * \param i_u16Color: Color to fill
  */
 void LCDDrawCompleteHorizontalRect(uint16_t i_u16Y0, uint16_t i_u16Y1, uint16_t i_u16Color);
+
 /**
  * Translate a 24 bit color into 16 bit value
  */
