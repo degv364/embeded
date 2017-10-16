@@ -111,19 +111,17 @@ void LCDDrawCompleteHorizontalRect(uint16_t i_u16Y0, uint16_t i_u16Y1, uint16_t 
  */
 uint32_t LCDColorTranslate(uint32_t i_u32Value);
 
+#define RECTANGLE_SIZE 16
+
 /**
  * Draw divided rectangle.
- * \param i_u16XLeft: Left of the rectangle (inclusive)
- * \param i_u16XRight: Right if the rectangle (inclusive) 
- * \param i_u16YBottom: Bottom of the rectangle (inclusive)
+ * \param i_u16XLeft: Left of the rectangle (inclusive) 
  * \param i_u16YTop: Top of the rectangle. (inclusive)
  * \param i_u16Y: related to pitch angle. Indicates the position at the center of the screen
  * \param i_i16Slope: line slope (Not angle). Obtained by multiplying float slope by 128
- * \param i_u16ColorSky: color to use for sky
- * \param i_u16ColorGround: color to use for ground
+ * \param i_u32Colors: MSB sky color, LSB ground color
  */
-void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16XRight,
-			     uint16_t i_u16YBottom, uint16_t i_u16YTop,
+void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
 			     uint16_t i_u16Y, uint16_t i_i16Slope,
-			     uint16_t i_u16Color);
+			     uint32_t i_u32Colors);
 #endif
