@@ -24,7 +24,7 @@
 #define TIME_INTERRUPTS_PER_SECOND 160
 
 //ADC number of samples per second
-#define ACCEL_ADC_SAMPLES_PER_SECOND 120
+#define ACCEL_ADC_SAMPLES_PER_SECOND 100
 
 #define NUMBER_OF_SLOTS 255
 

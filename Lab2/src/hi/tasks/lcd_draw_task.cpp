@@ -60,6 +60,7 @@ return_e LcdDrawTask::run(void)
 {
     return_e rt;
     message_t l_stInputMessage;
+    bool l_bGotValidMessage = false;
 
     if (m_bIsFirstIteration) {
 
@@ -70,12 +71,18 @@ return_e LcdDrawTask::run(void)
             if (l_stInputMessage.message_type == HORIZON_PARAMS
                         && l_stInputMessage.sender == LCD_ISSUE) {
                 m_u16NextHorizonLevelY = (uint16_t) l_stInputMessage.data[0];
+                l_bGotValidMessage = true;
             }
             rt = Task::Incoming.PopMessage(&l_stInputMessage);
         }
 
+        if (!l_bGotValidMessage){
+            return RETURN_OK;
+        }
 
         if (m_bIsFirstLcdDraw) {
+            m_u16NextHorizonLevelY -= m_u16NextHorizonLevelY % DRAW_CHUNK_LINES;
+            m_u16NextHorizonLevelY = max(m_u16NextHorizonLevelY, 0);
             m_u16CurrentHorizonIterLevelY = 0;
             InitialDrawIteration(128 % DRAW_CHUNK_LINES);
         }
@@ -127,7 +134,8 @@ void LcdDrawTask::InitialDrawIteration(uint16_t i_u16CurrentIterationDeltaY)
 {
     int16_t l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY + i_u16CurrentIterationDeltaY;
 
-    if (l_u16NextHorizonIterLevelY < m_u16NextHorizonLevelY) {
+    if (m_u16CurrentHorizonIterLevelY < m_u16NextHorizonLevelY) {
+    //if (l_u16NextHorizonIterLevelY < m_u16NextHorizonLevelY) {
         //Draw sky
         Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_DEEP_SKY_BLUE);
     }
