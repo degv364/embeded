@@ -24,7 +24,7 @@ LcdDrawTask::LcdDrawTask(void)
     Task::SetTaskName(LCD_DRAW);
     Task::SetTaskType(PERIODICAL);
 
-    m_u16HorizonLevelY = 63;
+    m_u16HorizonLevelY = 5; //63
     m_stUpdateRect = {0,0,0,0};
 }
 
@@ -50,6 +50,9 @@ return_e LcdDrawTask::setup(Heap* i_Heap)
     //Messages memory allocation
     rt = i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
 
+    //FIXME: Remove after testing timeout
+    InitialDraw(m_u16HorizonLevelY);
+
     return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
 }
 
@@ -69,13 +72,13 @@ return_e LcdDrawTask::run(void)
         rt = Task::Incoming.PopMessage(&l_stInputMessage);
     }
 
-    if(l_bGotValidMessage){
-        if (m_bIsFirstDraw) {
-            InitialDraw(l_u16NewHorizonLevelY);
-        }
-        else {
+    if (l_bGotValidMessage) {
+        //if (m_bIsFirstDraw) {
+        //    InitialDraw(l_u16NewHorizonLevelY);
+        //}
+        //else {
             UpdateDraw(l_u16NewHorizonLevelY);
-        }
+        //}
     }
 
     return RETURN_OK;

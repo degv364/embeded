@@ -1,4 +1,29 @@
+/**
+ Copyright 2017 Daniel Garcia Vaglio <degv364@gmail.com> Esteban Zamora Alvarado <estebanzacr.20@gmail.com>
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ associated documentation files (the "Software"), to deal in the Software without restriction,
+ including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+ **/
+
 #include "hi/scheduler.hh"
+
+// Variable to know if frame is being executed
+extern volatile bool g_bDuringFrame;
+
+// Variable to determine timeout condition
+extern volatile bool g_bTimeoutCondition;
 
 // - Scheduler constructor
 Scheduler::Scheduler()
@@ -34,6 +59,9 @@ return_e Scheduler::run(void)
 {
     return_e rt = RETURN_OK;
     uint8_t l_u8ExecutedTasks = 0;
+    if (g_bTimeoutCondition)
+      return RETURN_TIMEOUT;
+    g_bDuringFrame = true;
     // Execute all tasks marked for execution.
     for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++)
     {
@@ -41,7 +69,6 @@ return_e Scheduler::run(void)
         {
             if (m_aSchedule[l_u8Slot].bExecute)
             {
-                // Execute task
                 rt = m_aSchedule[l_u8Slot].pToAttach->run();
                 if (rt != RETURN_OK)
                 {
@@ -57,10 +84,6 @@ return_e Scheduler::run(void)
                     return RETURN_FAIL;
                 }
             }
-        }
-        else
-        {
-            return rt;
         }
     }
     return rt;
@@ -89,24 +112,23 @@ return_e Scheduler::UpdateTasksTimingAndFinishedState(void)
     {
         if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0))
         {
-            m_aSchedule[l_u8Slot].pToAttach->SetFinishedState(false);
-
+            if (m_aSchedule[l_u8Slot].pToAttach->GetTaskType() == ISR_HANDLER){
+                // because one does not know when an interrupt happens. Set that it is always executing.
+                m_aSchedule[l_u8Slot].pToAttach->SetFinishedState(false);
+            }
+	  
             if (m_aSchedule[l_u8Slot].pToAttach->GetTaskType() == PERIODICAL)
             {
                 m_aSchedule[l_u8Slot].u64ticks++;
                 if (m_aSchedule[l_u8Slot].u64ticks
-                        >= m_aSchedule[l_u8Slot].pToAttach->GetTaskTickInterval())
+                    >= m_aSchedule[l_u8Slot].pToAttach->GetTaskTickInterval())
                 {
                     m_aSchedule[l_u8Slot].bExecute = true;
                 }
             }
         }
-        else
-        {
-            return RETURN_OK;
-        }
     }
-
+    
     return RETURN_OK;
 }
 
@@ -126,6 +148,8 @@ return_e Scheduler::HandleInternalMessages(void)
     st_TaskInfo* l_stCurrentTask;
     task_name_e l_eCurrentTaskName;
     return_e rt;
+    if (g_bTimeoutCondition)
+      return RETURN_TIMEOUT;
 
     rt = InternalMessageQueue.PopMessage(&l_stCurrentMessage);
     while (rt != RETURN_EMPTY)
@@ -161,6 +185,8 @@ return_e Scheduler::HandleInternalMessages(void)
                 return RETURN_FAIL;
             }
         }
+	else
+	  return rt;
 
         rt = InternalMessageQueue.PopMessage(&l_stCurrentMessage);
     }
@@ -172,12 +198,14 @@ return_e Scheduler::HandleInternalMessages(void)
 return_e Scheduler::HandleExternalMessages(void){
   message_t l_stTempMessage;
   return_e rt;
+  if (g_bTimeoutCondition)
+      return RETURN_TIMEOUT;
 
   for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++)
   {
       if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0)){
       //Repeat until outgoing queue is empty
-      rt = m_aSchedule[l_u8Slot].pToAttach->PopMessage(&l_stTempMessage);
+      rt = m_aSchedule[l_u8Slot].pToAttach->Outgoing.PopMessage(&l_stTempMessage);
       while (rt != RETURN_EMPTY)
       {
           // Check for fails (not empty)
@@ -193,13 +221,13 @@ return_e Scheduler::HandleExternalMessages(void){
           }
           else {
               // Send to the specific task
-              rt =  m_aSchedule[l_stTempMessage.receiver].pToAttach->ReceiveMessage(l_stTempMessage);
+              rt =  m_aSchedule[l_stTempMessage.receiver].pToAttach->Incoming.AddMessage(l_stTempMessage);
               if (rt != RETURN_OK){
                   return rt;
               }
           }
           // Get next message
-          rt = m_aSchedule[l_u8Slot].pToAttach->PopMessage(&l_stTempMessage);
+          rt = m_aSchedule[l_u8Slot].pToAttach->Outgoing.PopMessage(&l_stTempMessage);
       }
     }
   }
@@ -210,6 +238,9 @@ return_e Scheduler::HandleExternalMessages(void){
 return_e Scheduler::PostAmble(void)
 {
   return_e rt;
+  if (g_bTimeoutCondition)
+      return RETURN_TIMEOUT;
+
   rt = this->HandleExternalMessages(); // Side effect of populating internal message queue
   if(rt != RETURN_OK){
     return rt;
@@ -222,5 +253,6 @@ return_e Scheduler::PostAmble(void)
   if(rt != RETURN_OK){
     return rt;
   }
+  g_bDuringFrame = false;
   return RETURN_OK;
 }

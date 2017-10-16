@@ -44,7 +44,7 @@ return_e CalcHorizonTask::run(void)
 {
     return_e rt;
     message_t l_stInputMessage;
-
+    Task::m_bIsFinished = false;
     rt = Task::Incoming.PopMessage(&l_stInputMessage);
     while(rt != RETURN_EMPTY){
         if (l_stInputMessage.message_type == ACCEL_DATA) {

@@ -21,10 +21,10 @@
 #define COMMON_DEF_H_
 
 //Scheduler tick count frequency
-#define TIME_INTERRUPTS_PER_SECOND 100
+#define TIME_INTERRUPTS_PER_SECOND 20 //100
 
 //ADC number of samples per second
-#define ACCEL_ADC_SAMPLES_PER_SECOND 150
+#define ACCEL_ADC_SAMPLES_PER_SECOND 20 //150
 
 #define NUMBER_OF_SLOTS 255
 
@@ -41,13 +41,14 @@
 //Return values
 typedef enum return_e
 {
-    RETURN_OK = 0,     // Execution successful
-    RETURN_FAIL,       // Execution failed
-    RETURN_CRITICAL,   // Critical fail
-    RETURN_BAD_PARAM,   // Execution failed due to invalid parameters
-    RETURN_EMPTY,       // Structurte is empty
+    RETURN_OK = 0,       // Execution successful
+    RETURN_FAIL,         // Execution failed
+    RETURN_CRITICAL,     // Critical fail
+    RETURN_TIMEOUT,      // Timeout
+    RETURN_BAD_PARAM,    // Execution failed due to invalid parameters
+    RETURN_EMPTY,        // Structurte is empty
     RETURN_INVALID_VALUE,//Function cant return a valid value yet
-    RETURN_NO_SPACE    //Not enough space in structure
+    RETURN_NO_SPACE      //Not enough space in structure
 } return_e;
 
 #endif

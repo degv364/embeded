@@ -23,7 +23,7 @@ AdcIRQTask::AdcIRQTask(void) :
     m_AccelADC(ACCEL_ADC_SAMPLES_PER_SECOND)
 {
     this->SetTaskName(ADC_IRQ);
-    this->SetTaskType(ONE_SHOT);
+    this->SetTaskType(ISR_HANDLER);
 }
 
 
