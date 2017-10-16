@@ -17,9 +17,48 @@
 
  **/
 
-
 #include "hd/lcd_driver/optimized_driver.hh"
+#include "hd/periph.hh"
 
+
+uint8_t Lcd_Orientation;
+uint16_t Lcd_ScreenWidth, Lcd_ScreenHeigth;
+uint8_t Lcd_PenSolid, Lcd_FontSolid, Lcd_FlagRead;
+uint16_t Lcd_TouchTrim;
+
+static void HAL_LCD_PortInit(void)
+{
+    // LCD_SCK
+    GPIO_setAsPeripheralModuleFunctionOutputPin(LCD_SCK_PORT, LCD_SCK_PIN, GPIO_PRIMARY_MODULE_FUNCTION);
+    // LCD_MOSI
+    GPIO_setAsPeripheralModuleFunctionOutputPin(LCD_MOSI_PORT, LCD_MOSI_PIN, GPIO_PRIMARY_MODULE_FUNCTION);
+    // LCD_RST
+    GPIO_setAsOutputPin(LCD_RST_PORT, LCD_RST_PIN);
+    // LCD_RS
+    GPIO_setAsOutputPin(LCD_DC_PORT, LCD_DC_PIN);
+    // LCD_CS
+    GPIO_setAsOutputPin(LCD_CS_PORT, LCD_CS_PIN);
+}
+
+static void HAL_LCD_SpiInit(void)
+{
+    eUSCI_SPI_MasterConfig config =
+        {
+            EUSCI_B_SPI_CLOCKSOURCE_SMCLK,
+            LCD_SYSTEM_CLOCK_SPEED,
+            LCD_SPI_CLOCK_SPEED,
+            EUSCI_B_SPI_MSB_FIRST,
+            EUSCI_B_SPI_PHASE_DATA_CAPTURED_ONFIRST_CHANGED_ON_NEXT,
+            EUSCI_B_SPI_CLOCKPOLARITY_INACTIVITY_LOW,
+            EUSCI_B_SPI_3PIN
+        };
+    SPI_initMaster(LCD_EUSCI_BASE, &config);
+    SPI_enableModule(LCD_EUSCI_BASE);
+
+    GPIO_setOutputLowOnPin(LCD_CS_PORT, LCD_CS_PIN);
+
+    GPIO_setOutputHighOnPin(LCD_DC_PORT, LCD_DC_PIN);
+}
 
 static inline void LCDWriteCommand(uint8_t i_u8Command)
 {
@@ -71,6 +110,59 @@ static inline void LCDSetDrawFrame(uint16_t i_u16X0, uint16_t i_u16Y0, uint16_t 
     LCDWriteData((uint8_t) (i_u16Y0));
     LCDWriteData((uint8_t) (i_u16Y1 >> 8));
     LCDWriteData((uint8_t) (i_u16Y1));
+}
+
+void LCDInit(void)
+{
+    HAL_LCD_PortInit();
+    HAL_LCD_SpiInit();
+
+    GPIO_setOutputLowOnPin(LCD_RST_PORT, LCD_RST_PIN);
+    HAL_LCD_delay(50);
+    GPIO_setOutputHighOnPin(LCD_RST_PORT, LCD_RST_PIN);
+    HAL_LCD_delay(120);
+
+    LCDWriteCommand(CM_SLPOUT);
+    HAL_LCD_delay(200);
+
+    LCDWriteCommand(CM_GAMSET);
+    LCDWriteData(0x04);
+
+    LCDWriteCommand(CM_SETPWCTR);
+    LCDWriteData(0x0A);
+    LCDWriteData(0x14);
+
+    LCDWriteCommand(CM_SETSTBA);
+    LCDWriteData(0x0A);
+    LCDWriteData(0x00);
+
+    LCDWriteCommand(CM_COLMOD);
+    LCDWriteData(0x05);
+    HAL_LCD_delay(10);
+
+    LCDWriteCommand(CM_MADCTL);
+    LCDWriteData(CM_MADCTL_BGR);
+
+    LCDWriteCommand(CM_NORON);
+
+    Lcd_ScreenWidth  = LCD_VERTICAL_MAX;
+    Lcd_ScreenHeigth = LCD_HORIZONTAL_MAX;
+    Lcd_PenSolid  = 0;
+    Lcd_FontSolid = 1;
+    Lcd_FlagRead  = 0;
+    Lcd_TouchTrim = 0;
+
+    LCDSetDrawFrame(0, 0, LCD_VERTICAL_MAX-1, LCD_HORIZONTAL_MAX-1);
+    LCDWriteCommand(CM_RAMWR);
+    int i;
+    for (i = 0; i < LCD_VERTICAL_MAX*LCD_HORIZONTAL_MAX; i++)
+    {
+        LCDWriteData(0xFF);
+        LCDWriteData(0xFF);
+    }
+
+    HAL_LCD_delay(10);
+    LCDWriteCommand(CM_DISPON);
 }
 
 

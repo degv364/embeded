@@ -39,7 +39,7 @@
 #include "hd/accel_adc.hh"
 
 /* LCD Driver Includes */
-#include "lcd_driver/Crystalfontz128x128_ST7735.hh"
-#include "lcd_driver/HAL_MSP_EXP432P401R_Crystalfontz128x128_ST7735.hh"
-
+//#include "lcd_driver/Crystalfontz128x128_ST7735.hh"
+//#include "lcd_driver/HAL_MSP_EXP432P401R_Crystalfontz128x128_ST7735.hh"
+#include "lcd_driver/optimized_driver.hh"
 #endif /* INCLUDE_PERIPH_H_ */

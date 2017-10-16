@@ -35,7 +35,7 @@ return_e LcdDrawTask::setup(Heap* i_Heap)
     return_e rt;
 
     // Initializes display hardware
-    Crystalfontz128x128_Init();
+    LCDInit();
     // Set default screen orientation
     LCDSetOrientation();
 
