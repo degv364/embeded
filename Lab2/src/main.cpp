@@ -156,8 +156,8 @@ int main(void)
         goto  error_handling;
 
     rt = g_MainScheduler.attach(&l_LcdDrawTask);
-        if (rt != RETURN_OK)
-            goto  error_handling;
+    if (rt != RETURN_OK)
+        goto  error_handling;
 
     rt = g_MainScheduler.setup();
     if (rt != RETURN_OK)
