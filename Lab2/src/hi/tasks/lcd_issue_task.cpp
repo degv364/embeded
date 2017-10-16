@@ -17,22 +17,23 @@
 
  **/
 
-#include "hi/tasks/calc_horizon_task.hh"
+#include "hi/tasks/lcd_issue_task.hh"
 
-CalcHorizonTask::CalcHorizonTask(void)
+LcdIssueTask::LcdIssueTask(void)
 {
-    Task::SetTaskName(CALC_HORIZON);
-    Task::SetTaskType(ONE_SHOT);
+    Task::SetTaskName(LCD_ISSUE);
+    Task::SetTaskType(PERIODICAL);
 
-    m_stLastAccel = {0,0,0};
+    m_u16HorizonLevelY = 63;
 }
 
-return_e CalcHorizonTask::setup(Heap* i_Heap)
+return_e LcdIssueTask::setup(Heap* i_Heap)
 {
     return_e rt;
 
+    //Tasks info setup
     Task::SetTaskExecutionCondition(false);
-    this->SetTaskTickInterval(0);
+    this->SetTaskTickInterval(TICKS_INTERVAL);
 
     //Messages memory allocation
     rt = i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
@@ -40,44 +41,43 @@ return_e CalcHorizonTask::setup(Heap* i_Heap)
     return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
 }
 
-return_e CalcHorizonTask::run(void)
+return_e LcdIssueTask::run(void)
 {
     return_e rt;
     message_t l_stInputMessage;
-    Task::m_bIsFinished = false;
+    bool l_bGotValidMessage = false;
+
     rt = Task::Incoming.PopMessage(&l_stInputMessage);
     while(rt != RETURN_EMPTY){
-        if (l_stInputMessage.message_type == ACCEL_DATA) {
-            m_stLastAccel.x = (int16_t) l_stInputMessage.data[0];
-            m_stLastAccel.y = (int16_t) l_stInputMessage.data[1];
-            m_stLastAccel.z = (int16_t) l_stInputMessage.data[2];
+        if (l_stInputMessage.message_type == HORIZON_PARAMS) {
+            m_u16HorizonLevelY = (uint16_t) l_stInputMessage.data[0];
+            l_bGotValidMessage = true;
         }
         rt = Task::Incoming.PopMessage(&l_stInputMessage);
     }
-    uint16_t l_u16HorizonY = (uint16_t) 63.0*((CalcPitchAngle()/90.0) + 1.0);
-    m_pHeapMem[0] = (uint32_t) l_u16HorizonY;
 
-    message_t l_stHorizonMessage = {CALC_HORIZON,
-                                    LCD_ISSUE,
-                                    HORIZON_PARAMS,
-                                    HEAP_MEM_SIZE,
-                                    m_pHeapMem};
+    if (l_bGotValidMessage) {
+        //Define Horizon Data to LCD_DRAW message
+        m_pHeapMem[0] = (uint32_t) m_u16HorizonLevelY;
+        message_t l_stHorizonMessage = {LCD_ISSUE,
+                                        LCD_DRAW,
+                                        HORIZON_PARAMS,
+                                        1,
+                                        m_pHeapMem};
 
-    rt = Task::Outgoing.AddMessage(l_stHorizonMessage);
 
-    Task::m_bIsFinished = true;
+        //Define Execute LCD_DRAW for Scheduler message
+        m_pHeapMem[1] = (uint32_t) LCD_DRAW;
+        message_t l_stTriggerDrawMessage = {LCD_ISSUE,
+                                     SCHEDULER,
+                                     ADD_TO_EXECUTION,
+                                     1,
+                                     &m_pHeapMem[1]};
+
+        //Send messages
+        rt = Task::Outgoing.AddMessage(l_stTriggerDrawMessage);
+        rt = Task::Outgoing.AddMessage(l_stHorizonMessage);
+    }
+
     return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
-}
-
-inline float CalcHorizonTask::CalcPitchAngle(void){
-
-    //Flipped axes to achieve correct horizon orientation
-    float gy = -m_stLastAccel.z;
-    float gx2 = m_stLastAccel.x * m_stLastAccel.x;
-    float gz2 = m_stLastAccel.y * m_stLastAccel.y;
-    //float sign = (m_stLastAccel.y < 0) ? 1 : -1;
-    //float result = sign * atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
-
-    float result = atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
-    return max(min(result, 90.0f),-90.0f);
 }

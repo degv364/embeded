@@ -17,38 +17,29 @@
 
  **/
 
-#ifndef COMMON_DEF_H_
-#define COMMON_DEF_H_
+#ifndef INCLUDE_HI_TASKS_LCD_ISSUE_TASK_HH_
+#define INCLUDE_HI_TASKS_LCD_ISSUE_TASK_HH_
 
-//Scheduler tick count frequency
-#define TIME_INTERRUPTS_PER_SECOND 160
+#include "hd/periph.hh"
+#include "hi/hi_def.hh"
+#include "hi/task.hh"
 
-//ADC number of samples per second
-#define ACCEL_ADC_SAMPLES_PER_SECOND 120
-
-#define NUMBER_OF_SLOTS 255
-
-#define MAX_TASKS_PER_FRAME 63
-
-#define MAX_SCHEDULER_INTERNAL_MESSAGES 5
-
-
-// Size of filter buffers
-#define MEAN_FILTER_BUFFER_SIZE 10
-// Recalibration period
-#define MEAN_FILTER_CALIBRATION_PERIOD 65535
-
-//Return values
-typedef enum return_e
+class LcdIssueTask : public Task
 {
-    RETURN_OK = 0,       // Execution successful
-    RETURN_FAIL,         // Execution failed
-    RETURN_CRITICAL,     // Critical fail
-    RETURN_TIMEOUT,      // Timeout
-    RETURN_BAD_PARAM,    // Execution failed due to invalid parameters
-    RETURN_EMPTY,        // Structurte is empty
-    RETURN_INVALID_VALUE,//Function cant return a valid value yet
-    RETURN_NO_SPACE      //Not enough space in structure
-} return_e;
+public:
+    LcdIssueTask(void);
+    virtual return_e run(void);
+    virtual return_e setup(Heap* i_Heap);
+private:
 
-#endif
+    uint16_t m_u16HorizonLevelY;
+
+    static constexpr uint8_t TICKS_INTERVAL = 10;
+    static constexpr uint8_t HEAP_MEM_SIZE = 2;
+    uint32_t* m_pHeapMem;
+};
+
+
+
+
+#endif /* INCLUDE_HI_TASKS_LCD_ISSUE_TASK_HH_ */

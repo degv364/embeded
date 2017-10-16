@@ -22,9 +22,10 @@
 LcdDrawTask::LcdDrawTask(void)
 {
     Task::SetTaskName(LCD_DRAW);
-    Task::SetTaskType(PERIODICAL);
+    Task::SetTaskType(ONE_SHOT);
 
-    m_u16HorizonLevelY = 5; //63
+    m_u16HorizonLevelY = 63; //0
+    m_u16NextHorizonLevelY = 63; //0
     m_stUpdateRect = {0,0,0,0};
 }
 
@@ -41,17 +42,16 @@ return_e LcdDrawTask::setup(Heap* i_Heap)
     Graphics_initContext(&m_sContext, &g_sCrystalfontz128x128, &g_sCrystalfontz128x128_funcs);
     Graphics_setBackgroundColor(&m_sContext, GRAPHICS_COLOR_WHITE);
 
-    m_bIsFirstDraw = true;
+    //Initializes tasks state booleans
+    m_bIsFirstLcdDraw = true;
+    m_bIsFirstIteration = true;
 
     //Tasks info setup
     Task::SetTaskExecutionCondition(false);
-    this->SetTaskTickInterval(TICKS_INTERVAL);
+    Task::SetTaskTickInterval(0);
 
     //Messages memory allocation
     rt = i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
-
-    //FIXME: Remove after testing timeout
-    InitialDraw(m_u16HorizonLevelY);
 
     return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
 }
@@ -60,60 +60,104 @@ return_e LcdDrawTask::run(void)
 {
     return_e rt;
     message_t l_stInputMessage;
-    uint16_t l_u16NewHorizonLevelY = m_u16HorizonLevelY;
-    bool l_bGotValidMessage = false;
 
-    rt = Task::Incoming.PopMessage(&l_stInputMessage);
-    while(rt != RETURN_EMPTY){
-        if (l_stInputMessage.message_type == HORIZON_PARAMS) {
-            l_u16NewHorizonLevelY = (uint16_t) l_stInputMessage.data[0];
-            l_bGotValidMessage = true;
-        }
+    if (m_bIsFirstIteration) {
+
+        //Receive message in first Draw Iteration
+
         rt = Task::Incoming.PopMessage(&l_stInputMessage);
+        while (rt != RETURN_EMPTY) {
+            if (l_stInputMessage.message_type == HORIZON_PARAMS
+                        && l_stInputMessage.sender == LCD_ISSUE) {
+                m_u16NextHorizonLevelY = (uint16_t) l_stInputMessage.data[0];
+            }
+            rt = Task::Incoming.PopMessage(&l_stInputMessage);
+        }
+
+
+        if (m_bIsFirstLcdDraw) {
+            m_u16CurrentHorizonIterLevelY = 0;
+            InitialDrawIteration(128 % DRAW_CHUNK_LINES);
+        }
+        else {
+            m_u16CurrentHorizonIterLevelY = m_u16HorizonLevelY;
+            UpdateDrawIteration((abs(m_u16NextHorizonLevelY-m_u16HorizonLevelY)) % DRAW_CHUNK_LINES);
+        }
+
+        m_bIsFirstIteration = false;
+    }
+    else {
+        if (m_bIsFirstLcdDraw) {
+            InitialDrawIteration(DRAW_CHUNK_LINES);
+        }
+        else {
+            UpdateDrawIteration(DRAW_CHUNK_LINES);
+        }
     }
 
-    if (l_bGotValidMessage) {
-        //if (m_bIsFirstDraw) {
-        //    InitialDraw(l_u16NewHorizonLevelY);
-        //}
-        //else {
-            UpdateDraw(l_u16NewHorizonLevelY);
-        //}
+    bool l_bFinishedIterations = m_bIsFirstLcdDraw ?
+                                m_u16CurrentHorizonIterLevelY == 128 :
+                                m_u16CurrentHorizonIterLevelY == m_u16NextHorizonLevelY;
+
+    if (l_bFinishedIterations) {
+        m_u16HorizonLevelY = m_u16NextHorizonLevelY;
+
+        if (m_bIsFirstLcdDraw)
+            m_bIsFirstLcdDraw = false;
+
+        m_bIsFirstIteration = true; //Prepare for next draw iteration chain
+    }
+    else {
+        //Define Execute LCD_DRAW for Scheduler message (Auto-Trigger)
+        m_pHeapMem[0] = (uint32_t) LCD_DRAW;
+        message_t l_stTriggerDrawMessage = {LCD_ISSUE,
+                                            SCHEDULER,
+                                            ADD_TO_EXECUTION,
+                                            1,
+                                            m_pHeapMem};
+        //Send message
+        rt = Task::Outgoing.AddMessage(l_stTriggerDrawMessage);
     }
 
     return RETURN_OK;
 }
 
 
-void LcdDrawTask::InitialDraw(uint16_t i_u16InitialHorizonLevelY)
+void LcdDrawTask::InitialDrawIteration(uint16_t i_u16CurrentIterationDeltaY)
 {
-    m_u16HorizonLevelY = i_u16InitialHorizonLevelY;
+    int16_t l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY + i_u16CurrentIterationDeltaY;
 
-    //Draw sky
-    Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_DEEP_SKY_BLUE);
-    m_stUpdateRect = {0,0,127,m_u16HorizonLevelY};
-    Graphics_fillRectangle(&m_sContext, &m_stUpdateRect);
-
-    //Draw ground
-    Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_BROWN);
-    m_stUpdateRect = {0,m_u16HorizonLevelY+1,127,127};
-    Graphics_fillRectangle(&m_sContext, &m_stUpdateRect);
-}
-
-void LcdDrawTask::UpdateDraw(uint16_t i_u16NewHorizonLevelY)
-{
-    if (i_u16NewHorizonLevelY-m_u16HorizonLevelY >= 0) {
+    if (l_u16NextHorizonIterLevelY < m_u16NextHorizonLevelY) {
+        //Draw sky
         Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_DEEP_SKY_BLUE);
-        m_stUpdateRect = {0,m_u16HorizonLevelY,127,i_u16NewHorizonLevelY};
-        //(*g_sCrystalfontz128x128_funcs.pfnRectFill)(&g_sCrystalfontz128x128, &m_stUpdateRect, 15000);
-        Graphics_fillRectangle(&m_sContext, &m_stUpdateRect);
-
     }
     else {
+        //Draw ground
         Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_BROWN);
-        m_stUpdateRect = {0,m_u16HorizonLevelY,127,i_u16NewHorizonLevelY};
-        Graphics_fillRectangle(&m_sContext, &m_stUpdateRect);
     }
 
-    m_u16HorizonLevelY = i_u16NewHorizonLevelY;
+    m_stUpdateRect = {0,m_u16CurrentHorizonIterLevelY,127,l_u16NextHorizonIterLevelY};
+    Graphics_fillRectangle(&m_sContext, &m_stUpdateRect);
+
+    m_u16CurrentHorizonIterLevelY = l_u16NextHorizonIterLevelY;
+}
+
+
+void LcdDrawTask::UpdateDrawIteration(uint16_t i_u16CurrentIterationDeltaY)
+{
+    uint16_t l_u16NextHorizonIterLevelY;
+
+    if ((int16_t)m_u16NextHorizonLevelY-(int16_t)m_u16HorizonLevelY >= 0) {
+        l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY + i_u16CurrentIterationDeltaY;
+        Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_DEEP_SKY_BLUE);
+    }
+    else {
+        l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY - i_u16CurrentIterationDeltaY;
+        Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_BROWN);
+    }
+
+    m_stUpdateRect = {0,m_u16CurrentHorizonIterLevelY,127,l_u16NextHorizonIterLevelY};
+    Graphics_fillRectangle(&m_sContext, &m_stUpdateRect);
+
+    m_u16CurrentHorizonIterLevelY = l_u16NextHorizonIterLevelY;
 }

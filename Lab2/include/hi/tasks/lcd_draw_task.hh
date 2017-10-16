@@ -21,9 +21,11 @@
 #ifndef INCLUDE_HI_TASKS_LCD_DRAW_TASK_HH_
 #define INCLUDE_HI_TASKS_LCD_DRAW_TASK_HH_
 
+#include <stdlib.h>
 #include "hd/periph.hh"
 #include "hi/hi_def.hh"
 #include "hi/task.hh"
+
 
 class LcdDrawTask : public Task
 {
@@ -33,15 +35,21 @@ public:
     virtual return_e setup(Heap* i_Heap);
 
 private:
-    void InitialDraw(uint16_t i_u16InitialHorizonLevelY);
-    void UpdateDraw(uint16_t i_u16NewHorizonLevelY);
+    void InitialDrawIteration(uint16_t i_u16CurrentIterationDeltaY);
+    void UpdateDrawIteration(uint16_t i_u16CurrentIterationDeltaY);
 
     Graphics_Context m_sContext;
-    uint16_t m_u16HorizonLevelY;
     Graphics_Rectangle m_stUpdateRect;
-    bool m_bIsFirstDraw;
 
-    static constexpr uint8_t TICKS_INTERVAL = 5;
+    uint16_t m_u16HorizonLevelY;     //Current HorizonLevelY
+    uint16_t m_u16NextHorizonLevelY; //HorizonLevelY after the draw iteration chain
+
+    uint16_t m_u16CurrentHorizonIterLevelY;
+
+    bool m_bIsFirstLcdDraw;
+    bool m_bIsFirstIteration;
+
+    static constexpr uint8_t DRAW_CHUNK_LINES = 4;
     static constexpr uint8_t HEAP_MEM_SIZE = 1;
     uint32_t* m_pHeapMem;
 };

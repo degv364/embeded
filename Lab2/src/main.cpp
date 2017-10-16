@@ -71,6 +71,7 @@
 #include "hi/task.hh"
 #include "hi/tasks/adc_irq_task.hh"
 #include "hi/tasks/calc_horizon_task.hh"
+#include "hi/tasks/lcd_issue_task.hh"
 #include "hi/tasks/lcd_draw_task.hh"
 
 //----- Hardware dependent (hd) -----
@@ -115,13 +116,12 @@ static return_e HardwareInit(void)
     timer.enableInterrupt();
     timer.start();
 
-    //Erro LEDs initial off state
+    //Error LEDs initial off state
     ErrorLight.reset();
     TimeoutLight.reset();
 
     //FIXME: Testing initial timeout condition
     g_bTimeoutCondition = false;
-
 
     //Enable interrupts
     MAP_Interrupt_enableMaster();
@@ -140,6 +140,7 @@ int main(void)
 
     // Define tasks
     CalcHorizonTask l_CalcHorizonTask;
+    LcdIssueTask l_LcdIssueTask;
     LcdDrawTask l_LcdDrawTask;
 
 
@@ -157,9 +158,13 @@ int main(void)
     if (rt != RETURN_OK)
         goto  error_handling;
     
-    rt = g_MainScheduler.attach(&l_LcdDrawTask);
+    rt = g_MainScheduler.attach(&l_LcdIssueTask);
     if (rt != RETURN_OK)
         goto  error_handling;
+
+    rt = g_MainScheduler.attach(&l_LcdDrawTask);
+        if (rt != RETURN_OK)
+            goto  error_handling;
 
     rt = g_MainScheduler.setup();
     if (rt != RETURN_OK)
@@ -192,7 +197,7 @@ int main(void)
             rt = g_MainScheduler.PostAmble();
             if (rt != RETURN_OK)
                 goto  error_handling;
-            }
+        }
     }
     return 0;
 
@@ -201,7 +206,7 @@ int main(void)
      ErrorLight.set();
 
     if (rt == RETURN_TIMEOUT){
-        // Incase of timeout, show yellow
+        // In case of timeout, show yellow
         TimeoutLight.set();
     }
 
