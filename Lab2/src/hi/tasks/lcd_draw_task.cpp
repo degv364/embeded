@@ -18,11 +18,14 @@
  **/
 
 #include "hi/tasks/lcd_draw_task.hh"
+#include "hd/optimized_driver.hh"
 
 LcdDrawTask::LcdDrawTask(void)
 {
     Task::SetTaskName(LCD_DRAW);
     Task::SetTaskType(ONE_SHOT);
+    m_u16SkyColor = (uint16_t)LCDColorTranslate(GRAPHICS_COLOR_DEEP_SKY_BLUE);
+    m_u16GroundColor = (uint16_t) LCDColorTranslate(GRAPHICS_COLOR_BROWN);
 
     m_u16HorizonLevelY = 63; //0
     m_u16NextHorizonLevelY = 63; //0
@@ -36,11 +39,11 @@ return_e LcdDrawTask::setup(Heap* i_Heap)
     // Initializes display hardware
     Crystalfontz128x128_Init();
     // Set default screen orientation
-    Crystalfontz128x128_SetOrientation(LCD_ORIENTATION_UP);
+    LCDSetOrientation();
 
     // Initializes graphics context
     Graphics_initContext(&m_sContext, &g_sCrystalfontz128x128, &g_sCrystalfontz128x128_funcs);
-    Graphics_setBackgroundColor(&m_sContext, GRAPHICS_COLOR_WHITE);
+    
 
     //Initializes tasks state booleans
     m_bIsFirstLcdDraw = true;
@@ -58,6 +61,7 @@ return_e LcdDrawTask::setup(Heap* i_Heap)
 
 return_e LcdDrawTask::run(void)
 {
+  // Use m_sContext->foreground
     return_e rt;
     message_t l_stInputMessage;
 
@@ -101,9 +105,8 @@ return_e LcdDrawTask::run(void)
 
     if (l_bFinishedIterations) {
         m_u16HorizonLevelY = m_u16NextHorizonLevelY;
-
-        if (m_bIsFirstLcdDraw)
-            m_bIsFirstLcdDraw = false;
+	
+	m_bIsFirstLcdDraw = false;
 
         m_bIsFirstIteration = true; //Prepare for next draw iteration chain
     }
@@ -125,20 +128,16 @@ return_e LcdDrawTask::run(void)
 
 void LcdDrawTask::InitialDrawIteration(uint16_t i_u16CurrentIterationDeltaY)
 {
+    uint16_t l_u16CurrentColor;
     int16_t l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY + i_u16CurrentIterationDeltaY;
 
     if (l_u16NextHorizonIterLevelY < m_u16NextHorizonLevelY) {
-        //Draw sky
-        Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_DEEP_SKY_BLUE);
+        l_u16CurrentColor = m_u16SkyColor;
     }
     else {
-        //Draw ground
-        Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_BROWN);
+        l_u16CurrentColor = m_u16GroundColor;
     }
-
-    m_stUpdateRect = {0,m_u16CurrentHorizonIterLevelY,127,l_u16NextHorizonIterLevelY};
-    Graphics_fillRectangle(&m_sContext, &m_stUpdateRect);
-
+    LCDDrawCompleteHorizontalRect(m_u16CurrentHorizonIterLevelY,l_u16NextHorizonIterLevelY, l_u16CurrentColor);
     m_u16CurrentHorizonIterLevelY = l_u16NextHorizonIterLevelY;
 }
 
@@ -146,18 +145,17 @@ void LcdDrawTask::InitialDrawIteration(uint16_t i_u16CurrentIterationDeltaY)
 void LcdDrawTask::UpdateDrawIteration(uint16_t i_u16CurrentIterationDeltaY)
 {
     uint16_t l_u16NextHorizonIterLevelY;
+    uint16_t l_u16CurrentColor;
 
     if ((int16_t)m_u16NextHorizonLevelY-(int16_t)m_u16HorizonLevelY >= 0) {
         l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY + i_u16CurrentIterationDeltaY;
-        Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_DEEP_SKY_BLUE);
+	l_u16CurrentColor = m_u16SkyColor;
     }
     else {
         l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY - i_u16CurrentIterationDeltaY;
-        Graphics_setForegroundColor(&m_sContext, GRAPHICS_COLOR_BROWN);
+	l_u16CurrentColor = m_u16GroundColor;
     }
 
-    m_stUpdateRect = {0,m_u16CurrentHorizonIterLevelY,127,l_u16NextHorizonIterLevelY};
-    Graphics_fillRectangle(&m_sContext, &m_stUpdateRect);
-
+    LCDDrawCompleteHorizontalRect(m_u16CurrentHorizonIterLevelY,l_u16NextHorizonIterLevelY, l_u16CurrentColor);
     m_u16CurrentHorizonIterLevelY = l_u16NextHorizonIterLevelY;
 }

@@ -23,6 +23,7 @@
 
 #include <stdlib.h>
 #include "hd/periph.hh"
+#include "hd/optimized_driver.hh"
 #include "hi/hi_def.hh"
 #include "hi/task.hh"
 
@@ -45,6 +46,9 @@ private:
     uint16_t m_u16NextHorizonLevelY; //HorizonLevelY after the draw iteration chain
 
     uint16_t m_u16CurrentHorizonIterLevelY;
+
+    uint16_t m_u16SkyColor;
+    uint16_t m_u16GroundColor;
 
     bool m_bIsFirstLcdDraw;
     bool m_bIsFirstIteration;

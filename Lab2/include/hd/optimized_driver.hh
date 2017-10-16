@@ -24,13 +24,36 @@
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 #include <stdint.h>
 
-inline  void LCDWriteCommand(uint8_t i_u8Command);
-inline void LCDWriteData(uint8_t i_u8Data);
-inline void LCDSetOrientation(void);
-inline void LCDDrawHorizontalLine(uint16_t i_u16X0, uint16_t i_u16X1, uint16_t i_u16Y, uint16_t i_u16Color);
-inline void LCDDrawCompleteHorizontalLine(uint16_t i_u16Y, uint16_t i_u16Color);
-inline void LCDDrawDevidedHorizontalLine(uint16_t i_u16XDivision, uint16_t i_u16Y,
-					 uint16_t i_u16Color0,uint16_t i_u16Color1 );
-inline void LCDDrawCompleteHorizontalRect(uint16_t i_u16Y0, uint16_t i_u16Y1, uint16_t i_u16Color);
+#ifndef OPTIMIZED
+#define OPTIMIZED
+
+// Set default iorientation Up
+void LCDSetOrientation(void);
+/**
+ * Draw a complete Filled Rectangle.
+ * \param i_u16Y0: Bottom of the rectangle
+ * \param i_u16Y1: Top of the rectangle.
+ * \param i_u16Color: Color to fill
+ */
+void LCDDrawCompleteHorizontalRect(uint16_t i_u16Y0, uint16_t i_u16Y1, uint16_t i_u16Color);
+/**
+ * Translate a 24 bit color into 16 bit value
+ */
 uint32_t LCDColorTranslate(uint32_t i_u32Value);
 
+/**
+ * Draw divided rectangle.
+ * \param i_u16XLeft: Left of the rectangle (inclusive)
+ * \param i_u16XRight: Right if the rectangle (inclusive) 
+ * \param i_u16YBottom: Bottom of the rectangle (inclusive)
+ * \param i_u16YTop: Top of the rectangle. (inclusive)
+ * \param i_u16Y: related to pitch angle. Indicates the position at the center of the screen
+ * \param i_i16Slope: line slope (Not angle). Obtained by multiplying float slope by 128
+ * \param i_u16ColorSky: color to use for sky
+ * \param i_u16ColorGround: color to use for ground
+ */
+void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16XRight,
+			     uint16_t i_u16YBottom, uint16_t i_u16YTop,
+			     uint16_t i_u16Y, uint16_t i_i16Slope,
+			     uint16_t i_u16Color);
+#endif
