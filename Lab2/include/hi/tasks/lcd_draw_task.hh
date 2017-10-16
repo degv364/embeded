@@ -53,7 +53,7 @@ private:
     bool m_bIsFirstLcdDraw;
     bool m_bIsFirstIteration;
 
-    static constexpr uint8_t DRAW_CHUNK_LINES = 4;
+    static constexpr uint8_t DRAW_CHUNK_LINES = 6;
     static constexpr uint8_t HEAP_MEM_SIZE = 1;
     uint32_t* m_pHeapMem;
 };

@@ -34,7 +34,7 @@ private:
 
     uint16_t m_u16HorizonLevelY;
 
-    static constexpr uint8_t TICKS_INTERVAL = 10;
+    static constexpr uint8_t TICKS_INTERVAL = 5;
     static constexpr uint8_t HEAP_MEM_SIZE = 2;
     uint32_t* m_pHeapMem;
 };

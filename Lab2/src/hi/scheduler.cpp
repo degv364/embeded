@@ -19,11 +19,10 @@
 
 #include "hi/scheduler.hh"
 
-// Variable to know if frame is being executed
-extern volatile bool g_bDuringFrame;
 
-// Variable to determine timeout condition
-extern volatile bool g_bTimeoutCondition;
+volatile bool g_bDuringFrame;        // Variable to know if frame is being executed
+volatile bool g_bTimeoutCondition;   // Variable to determine timeout condition
+
 
 // - Scheduler constructor
 Scheduler::Scheduler()

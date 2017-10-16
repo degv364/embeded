@@ -34,6 +34,9 @@ return_e CalcHorizonTask::setup(Heap* i_Heap)
     Task::SetTaskExecutionCondition(false);
     this->SetTaskTickInterval(0);
 
+    //Setup MeanFilter
+    m_LCDFilter.Setup(63);
+
     //Messages memory allocation
     rt = i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
 
@@ -55,7 +58,13 @@ return_e CalcHorizonTask::run(void)
         rt = Task::Incoming.PopMessage(&l_stInputMessage);
     }
     uint16_t l_u16HorizonY = (uint16_t) 63.0*((CalcPitchAngle()/90.0) + 1.0);
-    m_pHeapMem[0] = (uint32_t) l_u16HorizonY;
+    uint16_t l_u16FilteredHorizon;
+
+    m_LCDFilter.AddValue(l_u16HorizonY);
+    m_LCDFilter.GetFilteredValue(&l_u16FilteredHorizon);
+
+    m_pHeapMem[0] = (uint32_t) l_u16FilteredHorizon;
+    //m_pHeapMem[0] = (uint32_t) l_u16HorizonY;
 
     message_t l_stHorizonMessage = {CALC_HORIZON,
                                     LCD_ISSUE,

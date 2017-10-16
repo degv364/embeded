@@ -6,7 +6,7 @@
 #include "msp.h"
 
 //FIXME: find a better way to choose size, maybe inheritance?
-#define MESSAGE_QUEUE_SIZE 5
+#define MESSAGE_QUEUE_SIZE 10 //5
 
 class MessageQueue
 {

@@ -81,14 +81,12 @@
 //----- Global object declarations -----
 
 //Hardware dependent (hd)
-periph::Timer timer(TIMER32_0_BASE, TIME_INTERRUPTS_PER_SECOND);
-periph::OutputGPIO ErrorLight(GPIO_PORT_P2, GPIO_PIN0); //Red
+periph::Timer timer(TIMER32_0_BASE, TIME_TICKS_PER_SECOND);
+periph::OutputGPIO ErrorLight(GPIO_PORT_P2, GPIO_PIN0);   //Red
 periph::OutputGPIO TimeoutLight(GPIO_PORT_P2, GPIO_PIN1); // Green
 
 //Hardware independent (hi)
 volatile uint64_t g_SystemTicks = 0; // - The system counter.
-volatile bool g_bDuringFrame;        // Variable to know if frame is being executed
-volatile bool g_bTimeoutCondition;   // Variable to determine timeout condition
 
 Scheduler g_MainScheduler;           // - Instantiate a Scheduler
 
@@ -120,9 +118,6 @@ static return_e HardwareInit(void)
     ErrorLight.reset();
     TimeoutLight.reset();
 
-    //FIXME: Testing initial timeout condition
-    g_bTimeoutCondition = false;
-
     //Enable interrupts
     MAP_Interrupt_enableMaster();
 
@@ -134,9 +129,6 @@ static return_e HardwareInit(void)
 int main(void)
 {
     return_e rt;
-    // filter
-    MeanFilter LCDFilter;
-    uint16_t l_u16FilteredHorizon;
 
     // Define tasks
     CalcHorizonTask l_CalcHorizonTask;
@@ -148,6 +140,7 @@ int main(void)
     rt = HardwareInit();
     if (rt != RETURN_OK)
         goto  error_handling;
+
 
     // Attach and set up tasks
     rt = g_MainScheduler.attach(&g_AdcIRQTask);
@@ -163,8 +156,8 @@ int main(void)
         goto  error_handling;
 
     rt = g_MainScheduler.attach(&l_LcdDrawTask);
-        if (rt != RETURN_OK)
-            goto  error_handling;
+    if (rt != RETURN_OK)
+        goto  error_handling;
 
     rt = g_MainScheduler.setup();
     if (rt != RETURN_OK)
@@ -176,16 +169,8 @@ int main(void)
     if (rt != RETURN_OK)
       goto  error_handling;
 
-    //FIXME: Integrate with calc_horizon_task
-    //LCDFilter.Setup(l_u16HorizonY);
-    //LCDFilter.GetFilteredValue(&l_u16FilteredHorizon);
-
     while (1)
     {
-        //FIXME: Integrate with calc_horizon_task
-        //LCDFilter.AddValue(l_u16HorizonY);
-        //LCDFilter.GetFilteredValue(&l_u16FilteredHorizon);
-
         if (g_SystemTicks != g_MainScheduler.m_u64ticks)
         {
             //- Only execute the tasks if one tick has passed.

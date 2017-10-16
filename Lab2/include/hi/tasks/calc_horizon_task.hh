@@ -24,6 +24,7 @@
 #include "hd/periph.hh"
 #include "hi/hi_def.hh"
 #include "hi/task.hh"
+#include "hi/filters.hh"
 
 class CalcHorizonTask : public Task
 {
@@ -41,6 +42,7 @@ private:
 
     static constexpr uint8_t HEAP_MEM_SIZE = 1;
 
+    MeanFilter m_LCDFilter;
     AccelAxes m_stLastAccel;
     uint32_t* m_pHeapMem;
 };

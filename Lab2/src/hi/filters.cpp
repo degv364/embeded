@@ -35,6 +35,7 @@ MeanFilter::Setup(uint16_t i_u16InitialValue){
   for (m_u8Index = 0; m_u8Index<MEAN_FILTER_BUFFER_SIZE; m_u8Index++){
     m_aValuesBuffer[m_u8Index]= i_u16InitialValue;
   }
+  m_u8Index -= 1;
   m_fFilteredResult = (float)i_u16InitialValue;
   return RETURN_OK;
 }

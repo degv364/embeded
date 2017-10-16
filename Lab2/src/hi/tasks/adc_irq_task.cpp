@@ -28,15 +28,12 @@ AdcIRQTask::AdcIRQTask(void) :
 
 
 return_e AdcIRQTask::setup(Heap* i_Heap){
-  uint32_t* l_u32Ignored;
 
   this->SetTaskExecutionCondition(false);
   this->SetTaskTickInterval(0);
 
   i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
-  if (l_u32Ignored == 0){
-    return RETURN_FAIL;
-  }
+
 
   m_AccelADC.Setup();
   m_AccelADC.Start();
