@@ -56,7 +56,6 @@
 #include <stdbool.h>
 #include <math.h>
 #include <msp.h>
-#include <ti/grlib/grlib.h>
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
 //----- Project Includes -----
@@ -67,12 +66,9 @@
 #include "hi/hi_def.hh"
 #include "hi/scheduler.hh"
 #include "hi/filters.hh"
-//Tasks related
 #include "hi/task.hh"
-#include "tasks/adc_irq_task.hh"
-#include "tasks/calc_horizon_task.hh"
-#include "tasks/lcd_issue_task.hh"
-#include "tasks/lcd_draw_task.hh"
+
+#include "tasks/virtual_horizon_tasks.hh"
 
 //----- Hardware dependent (hd) -----
 #include "hd/periph.hh"

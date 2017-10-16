@@ -17,14 +17,10 @@
 
  **/
 
-#include <ti/devices/msp432p4xx/driverlib/driverlib.h>
-#include <stdint.h>
-
-#include "hd/lcd_driver/HAL_MSP_EXP432P401R_Crystalfontz128x128_ST7735.hh"
-#include "hd/lcd_driver/Crystalfontz128x128_ST7735.hh"
-
 #ifndef INCLUDE_HD_LCD_DRIVER_OPTIMIZED_HH_
 #define INCLUDE_HD_LCD_DRIVER_OPTIMIZED_HH_
+
+#include "hd/periph.hh"
 
 // Set default orientation Up
 void LCDSetOrientation(void);
