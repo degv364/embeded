@@ -41,7 +41,8 @@ typedef enum message_type_e
 {
     ADD_TO_EXECUTION = 0, // Add a task to execution queue (one shot tasks)
     ACCEL_DATA,           // Message with message data
-    HORIZON_PARAMS,       //Parameters required to draw horizon
+    HORIZON_PARAMS,       // Parameters required to draw horizon
+    RECTANGLES_TO_DRAW,   // List of rectangles that need to be drawn
     UNDEFINED_TYPE        // Always last type. For error handling
 } message_type_e;
 
