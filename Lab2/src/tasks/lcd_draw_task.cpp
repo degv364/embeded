@@ -61,6 +61,10 @@ LcdDrawTask::run(){
   if(m_bIsFirstIteration){
     // Receive mesages
     rt = Task::Incoming.PopMessage(&l_stInputMessage);
+    if (rt == RETURN_EMPTY){
+        // No messages
+        return RETURN_OK;
+    }
     while (rt != RETURN_EMPTY) {
       if (rt != RETURN_OK) return rt;
       if (l_stInputMessage.message_type == HORIZON_PARAMS
