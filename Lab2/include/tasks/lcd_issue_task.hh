@@ -32,8 +32,11 @@ public:
     virtual return_e setup(Heap* i_Heap);
 private:
     void CheckRectanglesToDraw(void);
+    void SetToDrawAllRectangles(void);
     bool NeedToDrawRectangle(uint16_t row, uint16_t col,
                              int16_t i_u16CurrentLineB, int16_t i_u16NextLineB);
+
+    bool m_bIsInitialDraw;
 
     uint16_t m_u16HorizonLevelY;
     int16_t m_i16HorizonSlope;

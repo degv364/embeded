@@ -36,11 +36,14 @@ return_e LcdIssueTask::setup(Heap* i_Heap)
     Task::SetTaskExecutionCondition(false);
     this->SetTaskTickInterval(TICKS_INTERVAL);
 
+    m_bIsInitialDraw = false;
+
     //Messages memory allocation
     rt = i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
 
     return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
 }
+
 
 return_e LcdIssueTask::run(void)
 {
@@ -79,8 +82,12 @@ return_e LcdIssueTask::run(void)
                                               2,
                                               &m_pHeapMem[1]};
 
-        CheckRectanglesToDraw();
-
+        if (m_bIsInitialDraw) {
+            SetToDrawAllRectangles();
+        }
+        else {
+            CheckRectanglesToDraw();
+        }
         message_t l_stRectanglesToDrawMessage = {LCD_ISSUE,
                                                  LCD_DRAW,
                                                  RECTANGLES_TO_DRAW,
@@ -98,6 +105,22 @@ return_e LcdIssueTask::run(void)
     }
 
     return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
+}
+
+
+inline void LcdIssueTask::SetToDrawAllRectangles(void)
+{
+    m_u8NumRectanglesToDraw = 0;
+    uint16_t* l_pRectCoord;
+
+    //FIXME: Unroll when sure about number of rectangles
+    for (uint16_t row = 0; row < 4; row++) {
+        for (uint16_t col = 0; col < 4; col++) {
+            l_pRectCoord = (uint16_t*) &m_pHeapMem[3+m_u8NumRectanglesToDraw++];
+            l_pRectCoord[0] = col << 5; //Rectangles are 32x32 (32 = 2^5)
+            l_pRectCoord[1] = row << 5;
+        }
+    }
 }
 
 

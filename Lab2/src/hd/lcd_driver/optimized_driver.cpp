@@ -791,6 +791,102 @@ void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
     l_i16RemainingPixelsForShift--;
     LCDWriteData(l_u16SelectedColor >> 8);
     LCDWriteData(l_u16SelectedColor);
+    //16
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //17
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //18
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //19
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //20
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //21
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //22
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //23
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //24
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //25
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //26
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //27
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //28
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //29
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //30
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
+    //31
+    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+    l_i16RemainingPixelsForShift--;
+    LCDWriteData(l_u16SelectedColor >> 8);
+    LCDWriteData(l_u16SelectedColor);
   }
   
 }
