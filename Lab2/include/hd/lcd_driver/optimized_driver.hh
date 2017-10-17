@@ -91,8 +91,6 @@
 #define LCD_EUSCI_BASE        EUSCI_B0_BASE
 
 
-//#undef __delay_cycles
-//#define __delay_cycles(x) SysCtlDelay(x)
 #define HAL_LCD_delay(x)  SysCtlDelay(x * 48)
 
 
@@ -112,7 +110,7 @@ void LCDDrawCompleteHorizontalRect(uint16_t i_u16Y0, uint16_t i_u16Y1, uint16_t 
 /**
  * Translate a 24 bit color into 16 bit value
  */
-uint32_t LCDColorTranslate(uint32_t i_u32Value);
+/*uint32_t*/ uint16_t LCDColorTranslate(uint32_t i_u32Value);
 
 #define RECTANGLE_SIZE 32
 
@@ -125,6 +123,5 @@ uint32_t LCDColorTranslate(uint32_t i_u32Value);
  * \param i_u32Colors: MSB sky color, LSB ground color
  */
 void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
-			     uint16_t i_u16Y, uint16_t i_i16Slope,
-			     uint32_t i_u32Colors);
+			     uint16_t i_u16Y, int16_t i_i16Slope, uint32_t i_u32Colors);
 #endif

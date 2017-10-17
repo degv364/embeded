@@ -82,13 +82,13 @@ return_e LcdIssueTask::run(void)
                                               2,
                                               &m_pHeapMem[1]};
 
-        if (m_bIsInitialDraw) {
+//        if (m_bIsInitialDraw) {
             SetToDrawAllRectangles();
-            m_bIsInitialDraw = false;
-        }
-        else {
-            CheckRectanglesToDraw();
-        }
+//            m_bIsInitialDraw = false;
+//        }
+//        else {
+//            CheckRectanglesToDraw();
+//        }
 
         //FIXME: Remove after testing LcdIssue
 //        m_u8NumRectanglesToDraw = 0;
@@ -126,7 +126,8 @@ inline void LcdIssueTask::SetToDrawAllRectangles(void)
     //FIXME: Unroll when sure about number of rectangles
     for (uint16_t row = 0; row < 4; row++) {
         for (uint16_t col = 0; col < 4; col++) {
-            l_pRectCoord = (uint16_t*) &m_pHeapMem[3+m_u8NumRectanglesToDraw++];
+            l_pRectCoord = (uint16_t*) &m_pHeapMem[3+m_u8NumRectanglesToDraw];
+            m_u8NumRectanglesToDraw++;
             l_pRectCoord[0] = col << 5; //Rectangles are 32x32 (32 = 2^5)
             l_pRectCoord[1] = row << 5;
         }

@@ -256,7 +256,7 @@ void LCDSetOrientation(void)
 }
 
 
-uint32_t LCDColorTranslate(uint32_t i_u32Value)
+/*uint32_t*/ uint16_t LCDColorTranslate(uint32_t i_u32Value)
 {
     return (((((i_u32Value) & 0x00f80000) >> 8)
             | (((i_u32Value) & 0x0000fc00) >> 5)
@@ -660,26 +660,28 @@ void LCDDrawCompleteHorizontalRect(uint16_t i_u16Y0, uint16_t i_u16Y1, uint16_t 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// We know that sqares are 16x16
+// We know that squares are 32x32
 
 void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
-			     uint16_t i_u16Y, uint16_t i_i16Slope,
-			     uint32_t i_u32Colors){
-  uint16_t l_i16B;
-  int16_t  l_i16RemainingPixelsForShift;
-  uint16_t l_u16ShouldShift;
-  uint16_t l_u16SelectedColor;
-  // Limit slope from -127 to +127
-  i_i16Slope += 127;
-  i_i16Slope &= 127;
-  i_i16Slope -= 127;
-  
-  // Get line equation parameters
-  l_i16B = (int16_t) i_u16Y - i_i16Slope * 63;
-  
-  // Draw
-  LCDSetDrawFrame(i_u16XLeft,i_u16XLeft+RECTANGLE_SIZE , i_u16YTop, i_u16YTop+RECTANGLE_SIZE);
-  LCDWriteCommand(CM_RAMWR);
+			     uint16_t i_u16Y, int16_t i_i16Slope, uint32_t i_u32Colors)
+{
+    int16_t l_i16B;
+    int16_t l_i16RemainingPixelsForShift;
+    uint16_t l_u16ShouldShift;
+    uint16_t l_u16SelectedColor;
+    // Limit slope from -127 to +127
+    i_i16Slope += 127;
+    i_i16Slope &= 127;
+    i_i16Slope -= 127;
+
+    // Get line equation parameters
+    l_i16B = (int16_t) i_u16Y - i_i16Slope * 63;
+
+    // Draw
+    LCDSetDrawFrame(i_u16XLeft, i_u16YTop, i_u16XLeft + RECTANGLE_SIZE,
+                    i_u16YTop + RECTANGLE_SIZE);
+    LCDWriteCommand(CM_RAMWR);
+
   // Note that slopes above 64 are slower. Because we draw by row
   for (int16_t l_i16YIndex = (int16_t) i_u16YTop;
        l_i16YIndex <= (int16_t) i_u16YTop+RECTANGLE_SIZE; l_i16YIndex++) {
@@ -689,11 +691,13 @@ void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
 
     // Send Pixel 0 
     
-    // When Remaining pixels becomes negative its first bit becomes 1. This hapens when the
-    // Color shift should hapen. In taht case the color is shifted to select the second one.
+    // When Remaining pixels becomes negative its first bit becomes 1. This happens when the
+    // Color shift should happen. In that case the color is shifted to select the second one.
     l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
+
     // If we should shift, shift 16 bits to select the next color
     l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+
     // Update remaining bits
     l_i16RemainingPixelsForShift--;
     //Write data

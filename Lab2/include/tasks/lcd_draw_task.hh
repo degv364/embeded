@@ -41,7 +41,7 @@ private:
   uint16_t m_u16Pitch;
   uint16_t m_i16Slope;
   uint8_t m_u8RectanglesToDraw;
-  uint16_t* l_aCoordinates;
+  uint16_t* m_aCoordinates;
   uint8_t m_u8CurrentRectangle;
   
     void InitialDrawIteration(uint16_t i_u16CurrentIterationDeltaY);

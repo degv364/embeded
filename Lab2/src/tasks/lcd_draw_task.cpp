@@ -25,8 +25,8 @@ LcdDrawTask::LcdDrawTask(void)
     Task::SetTaskType(ONE_SHOT);
     m_u32Colors = 0;
     //Initialize sky as MSB and ground as LSB
-    m_u32Colors = (uint32_t)LCDColorTranslate(GRAPHICS_COLOR_DEEP_SKY_BLUE)<<16;
-    m_u32Colors |= (uint32_t) LCDColorTranslate(GRAPHICS_COLOR_BROWN);
+    m_u32Colors = ((uint32_t)LCDColorTranslate(GRAPHICS_COLOR_DEEP_SKY_BLUE))<<16;
+    m_u32Colors |= (uint32_t) (LCDColorTranslate(GRAPHICS_COLOR_BROWN) & 0x0000FFFF);
 }
 
 return_e LcdDrawTask::setup(Heap* i_Heap)
@@ -54,61 +54,71 @@ return_e LcdDrawTask::setup(Heap* i_Heap)
 
 return_e
 LcdDrawTask::run(){
-  return_e rt;
-  message_t l_stInputMessage;
-  uint16_t* l_aCoordinates;
+    return_e rt;
+    message_t l_stInputMessage;
+
   //Handle messages in first iteration--------------------------------------------
-  if(m_bIsFirstIteration){
-    // Receive mesages
-    rt = Task::Incoming.PopMessage(&l_stInputMessage);
-    if (rt == RETURN_EMPTY){
-        // No messages
-        return RETURN_OK;
+    if (m_bIsFirstIteration)
+    {
+        // Receive messages
+        rt = Task::Incoming.PopMessage(&l_stInputMessage);
+        if (rt == RETURN_EMPTY) {
+            // No messages
+            return RETURN_OK;
+        }
+        while (rt != RETURN_EMPTY) {
+            if (rt != RETURN_OK)
+                return rt;
+
+            if (l_stInputMessage.message_type == HORIZON_PARAMS
+                    && l_stInputMessage.sender == LCD_ISSUE)
+            {
+                m_u16Pitch = (uint16_t) l_stInputMessage.data[0];
+                m_i16Slope = (int16_t) l_stInputMessage.data[1];
+            }
+            else if (l_stInputMessage.message_type == RECTANGLES_TO_DRAW
+                    && l_stInputMessage.sender == LCD_ISSUE)
+            {
+                m_u8RectanglesToDraw = (uint8_t) l_stInputMessage.length;
+                m_aCoordinates = (uint16_t*) l_stInputMessage.data;
+                m_u8CurrentRectangle = 0;
+            }
+            else
+            {
+                //invalid message
+                return RETURN_FAIL;
+            }
+
+            rt = Task::Incoming.PopMessage(&l_stInputMessage);
+        }
+        m_bIsFirstIteration = false;
     }
-    while (rt != RETURN_EMPTY) {
-      if (rt != RETURN_OK) return rt;
-      if (l_stInputMessage.message_type == HORIZON_PARAMS
-	  && l_stInputMessage.sender == LCD_ISSUE) {
-	m_u16Pitch = (uint16_t) l_stInputMessage.data[0];
-	m_i16Slope = (int16_t) l_stInputMessage.data[1];
-      }
-      else if (l_stInputMessage.message_type == RECTANGLES_TO_DRAW
-	  && l_stInputMessage.sender == LCD_ISSUE){
-	m_u8RectanglesToDraw = (uint8_t) l_stInputMessage.length;
-	l_aCoordinates = (uint16_t*) l_stInputMessage.data;
-	m_u8CurrentRectangle = 0;
-      }
-      else{
-	//invalid message
-	return RETURN_FAIL;
-      }
-      rt = Task::Incoming.PopMessage(&l_stInputMessage);
-    }
-    m_bIsFirstIteration = false;
-  }
+
   //Draw the rectangles----------------------------------------------------------
-  LCDDrawDividedRectangle(l_aCoordinates[m_u8CurrentRectangle],  
-			  l_aCoordinates[(m_u8CurrentRectangle+1)],
+  LCDDrawDividedRectangle(m_aCoordinates[m_u8CurrentRectangle<<1],
+			  m_aCoordinates[(m_u8CurrentRectangle<<1)+1],
 			  m_u16Pitch, m_i16Slope, m_u32Colors);
 
   //Check if more squares need to be drawn---------------------------------------
   m_u8CurrentRectangle++;
-  if (m_u8CurrentRectangle < m_u8RectanglesToDraw){
-    m_pHeapMem[0] = (uint32_t) LCD_DRAW;
-    message_t l_stTriggerDrawMessage = {LCD_ISSUE,
-					SCHEDULER,
-					ADD_TO_EXECUTION,
-					1,
-					m_pHeapMem};
-    //Send message
-    rt = Task::Outgoing.AddMessage(l_stTriggerDrawMessage);
-    if (rt != RETURN_OK){
-      return rt;
-    }
+
+  if (m_u8CurrentRectangle < m_u8RectanglesToDraw) {
+        m_pHeapMem[0] = (uint32_t) LCD_DRAW;
+        message_t l_stTriggerDrawMessage = { LCD_ISSUE,
+                                             SCHEDULER,
+                                             ADD_TO_EXECUTION,
+                                             1,
+                                             m_pHeapMem };
+        //Send message
+        rt = Task::Outgoing.AddMessage(l_stTriggerDrawMessage);
+        if (rt != RETURN_OK) {
+            return rt;
+        }
   }
-  else{
-    //this is the alst iteration, set first iteration flag for next cycle
-    m_bIsFirstIteration = true;
+  else {
+        //this is the last iteration, set first iteration flag for next cycle
+        m_bIsFirstIteration = true;
   }
+
   return RETURN_OK;
 }
