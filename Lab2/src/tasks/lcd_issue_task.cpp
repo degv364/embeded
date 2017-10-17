@@ -41,7 +41,7 @@ return_e LcdIssueTask::setup(Heap* i_Heap)
     return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
 }
 
-static inline
+//static inline
 
 
 
