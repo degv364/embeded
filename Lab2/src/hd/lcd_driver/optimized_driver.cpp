@@ -26,6 +26,19 @@ uint16_t Lcd_ScreenWidth, Lcd_ScreenHeigth;
 uint8_t Lcd_PenSolid, Lcd_FontSolid, Lcd_FlagRead;
 uint16_t Lcd_TouchTrim;
 
+
+extern "C"
+{
+void __attribute__((naked))
+SysCtlDelay(uint32_t ui32Count)
+{
+    __asm("    subs    r0, #1\n"
+          "    bne     SysCtlDelay\n"
+          "    bx      lr");
+}
+}
+
+
 static void HAL_LCD_PortInit(void)
 {
     // LCD_SCK

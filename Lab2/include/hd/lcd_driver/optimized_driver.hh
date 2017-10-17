@@ -91,7 +91,10 @@
 #define LCD_EUSCI_BASE        EUSCI_B0_BASE
 
 
-#define HAL_LCD_delay(x)      __delay_cycles(x * 48)
+//#undef __delay_cycles
+//#define __delay_cycles(x) SysCtlDelay(x)
+#define HAL_LCD_delay(x)  SysCtlDelay(x * 48)
+
 
 // Initialization
 void LCDInit(void);
