@@ -36,7 +36,7 @@ return_e LcdIssueTask::setup(Heap* i_Heap)
     Task::SetTaskExecutionCondition(false);
     this->SetTaskTickInterval(TICKS_INTERVAL);
 
-    m_bIsInitialDraw = false;
+    m_bIsInitialDraw = true;
 
     //Messages memory allocation
     rt = i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
@@ -84,10 +84,20 @@ return_e LcdIssueTask::run(void)
 
         if (m_bIsInitialDraw) {
             SetToDrawAllRectangles();
+            m_bIsInitialDraw = false;
         }
         else {
             CheckRectanglesToDraw();
         }
+
+        //FIXME: Remove after testing LcdIssue
+//        m_u8NumRectanglesToDraw = 0;
+//        uint16_t* l_pRectCoord;
+//        l_pRectCoord = (uint16_t*) &m_pHeapMem[3+m_u8NumRectanglesToDraw++];
+//        l_pRectCoord[0] = 3 << 5;
+//        l_pRectCoord[1] = 2 << 5;
+
+
         message_t l_stRectanglesToDrawMessage = {LCD_ISSUE,
                                                  LCD_DRAW,
                                                  RECTANGLES_TO_DRAW,

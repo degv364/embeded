@@ -191,5 +191,7 @@ int main(void)
         TimeoutLight.set();
     }
 
+    while(1);
+
     return 42;
 }
