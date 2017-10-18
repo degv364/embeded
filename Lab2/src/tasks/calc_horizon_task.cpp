@@ -90,23 +90,45 @@ return_e CalcHorizonTask::run(void)
 inline float CalcHorizonTask::CalcPitchAngle(void){
 
     //Flipped axes to achieve correct horizon orientation
-    float gy = -m_stLastAccel.z;
-    float gx2 = m_stLastAccel.x * m_stLastAccel.x;
-    float gz2 = m_stLastAccel.y * m_stLastAccel.y;
-    //float sign = (m_stLastAccel.y < 0) ? 1 : -1;
-    //float result = sign * atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
+//    float gy = -m_stLastAccel.z;
+//    float gx2 = m_stLastAccel.x * m_stLastAccel.x;
+//    float gz2 = m_stLastAccel.y * m_stLastAccel.y;
+//
+//  //float sign = (m_stLastAccel.y < 0) ? 1 : -1;
+//  //float result = sign * atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
 
-    float result = atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
+//    float result = atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
+
+//    float gx = m_stLastAccel.x;
+//    float gy2 = m_stLastAccel.y * m_stLastAccel.y;
+//    float gz2 = m_stLastAccel.z * m_stLastAccel.z;
+//
+//    float result = atan(gx/sqrt(gy2+gz2))*(180.0f/M_PI);
+
+    float gz = m_stLastAccel.z;
+    float gx2 = m_stLastAccel.x * m_stLastAccel.x;
+    float gy2 = m_stLastAccel.y * m_stLastAccel.y;
+
+    float result = atan(gz/sqrt(gx2+gy2))*(180.0f/M_PI);
+
     return max(min(result, 90.0f),-90.0f);
 }
 
 inline float CalcHorizonTask::CalcRollAngleSlope(void){
 
     //Flipped axes to achieve correct horizon orientation
-    float gy = -m_stLastAccel.z;
-    float gz =  m_stLastAccel.y;
+//    float gy = -m_stLastAccel.z;
+//    float gz =  m_stLastAccel.y;
+
+//    float gy = m_stLastAccel.y;
+//    float gz = m_stLastAccel.z;
+//
+//    float result = gy/gz;
+
+    float gx = -m_stLastAccel.x;
+    float gz = m_stLastAccel.z;
     
-    float result = gy/gz;
+    float result = gx/gz;
     
     return max(min(result, 128.0f),-128.0f);
 }
