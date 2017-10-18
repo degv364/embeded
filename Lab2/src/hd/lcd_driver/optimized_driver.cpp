@@ -699,14 +699,14 @@ void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
       l_i16RemainingPixelsForShift = INT16_MAX;
       l_u16UpdateValue = -1;
     }
-    // Positive slope, start with blue, then turn brown
-    else if(i_fSlope>0){
+    // Negative slope, start with blue, then turn brown
+    else if(i_fSlope<0){
       l_u16UpdateValue = -1;
       l_i16RemainingPixelsForShift = (int16_t) ((float)(l_i16YIndex-l_i16B)/i_fSlope) -
 	(int16_t)i_u16XLeft;
     }
-    //Negative Slope, start with brown then turn blue
-    else{ // i_fSlope<0
+    //Positive Slope, start with brown then turn blue
+    else{ // i_fSlope>0
       l_u16UpdateValue = 1;
       l_i16RemainingPixelsForShift = (int16_t) ((float)(l_i16YIndex-l_i16B)/i_fSlope) -
 	(int16_t)i_u16XLeft;

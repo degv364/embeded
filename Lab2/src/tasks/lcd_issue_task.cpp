@@ -19,6 +19,7 @@
 
 #include "tasks/lcd_issue_task.hh"
 
+
 LcdIssueTask::LcdIssueTask(void)
 {
     Task::SetTaskName(LCD_ISSUE);
@@ -74,7 +75,8 @@ return_e LcdIssueTask::run(void)
 
         //Define Horizon Data to LCD_DRAW message
         m_pHeapMem[1] = (uint32_t) m_u16NextHorizonLevelY;
-        m_pHeapMem[2] = *((uint32_t*) &m_fNextHorizonSlope); //cast pointers to not change data
+        m_pHeapMem[2] = *reinterpret_cast<uint32_t*>(&m_fNextHorizonSlope); //cast pointers to not change data
+
 
         message_t l_stHorizonParamsMessage = {LCD_ISSUE,
                                               LCD_DRAW,
