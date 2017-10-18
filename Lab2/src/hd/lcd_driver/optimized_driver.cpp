@@ -718,9 +718,17 @@ void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
         // Boring unoptimized solution.
 
         //Get the current x position.
+        uint16_t l_u16DivisionY;
         uint16_t l_u16CurrentX = i+i_u16XLeft;
         //Get Y value for given X
-        uint16_t l_u16DivisionY = (uint16_t) ((float)l_u16CurrentX*i_fSlope)+l_i16B;
+        int32_t l_i32TemporalDivision = (int32_t) ((float)l_u16CurrentX*i_fSlope)+l_i16B;
+        if (l_i32TemporalDivision<=0){
+            l_u16DivisionY = 0;
+        }
+        else{
+            l_u16DivisionY = (uint16_t) l_i32TemporalDivision;
+        }
+
         // If Y lcd position is lower than equation, draw sky, else draw ground
         if (l_i16YIndex<l_u16DivisionY){
             l_u16SelectedColor = (uint16_t)(i_u32Colors);
