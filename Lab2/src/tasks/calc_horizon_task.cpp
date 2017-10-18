@@ -58,14 +58,15 @@ return_e CalcHorizonTask::run(void)
         }
         rt = Task::Incoming.PopMessage(&l_stInputMessage);
     }
-    uint16_t l_u16HorizonY = (uint16_t) 63.0*((CalcPitchAngle()/90.0) + 1.0);
+    uint16_t l_u16HorizonY = (uint16_t) (63.0*((CalcPitchAngle()/90.0) + 1.0));
     float l_fHorizonSlope =  CalcRollAngleSlope();
     uint16_t l_u16FilteredHorizonPitch;
     float l_fFilteredHorizonSlope;
 
     // Filter Pitch
-    m_LCDFilterPitch.AddValue(l_u16HorizonY);
-    m_LCDFilterPitch.GetFilteredValue(&l_u16FilteredHorizonPitch);
+    l_u16FilteredHorizonPitch = l_u16HorizonY;
+    //m_LCDFilterPitch.AddValue(l_u16HorizonY);
+    //m_LCDFilterPitch.GetFilteredValue(&l_u16FilteredHorizonPitch);
 
     //Filter Roll. FIXME: re-enable after debugging
     //m_LCDFilterRoll.AddValue((uint16_t) (l_i16HorizonSlope+128));
@@ -95,7 +96,7 @@ inline float CalcHorizonTask::CalcPitchAngle(void){
     float gx = -m_stLastAccel.x;
     float gy = -m_stLastAccel.z;
 
-    float result = atan(gy/gz);
+    float result = atan(gy/gz)*(180.0f/M_PI);
 
     return max(min(result, 90.0f),-90.0f);
 }

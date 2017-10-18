@@ -46,7 +46,7 @@ private:
 
     uint8_t m_u8NumRectanglesToDraw;
 
-    static constexpr uint8_t TICKS_INTERVAL = 20; //5
+    static constexpr uint8_t TICKS_INTERVAL = 5;
     static constexpr uint8_t HEAP_MEM_SIZE = 19; //1 for Scheduler, 2+16 for LcdDraw
     uint32_t* m_pHeapMem;
 };

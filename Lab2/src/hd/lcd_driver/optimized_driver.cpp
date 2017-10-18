@@ -671,18 +671,8 @@ void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
     uint16_t l_u16SelectedColor;
     uint16_t l_u16UpdateValue;
 
-    //FIXME: Check if this is working
-    // Limit slope from -127 to +127
-//    i_i16Slope += 127;
-//    i_i16Slope &= 127;
-//    i_i16Slope -= 127;
-
     // Get line equation parameters
     l_i16B = (int16_t) i_u16Y - i_fSlope * 63;
-
-    //FIXME: Remove after testing hardcoded m and b
-    //l_i16B = 30;
-    //i_i16Slope = 1;
 
     // Draw
     LCDSetDrawFrame(i_u16XLeft, i_u16YTop, i_u16XLeft + RECTANGLE_SIZE-1,
