@@ -715,6 +715,24 @@ void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
     //FIXME: Unroll when sure draw is working properly
 
     for(uint16_t i = 0; i < 32; i++) {
+        // Boring unoptimized solution.
+
+        //Get the current x position.
+        uint16_t l_u16CurrentX = i+i_u16XLeft;
+        //Get Y value for given X
+        uint16_t l_u16DivisionY = (uint16_t) ((float)l_u16CurrentX*i_fSlope)+l_i16B;
+        // If Y lcd position is lower than equation, draw sky, else draw ground
+        if (l_i16YIndex<l_u16DivisionY){
+            l_u16SelectedColor = (uint16_t)(i_u32Colors);
+        }
+        else{
+            l_u16SelectedColor = (uint16_t)(i_u32Colors >> 16);
+        }
+        //Write data
+        LCDWriteData(l_u16SelectedColor >> 8);
+        LCDWriteData(l_u16SelectedColor);
+
+#ifdef CLEVER_BIT_SHIFTING
         // When Remaining pixels is negative its MSB becomes 1. This bit shifts
         //when the color shift should hapen.
 
@@ -730,8 +748,10 @@ void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
            //Write data
            LCDWriteData(l_u16SelectedColor >> 8);
            LCDWriteData(l_u16SelectedColor);
+#endif
     }
 
+#ifdef SUPER_OPTIMIZATION
 //    // Send Pixel 0
 //
 //    // When Remaining pixels becomes negative its MSB becomes 1. This happens when the
@@ -934,6 +954,7 @@ void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
 //    l_i16RemainingPixelsForShift--;
 //    LCDWriteData(l_u16SelectedColor >> 8);
 //    LCDWriteData(l_u16SelectedColor);
+#endif
   }
   
 }
