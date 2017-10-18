@@ -39,7 +39,7 @@ public:
 
 private:
   uint16_t m_u16Pitch;
-  uint16_t m_i16Slope;
+  float m_fSlope;
   uint8_t m_u8RectanglesToDraw;
   uint16_t* m_aCoordinates;
   uint8_t m_u8CurrentRectangle;

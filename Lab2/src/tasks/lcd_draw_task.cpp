@@ -74,7 +74,7 @@ LcdDrawTask::run(){
                     && l_stInputMessage.sender == LCD_ISSUE)
             {
                 m_u16Pitch = (uint16_t) l_stInputMessage.data[0];
-                m_i16Slope = (int16_t) l_stInputMessage.data[1];
+                m_fSlope = *((float*) &l_stInputMessage.data[1]);
             }
             else if (l_stInputMessage.message_type == RECTANGLES_TO_DRAW
                     && l_stInputMessage.sender == LCD_ISSUE)
@@ -97,7 +97,7 @@ LcdDrawTask::run(){
   //Draw the rectangles----------------------------------------------------------
   LCDDrawDividedRectangle(m_aCoordinates[m_u8CurrentRectangle<<1],
 			  m_aCoordinates[(m_u8CurrentRectangle<<1)+1],
-			  m_u16Pitch, m_i16Slope, m_u32Colors);
+			  m_u16Pitch, m_fSlope, m_u32Colors);
 
   //Check if more squares need to be drawn---------------------------------------
   m_u8CurrentRectangle++;

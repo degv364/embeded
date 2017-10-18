@@ -123,5 +123,5 @@ void LCDDrawCompleteHorizontalRect(uint16_t i_u16Y0, uint16_t i_u16Y1, uint16_t 
  * \param i_u32Colors: MSB sky color, LSB ground color
  */
 void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
-			     uint16_t i_u16Y, int16_t i_i16Slope, uint32_t i_u32Colors);
+			     uint16_t i_u16Y, float i_fSlope, uint32_t i_u32Colors);
 #endif

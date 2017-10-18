@@ -39,10 +39,10 @@ private:
     bool m_bIsInitialDraw;
 
     uint16_t m_u16HorizonLevelY;
-    int16_t m_i16HorizonSlope;
+    float m_fHorizonSlope;
 
     uint16_t m_u16NextHorizonLevelY;
-    int16_t m_i16NextHorizonSlope;
+    float m_fNextHorizonSlope;
 
     uint8_t m_u8NumRectanglesToDraw;
 

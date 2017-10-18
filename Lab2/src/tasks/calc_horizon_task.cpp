@@ -59,20 +59,21 @@ return_e CalcHorizonTask::run(void)
         rt = Task::Incoming.PopMessage(&l_stInputMessage);
     }
     uint16_t l_u16HorizonY = (uint16_t) 63.0*((CalcPitchAngle()/90.0) + 1.0);
-    int16_t l_i16HorizonSlope = (int16_t) CalcRollAngleSlope();
+    float l_fHorizonSlope =  CalcRollAngleSlope();
     uint16_t l_u16FilteredHorizonPitch;
-    uint16_t l_u16FilteredHorizonSlope;
+    float l_fFilteredHorizonSlope;
 
     // Filter Pitch
     m_LCDFilterPitch.AddValue(l_u16HorizonY);
     m_LCDFilterPitch.GetFilteredValue(&l_u16FilteredHorizonPitch);
 
-    //Filter Roll
-    m_LCDFilterRoll.AddValue((uint16_t) (l_i16HorizonSlope+128));
-    m_LCDFilterRoll.GetFilteredValue(&l_u16FilteredHorizonSlope);
+    //Filter Roll. FIXME: re-enable after debugging
+    //m_LCDFilterRoll.AddValue((uint16_t) (l_i16HorizonSlope+128));
+    //m_LCDFilterRoll.GetFilteredValue(&l_u16FilteredHorizonSlope);
+    l_fFilteredHorizonSlope = l_fHorizonSlope;
 
     m_pHeapMem[0] = (uint32_t) l_u16FilteredHorizonPitch;
-    m_pHeapMem[1] = ((int32_t) l_u16FilteredHorizonSlope)-128;
+    m_pHeapMem[1] = *((int32_t*) &l_fFilteredHorizonSlope); //Cast pointer to not change the bits
 
     message_t l_stHorizonMessage = {CALC_HORIZON,
                                     LCD_ISSUE,

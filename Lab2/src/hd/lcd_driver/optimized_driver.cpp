@@ -663,12 +663,13 @@ void LCDDrawCompleteHorizontalRect(uint16_t i_u16Y0, uint16_t i_u16Y1, uint16_t 
 // We know that squares are 32x32
 
 void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
-			     uint16_t i_u16Y, int16_t i_i16Slope, uint32_t i_u32Colors)
+			     uint16_t i_u16Y, float i_fSlope, uint32_t i_u32Colors)
 {
     int16_t l_i16B;
     int16_t l_i16RemainingPixelsForShift;
     uint16_t l_u16ShouldShift;
     uint16_t l_u16SelectedColor;
+    uint16_t l_u16UpdateValue;
 
     //FIXME: Check if this is working
     // Limit slope from -127 to +127
@@ -677,7 +678,7 @@ void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
 //    i_i16Slope -= 127;
 
     // Get line equation parameters
-    l_i16B = (int16_t) i_u16Y - i_i16Slope * 63;
+    l_i16B = (int16_t) i_u16Y - i_fSlope * 63;
 
     //FIXME: Remove after testing hardcoded m and b
     //l_i16B = 30;
@@ -693,17 +694,32 @@ void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
        l_i16YIndex <= (int16_t) i_u16YTop+RECTANGLE_SIZE-1; l_i16YIndex++) {
 
     // Solve equation for when there is a color shift
-    l_i16RemainingPixelsForShift = (l_i16YIndex-l_i16B)/i_i16Slope - (int16_t)i_u16XLeft;
-
+    if (i_fSlope == 0.0f){
+      //Avoid exception
+      l_i16RemainingPixelsForShift = INT16_MAX;
+      l_u16UpdateValue = -1;
+    }
+    // Positive slope, start with blue, then turn brown
+    else if(i_fSlope>0){
+      l_u16UpdateValue = -1;
+      l_i16RemainingPixelsForShift = (int16_t) ((float)(l_i16YIndex-l_i16B)/i_fSlope) -
+	(int16_t)i_u16XLeft;
+    }
+    //Negative Slope, start with brown then turn blue
+    else{ // i_fSlope<0
+      l_u16UpdateValue = 1;
+      l_i16RemainingPixelsForShift = (int16_t) ((float)(l_i16YIndex-l_i16B)/i_fSlope) -
+	(int16_t)i_u16XLeft;
+    }
     
     //FIXME: Unroll when sure draw is working properly
 
     for(uint16_t i = 0; i < 32; i++) {
-        // When Remaining pixels becomes negative its MSB becomes 1. This happens when the
-           // Color shift should happen. In that case the color is shifted to select the second one.
+        // When Remaining pixels is negative its MSB becomes 1. This bit shifts
+        //when the color shift should hapen.
 
            // Update remaining bits
-           l_i16RemainingPixelsForShift--;
+           l_i16RemainingPixelsForShift+=l_u16UpdateValue;
 
            l_u16ShouldShift = ((uint16_t)l_i16RemainingPixelsForShift) >> 15;
 

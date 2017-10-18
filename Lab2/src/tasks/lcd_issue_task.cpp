@@ -25,7 +25,7 @@ LcdIssueTask::LcdIssueTask(void)
     Task::SetTaskType(PERIODICAL);
 
     m_u16HorizonLevelY = m_u16NextHorizonLevelY = 63;
-    m_i16HorizonSlope = m_i16NextHorizonSlope = 0;
+    m_fHorizonSlope = m_fNextHorizonSlope = 0.0f;
 }
 
 return_e LcdIssueTask::setup(Heap* i_Heap)
@@ -56,7 +56,7 @@ return_e LcdIssueTask::run(void)
     while(rt != RETURN_EMPTY){
         if (l_stInputMessage.message_type == HORIZON_PARAMS) {
             m_u16NextHorizonLevelY = (uint16_t) l_stInputMessage.data[0];
-            m_i16NextHorizonSlope = (int16_t) l_stInputMessage.data[1];
+            m_fNextHorizonSlope = *((float*) &l_stInputMessage.data[1]);
             l_bGotValidMessage = true;
         }
         rt = Task::Incoming.PopMessage(&l_stInputMessage);
@@ -74,7 +74,7 @@ return_e LcdIssueTask::run(void)
 
         //Define Horizon Data to LCD_DRAW message
         m_pHeapMem[1] = (uint32_t) m_u16NextHorizonLevelY;
-        m_pHeapMem[2] = (uint32_t) m_i16NextHorizonSlope;
+        m_pHeapMem[2] = *((uint32_t*) &m_fNextHorizonSlope); //cast pointers to not change data
 
         message_t l_stHorizonParamsMessage = {LCD_ISSUE,
                                               LCD_DRAW,
@@ -111,7 +111,7 @@ return_e LcdIssueTask::run(void)
 
 
         m_u16HorizonLevelY = m_u16NextHorizonLevelY;
-        m_i16HorizonSlope = m_i16NextHorizonSlope;
+        m_fHorizonSlope = m_fNextHorizonSlope;
     }
 
     return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
@@ -140,8 +140,8 @@ inline void LcdIssueTask::CheckRectanglesToDraw(void)
     m_u8NumRectanglesToDraw = 0;
     uint16_t* l_pRectCoord;
 
-    int16_t l_u16CurrentLineB = m_u16HorizonLevelY - m_i16HorizonSlope * 63;
-    int16_t l_u16NextLineB = m_u16NextHorizonLevelY - m_i16NextHorizonSlope * 63;
+    int16_t l_u16CurrentLineB = (int16_t) ((float) m_u16HorizonLevelY - m_fHorizonSlope * 63.0f);
+    int16_t l_u16NextLineB = (int16_t) ((float) m_u16NextHorizonLevelY - m_fNextHorizonSlope * 63.0f);
 
 
     //FIXME: Unroll when sure about number of rectangles
@@ -156,14 +156,18 @@ inline void LcdIssueTask::CheckRectanglesToDraw(void)
     }
 }
 
-static inline int16_t CalculateLineY(uint16_t i_u16x, int16_t i_u16m, int16_t i_u16b)
+static inline int16_t CalculateLineY(uint16_t i_u16x, float i_fm, int16_t i_u16b)
 {
-    return i_u16m*i_u16x+i_u16b;
+  return (int16_t)(i_fm*(float)i_u16x+(float)i_u16b);
 }
 
-static inline int16_t CalculateLineX(uint16_t i_u16y, int16_t i_u16m, int16_t i_u16b)
+static inline int16_t CalculateLineX(uint16_t i_u16y, float i_fm, int16_t i_u16b)
 {
-    return (int32_t) (i_u16y-i_u16b)/i_u16m; //FIXME: Check if need cast to float for calculation
+  if (i_fm == 0){
+    // Avoid exception
+    return INT16_MAX;
+  }
+  return (int16_t) ((float)(i_u16y-i_u16b)/i_fm); 
 }
 
 static inline bool ValueInRange(int16_t i_u16Value, int16_t i_u16LimA, int16_t i_u16LimB)
@@ -183,10 +187,10 @@ inline bool LcdIssueTask::NeedToDrawRectangle(uint16_t row, uint16_t col,
     int16_t l_u16Y_H = (col+1) << 5;
 
 
-    int16_t l_i16CurrentLineY_X_L = CalculateLineY(l_u16X_L, m_u16HorizonLevelY, i_u16CurrentLineB);
-    int16_t l_i16CurrentLineY_X_H = CalculateLineY(l_u16X_H, m_u16HorizonLevelY, i_u16CurrentLineB);
-    int16_t l_i16NextLineY_X_L    = CalculateLineY(l_u16X_L, m_u16NextHorizonLevelY, i_u16NextLineB);
-    int16_t l_i16NextLineY_X_H    = CalculateLineY(l_u16X_H, m_u16NextHorizonLevelY, i_u16NextLineB);
+    int16_t l_i16CurrentLineY_X_L = CalculateLineY(l_u16X_L, m_fHorizonSlope, i_u16CurrentLineB);
+    int16_t l_i16CurrentLineY_X_H = CalculateLineY(l_u16X_H, m_fHorizonSlope, i_u16CurrentLineB);
+    int16_t l_i16NextLineY_X_L    = CalculateLineY(l_u16X_L, m_fNextHorizonSlope, i_u16NextLineB);
+    int16_t l_i16NextLineY_X_H    = CalculateLineY(l_u16X_H, m_fNextHorizonSlope, i_u16NextLineB);
 
 
     //--------Rectangle between current and next line conditions--------
