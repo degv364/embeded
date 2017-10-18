@@ -106,7 +106,7 @@ inline float CalcHorizonTask::CalcRollAngleSlope(void){
     float gz = -m_stLastAccel.y;
     float gx = -m_stLastAccel.x;
     float gy = -m_stLastAccel.z;
-    float result = gx/sqrt(gz*gz+gx*gx);
+    float result = gx/sqrt(gz*gz+gy*gy);
     
     return max(min(result, 128.0f),-128.0f);
 }
