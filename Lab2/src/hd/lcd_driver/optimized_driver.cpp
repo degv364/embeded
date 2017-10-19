@@ -670,7 +670,6 @@ void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
     int16_t l_i16RemainingPixelsForShift;
     uint16_t l_u16ShouldShift;
     uint16_t l_u16SelectedColor;
-    uint16_t l_u16UpdateValue;
 
     // Get line equation parameters
     l_i16B = (int16_t) i_u16Y - i_fSlope * 63;

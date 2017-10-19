@@ -80,7 +80,6 @@ inline float CalcHorizonTask::CalcPitchAngle(void){
     //Flipped axes to achieve correct horizon orientation
 
     float l_fGravityZ = -m_stLastAccel.m_i16Y;
-    float l_fGravityX = -m_stLastAccel.m_i16X;
     float l_fGravityY = -m_stLastAccel.m_i16Z;
 
 
