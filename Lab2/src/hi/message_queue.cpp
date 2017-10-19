@@ -13,8 +13,8 @@ return_e MessageQueue::AddMessage(message_t i_stNewMessage)
         return RETURN_NO_SPACE;
     }
     // Add message
-    m_u8WriteIndex = (m_u8WriteIndex + 1) % MESSAGE_QUEUE_SIZE;
     m_aMessageList[m_u8WriteIndex] = i_stNewMessage;
+    m_u8WriteIndex = (m_u8WriteIndex + 1) % MESSAGE_QUEUE_SIZE;
     return RETURN_OK;
 }
 

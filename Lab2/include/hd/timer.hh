@@ -20,9 +20,9 @@
 #ifndef INCLUDE_HD_TIMER_HH_
 #define INCLUDE_HD_TIMER_HH_
 
-#include "hd/periph.hh"
+#include "peripherals.hh"
 
-namespace periph
+namespace peripherals
 {
 /*
  * Class that manages the Timer32 configuration allowing to set
@@ -36,25 +36,25 @@ public:
      * and configures the timer to issue the indicated number of
      * interrupts per second
      */
-    Timer(uint32_t timer32_base, uint16_t interrupts_per_second);
+    Timer(uint32_t i_u32Timer32Base, uint16_t i_u16InterruptsPerSecond);
 
     //Start the timer count
-    void start(void);
+    void Start(void);
 
     //Halts the timer
-    void stop(void);
+    void Stop(void);
 
     //Get the current number of interrupts per second
-    uint16_t getInterruptsPerSecond(void);
+    uint16_t GetInterruptsPerSecond(void);
 
     //Enable the interrupt generation for the specified timer
-    void enableInterrupt(void);
+    void EnableInterrupt(void);
 
     //Clean the interrupt flag for specified Timer32 module
-    static void cleanIRQ(uint32_t timer32_base);
+    static void CleanIRQ(uint32_t timer32_base);
 private:
-    uint32_t timer32_base_; //Timer32 module
-    uint16_t interrupts_per_second_;
+    uint32_t m_u32Timer32Base; //Timer32 module
+    uint16_t m_u16InterruptsPerSecond;
 };
 
 }

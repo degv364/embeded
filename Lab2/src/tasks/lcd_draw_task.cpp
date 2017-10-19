@@ -23,14 +23,13 @@ LcdDrawTask::LcdDrawTask(void)
 {
     Task::SetTaskName(LCD_DRAW);
     Task::SetTaskType(ONE_SHOT);
-    m_u16SkyColor = (uint16_t)LCDColorTranslate(GRAPHICS_COLOR_DEEP_SKY_BLUE);
-    m_u16GroundColor = (uint16_t) LCDColorTranslate(GRAPHICS_COLOR_BROWN);
-
-    m_u16HorizonLevelY = 63;
-    m_u16NextHorizonLevelY = 63;
+    m_u32Colors = 0;
+    //Initialize sky as MSB and ground as LSB
+    m_u32Colors = (uint32_t) (GRAPHICS_COLOR_BROWN_16BITS<<16);
+    m_u32Colors |= (uint32_t) (LCDColorTranslate(GRAPHICS_COLOR_DEEP_SKY_BLUE));
 }
 
-return_e LcdDrawTask::setup(Heap* i_Heap)
+return_e LcdDrawTask::Setup(Heap* i_Heap)
 {
     return_e rt;
 
@@ -39,8 +38,7 @@ return_e LcdDrawTask::setup(Heap* i_Heap)
     // Set default screen orientation
     LCDSetOrientation();
 
-    //Initializes tasks state booleans
-    m_bIsFirstLcdDraw = true;
+    //Initializes task state boolean
     m_bIsFirstIteration = true;
 
     //Tasks info setup
@@ -53,117 +51,74 @@ return_e LcdDrawTask::setup(Heap* i_Heap)
     return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
 }
 
-return_e LcdDrawTask::run(void)
-{
-  // Use m_sContext->foreground
+
+return_e
+LcdDrawTask::Run(){
     return_e rt;
     message_t l_stInputMessage;
-    bool l_bGotValidMessage = false;
 
-    if (m_bIsFirstIteration) {
-
-        //Receive message in first Draw Iteration
-
+  //Handle messages in first iteration--------------------------------------------
+    if (m_bIsFirstIteration)
+    {
+        // Receive messages
         rt = Task::Incoming.PopMessage(&l_stInputMessage);
-        while (rt != RETURN_EMPTY) {
-            if (l_stInputMessage.message_type == HORIZON_PARAMS
-                        && l_stInputMessage.sender == LCD_ISSUE) {
-                m_u16NextHorizonLevelY = (uint16_t) l_stInputMessage.data[0];
-                l_bGotValidMessage = true;
-            }
-            rt = Task::Incoming.PopMessage(&l_stInputMessage);
-        }
-
-        if (!l_bGotValidMessage){
+        if (rt == RETURN_EMPTY) {
+            // No messages
             return RETURN_OK;
         }
+        while (rt != RETURN_EMPTY) {
+            if (rt != RETURN_OK)
+                return rt;
 
-        if (m_bIsFirstLcdDraw) {
-            m_u16NextHorizonLevelY -= m_u16NextHorizonLevelY % DRAW_CHUNK_LINES;
-            m_u16NextHorizonLevelY = max(m_u16NextHorizonLevelY, 0);
-            m_u16CurrentHorizonIterLevelY = 0;
-            InitialDrawIteration(128 % DRAW_CHUNK_LINES);
-        }
-        else {
-            m_u16CurrentHorizonIterLevelY = m_u16HorizonLevelY;
-            UpdateDrawIteration((abs(m_u16NextHorizonLevelY-m_u16HorizonLevelY)) % DRAW_CHUNK_LINES);
-        }
+            if (l_stInputMessage.m_eMessageType == HORIZON_PARAMS
+                    && l_stInputMessage.m_eSender == LCD_ISSUE)
+            {
+                m_u16Pitch = (uint16_t) l_stInputMessage.m_pData[0];
+                m_fSlope = *((float*) &l_stInputMessage.m_pData[1]);
+            }
+            else if (l_stInputMessage.m_eMessageType == RECTANGLES_TO_DRAW
+                    && l_stInputMessage.m_eSender == LCD_ISSUE)
+            {
+                m_u8RectanglesToDraw = (uint8_t) l_stInputMessage.m_u8Length;
+                m_aCoordinates = (uint16_t*) l_stInputMessage.m_pData;
+                m_u8CurrentRectangle = 0;
+            }
+            else
+            {
+                //invalid message
+                return RETURN_FAIL;
+            }
 
+            rt = Task::Incoming.PopMessage(&l_stInputMessage);
+        }
         m_bIsFirstIteration = false;
     }
-    else {
-        if (m_bIsFirstLcdDraw) {
-            InitialDrawIteration(DRAW_CHUNK_LINES);
-        }
-        else {
-            UpdateDrawIteration(DRAW_CHUNK_LINES);
-        }
-    }
 
-    bool l_bFinishedIterations = m_bIsFirstLcdDraw ?
-                                m_u16CurrentHorizonIterLevelY == 128 :
-                                m_u16CurrentHorizonIterLevelY == m_u16NextHorizonLevelY;
+  //Draw the rectangles----------------------------------------------------------
+  LCDDrawDividedRectangle(m_aCoordinates[m_u8CurrentRectangle<<1],
+			  m_aCoordinates[(m_u8CurrentRectangle<<1)+1],
+			  m_u16Pitch, m_fSlope, m_u32Colors);
 
-    if (l_bFinishedIterations) {
-        m_u16HorizonLevelY = m_u16NextHorizonLevelY;
-	
-	m_bIsFirstLcdDraw = false;
+  //Check if more squares need to be drawn---------------------------------------
+  m_u8CurrentRectangle++;
 
-        m_bIsFirstIteration = true; //Prepare for next draw iteration chain
-    }
-    else {
-        //Define Execute LCD_DRAW for Scheduler message (Auto-Trigger)
+  if (m_u8CurrentRectangle < m_u8RectanglesToDraw) {
         m_pHeapMem[0] = (uint32_t) LCD_DRAW;
-        message_t l_stTriggerDrawMessage = {LCD_ISSUE,
-                                            SCHEDULER,
-                                            ADD_TO_EXECUTION,
-                                            1,
-                                            m_pHeapMem};
+        message_t l_stTriggerDrawMessage = { LCD_ISSUE,
+                                             SCHEDULER,
+                                             ADD_TO_EXECUTION,
+                                             1,
+                                             m_pHeapMem };
         //Send message
         rt = Task::Outgoing.AddMessage(l_stTriggerDrawMessage);
-    }
+        if (rt != RETURN_OK) {
+            return rt;
+        }
+  }
+  else {
+        //this is the last iteration, set first iteration flag for next cycle
+        m_bIsFirstIteration = true;
+  }
 
-    return RETURN_OK;
-}
-
-
-void LcdDrawTask::InitialDrawIteration(uint16_t i_u16CurrentIterationDeltaY)
-{
-    uint16_t l_u16CurrentColor;
-    uint16_t l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY + i_u16CurrentIterationDeltaY;
-
-    if(m_u16CurrentHorizonIterLevelY<m_u16NextHorizonLevelY){
-        l_u16CurrentColor = m_u16SkyColor;
-    }
-    else{
-        l_u16CurrentColor = m_u16GroundColor;
-    }
-    
-    LCDDrawCompleteHorizontalRect(m_u16CurrentHorizonIterLevelY, l_u16NextHorizonIterLevelY, l_u16CurrentColor);
-    m_u16CurrentHorizonIterLevelY = l_u16NextHorizonIterLevelY;
-}
-
-
-void LcdDrawTask::UpdateDrawIteration(uint16_t i_u16CurrentIterationDeltaY)
-{
-    uint16_t l_u16NextHorizonIterLevelY;
-    uint16_t l_u16CurrentColor;
-    uint16_t l_u16HorizonBottom;
-    uint16_t l_u16HorizonTop;
-
-    if ((int16_t)m_u16NextHorizonLevelY-(int16_t)m_u16HorizonLevelY >= 0) {
-        l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY + i_u16CurrentIterationDeltaY;
-        l_u16HorizonTop = l_u16NextHorizonIterLevelY;
-        l_u16HorizonBottom = m_u16CurrentHorizonIterLevelY;
-        l_u16CurrentColor = m_u16SkyColor;
-    }
-    else {
-        l_u16NextHorizonIterLevelY = m_u16CurrentHorizonIterLevelY - i_u16CurrentIterationDeltaY;
-        l_u16HorizonTop = m_u16CurrentHorizonIterLevelY;
-        l_u16HorizonBottom = l_u16NextHorizonIterLevelY;
-        l_u16CurrentColor = m_u16GroundColor;
-    }
-
-    LCDDrawCompleteHorizontalRect(l_u16HorizonBottom,l_u16HorizonTop, l_u16CurrentColor);
-    m_u16CurrentHorizonIterLevelY = l_u16NextHorizonIterLevelY;
+  return RETURN_OK;
 }

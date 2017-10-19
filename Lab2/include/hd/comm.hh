@@ -27,37 +27,37 @@
 #include "common_def.hh"
 #include "hd/hd_def.hh"
 
-namespace comm
+namespace communication
 {
 namespace i2c
 {
 /* Initialize I2C module in master mode at EUSCI_B1
  * and pins P6.5(I2C_SCL), P6.4(I2C_SDA)
  */
-void init(void);
+void Init(void);
 
 //Set slave address prior to I2C communication
-void setSlave(uint16_t slaveAddr);
+void SetSlave(uint16_t i_u16SlaveAddr);
 
 /* Write 1 byte (writeValue) from master (MSP432) to
  * some slave register indicated by regAddr
  */
-void write8(uint8_t regAddr, uint8_t writeValue);
+void Write8(uint8_t i_u8RegAddr, uint8_t i_u8WriteValue);
 
 /* Write 2 bytes (writeValue) from master (MSP432) to
  * some slave register indicated by regAddr
  */
-void write16(uint8_t regAddr, uint16_t writeValue);
+void Write16(uint8_t i_u8RegAddr, uint16_t i_u16WriteValue);
 
 /* Read 1 byte from some slave register indicated
  * by regAddr to master (MSP432)
  */
-uint8_t read8(uint8_t regAddr);
+uint8_t Read8(uint8_t i_u8RegAddr);
 
 /* Read 2 bytes from some slave register indicated
  * by regAddr to master (MSP432)
  */
-uint16_t read16(uint16_t regAddr);
+uint16_t Read16(uint16_t i_u16RegAddr);
 }
 }
 

@@ -20,19 +20,19 @@
 #ifndef ADC_IRQ_TASK
 #define ADC_IRQ_TASK
 
+#include "../hd/peripherals.hh"
 #include "hi/task.hh"
 #include "hi/heap.hh"
-#include "hd/periph.hh"
 
 class AdcIRQTask : public Task{
 public:
     AdcIRQTask(void);
-    virtual return_e setup(Heap* i_Heap);
+    virtual return_e Setup(Heap* i_Heap);
 
     uint32_t* m_pHeapMem;
 
 private:
-    periph::AccelADC m_AccelADC;
+    peripherals::AccelADC m_AccelADC;
 
     // One for each accel axis result. One for execution message
     static constexpr uint8_t HEAP_MEM_SIZE = 4;

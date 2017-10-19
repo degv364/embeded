@@ -19,6 +19,7 @@
 
 /* Standard Includes */
 
+#include <hd/peripherals.hh>
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -26,7 +27,6 @@
 
 /* Project Includes*/
 #include "common_def.hh"
-#include "hd/periph.hh"
 #include "hi/hi_def.hh"
 #include "hi/scheduler.hh"
 
@@ -58,7 +58,7 @@ void T32_INT1_IRQHandler(void)
 {
     __disable_irq();
 
-    periph::Timer::cleanIRQ(TIMER32_0_BASE);
+    peripherals::Timer::CleanIRQ(TIMER32_0_BASE);
     if (g_bDuringFrame)
       g_bTimeoutCondition = true;
     g_SystemTicks++;
@@ -73,7 +73,7 @@ void T32_INT2_IRQHandler(void)
 {
     __disable_irq();
 
-    periph::Timer::cleanIRQ(TIMER32_1_BASE);
+    peripherals::Timer::CleanIRQ(TIMER32_1_BASE);
     MAP_ADC14_toggleConversionTrigger();
 
     __enable_irq();
@@ -86,7 +86,7 @@ void ADC14_IRQHandler(void)
 {
     __disable_irq();
 
-    if (periph::AccelADC::CheckAndCleanIRQ(ADC_INT2)
+    if (peripherals::AccelADC::CheckAndCleanIRQ(ADC_INT2)
         && !g_AdcIRQTask.IsTaskFinished())
     {
       // Create message with accel data

@@ -27,16 +27,12 @@ CalcHorizonTask::CalcHorizonTask(void)
     m_stLastAccel = {0,0,0};
 }
 
-return_e CalcHorizonTask::setup(Heap* i_Heap)
+return_e CalcHorizonTask::Setup(Heap* i_Heap)
 {
     return_e rt;
 
     Task::SetTaskExecutionCondition(false);
     this->SetTaskTickInterval(0);
-
-    //Setup MeanFilter
-    m_LCDFilterPitch.Setup(63);
-    m_LCDFilterRoll.Setup(63);
 
     //Messages memory allocation
     rt = i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
@@ -44,35 +40,28 @@ return_e CalcHorizonTask::setup(Heap* i_Heap)
     return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
 }
 
-return_e CalcHorizonTask::run(void)
+return_e CalcHorizonTask::Run(void)
 {
     return_e rt;
     message_t l_stInputMessage;
     Task::m_bIsFinished = false;
     rt = Task::Incoming.PopMessage(&l_stInputMessage);
+
     while(rt != RETURN_EMPTY){
-        if (l_stInputMessage.message_type == ACCEL_DATA) {
-            m_stLastAccel.x = (int16_t) l_stInputMessage.data[0];
-            m_stLastAccel.y = (int16_t) l_stInputMessage.data[1];
-            m_stLastAccel.z = (int16_t) l_stInputMessage.data[2];
+        if (l_stInputMessage.m_eMessageType == ACCEL_DATA) {
+            m_stLastAccel.m_i16X = (int16_t) l_stInputMessage.m_pData[0];
+            m_stLastAccel.m_i16Y = (int16_t) l_stInputMessage.m_pData[1];
+            m_stLastAccel.m_i16Z = (int16_t) l_stInputMessage.m_pData[2];
         }
         rt = Task::Incoming.PopMessage(&l_stInputMessage);
     }
-    uint16_t l_u16HorizonY = (uint16_t) 63.0*((CalcPitchAngle()/90.0) + 1.0);
-    int16_t l_i16HorizonSlope = (int16_t) CalcRollAngleSlope();
-    uint16_t l_u16FilteredHorizonPitch;
-    uint16_t l_u16FilteredHorizonSlope;
 
-    // Filter Pitch
-    m_LCDFilterPitch.AddValue(l_u16HorizonY);
-    m_LCDFilterPitch.GetFilteredValue(&l_u16FilteredHorizonPitch);
+    uint16_t l_u16HorizonY = (uint16_t) (63.0*((CalcPitchAngle()/90.0) + 1.0));
+    float l_fHorizonSlope =  CalcRollAngleSlope();
 
-    //Filter Roll
-    m_LCDFilterRoll.AddValue((uint16_t) (l_i16HorizonSlope+128));
-    m_LCDFilterRoll.GetFilteredValue(&l_u16FilteredHorizonSlope);
+    m_pHeapMem[0] = (uint32_t) l_u16HorizonY;
+    m_pHeapMem[1] = *reinterpret_cast<uint32_t*>(&l_fHorizonSlope); //Cast pointer to not change the bits
 
-    m_pHeapMem[0] = (uint32_t) l_u16FilteredHorizonPitch;
-    m_pHeapMem[1] = ((int32_t) l_u16FilteredHorizonSlope)-128;
 
     message_t l_stHorizonMessage = {CALC_HORIZON,
                                     LCD_ISSUE,
@@ -89,24 +78,24 @@ return_e CalcHorizonTask::run(void)
 inline float CalcHorizonTask::CalcPitchAngle(void){
 
     //Flipped axes to achieve correct horizon orientation
-    float gy = -m_stLastAccel.z;
-    float gx2 = m_stLastAccel.x * m_stLastAccel.x;
-    float gz2 = m_stLastAccel.y * m_stLastAccel.y;
-    //float sign = (m_stLastAccel.y < 0) ? 1 : -1;
-    //float result = sign * atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
 
-    float result = atan(gy/sqrt(gx2+gz2))*(180.0f/M_PI);
-    return max(min(result, 90.0f),-90.0f);
+    float l_fGravityZ = -m_stLastAccel.m_i16Y;
+    float l_fGravityY = -m_stLastAccel.m_i16Z;
+
+
+    float l_fResult = atan2(l_fGravityY,l_fGravityZ)*(180.0f/M_PI);
+
+    return max(min(l_fResult, 90.0f),-90.0f);
 }
 
 inline float CalcHorizonTask::CalcRollAngleSlope(void){
 
     //Flipped axes to achieve correct horizon orientation
-    float gy = -m_stLastAccel.z;
-    float gz =  m_stLastAccel.y;
+    float l_fGravityZ = -m_stLastAccel.m_i16Y;
+    float l_fGravityX = -m_stLastAccel.m_i16X;
+    float l_fGravityY = -m_stLastAccel.m_i16Z;
+    float l_fResult = l_fGravityX/sqrt(l_fGravityZ*l_fGravityZ+l_fGravityY*l_fGravityY);
     
-    float result = gy/gz;
-    
-    return max(min(result, 128.0f),-128.0f);
+    return max(min(l_fResult, 128.0f),-128.0f);
 }
 

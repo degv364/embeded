@@ -28,9 +28,9 @@ public:
     MessageQueue Outgoing;
 
 
-    virtual return_e run(void){return (RETURN_OK);}
+    virtual return_e Run(void){return (RETURN_OK);}
     // Receives a pointer to the heap for memory allocation
-    virtual return_e setup(Heap* i_Heap){return (RETURN_OK);}
+    virtual return_e Setup(Heap* i_Heap){return (RETURN_OK);}
     bool IsTaskFinished(void){return m_bIsFinished;}
 
     // Gets

@@ -21,7 +21,7 @@
 #define INCLUDE_HI_TASKS_CALC_HORIZON_TASK_HH_
 
 #include <math.h>
-#include "hd/periph.hh"
+#include "../hd/peripherals.hh"
 #include "hi/hi_def.hh"
 #include "hi/task.hh"
 #include "hi/filters.hh"
@@ -30,21 +30,19 @@ class CalcHorizonTask : public Task
 {
 public:
     CalcHorizonTask(void);
-    virtual return_e run(void);
-    virtual return_e setup(Heap* i_Heap);
+    virtual return_e Run(void);
+    virtual return_e Setup(Heap* i_Heap);
     float CalcPitchAngle(void);
     float CalcRollAngleSlope(void);
 private:
     struct AccelAxes {
-        int16_t x;
-        int16_t y;
-        int16_t z;
+        int16_t m_i16X;
+        int16_t m_i16Y;
+        int16_t m_i16Z;
     };
 
     static constexpr uint8_t HEAP_MEM_SIZE = 2;
 
-    MeanFilter m_LCDFilterPitch;
-    MeanFilter m_LCDFilterRoll;
     AccelAxes m_stLastAccel;
     uint32_t* m_pHeapMem;
 };

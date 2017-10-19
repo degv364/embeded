@@ -19,7 +19,7 @@
 
 #include "hd/comm.hh"
 
-void comm::i2c::init(void)
+void communication::i2c::Init(void)
 {
     const eUSCI_I2C_MasterConfig i2cConfig = {
     EUSCI_B_I2C_CLOCKSOURCE_SMCLK,              // SMCLK Clock Source
@@ -40,17 +40,17 @@ void comm::i2c::init(void)
     MAP_I2C_enableModule(EUSCI_B1_BASE);
 }
 
-void comm::i2c::setSlave(uint16_t slaveAddr)
+void communication::i2c::SetSlave(uint16_t i_u16SlaveAddr)
 {
     //Config I2C Slave Address
-    MAP_I2C_setSlaveAddress(EUSCI_B1_BASE, slaveAddr);
+    MAP_I2C_setSlaveAddress(EUSCI_B1_BASE, i_u16SlaveAddr);
 
     //Enable and clear TX/RX Interrupt Flags
     MAP_I2C_clearInterruptFlag(EUSCI_B1_BASE,
     EUSCI_B_I2C_TRANSMIT_INTERRUPT0 | EUSCI_B_I2C_RECEIVE_INTERRUPT0);
 }
 
-void comm::i2c::write8(uint8_t regAddr, uint8_t writeValue)
+void communication::i2c::Write8(uint8_t i_u8RegAddr, uint8_t i_u8WriteValue)
 {
     __disable_irq();
 
@@ -66,16 +66,16 @@ void comm::i2c::write8(uint8_t regAddr, uint8_t writeValue)
 
     //------ Send Register Address ------
 
-    MAP_I2C_masterSendMultiByteStart(EUSCI_B1_BASE, regAddr);
+    MAP_I2C_masterSendMultiByteStart(EUSCI_B1_BASE, i_u8RegAddr);
 
     //------ Send Data ------
 
-    MAP_I2C_masterSendMultiByteFinish(EUSCI_B1_BASE, writeValue);
+    MAP_I2C_masterSendMultiByteFinish(EUSCI_B1_BASE, i_u8WriteValue);
 
     __enable_irq();
 }
 
-void comm::i2c::write16(uint8_t regAddr, uint16_t writeValue)
+void communication::i2c::Write16(uint8_t i_u8RegAddr, uint16_t i_u16WriteValue)
 {
     __disable_irq();
 
@@ -89,12 +89,12 @@ void comm::i2c::write16(uint8_t regAddr, uint16_t writeValue)
     //Wait until I2C Bus is Free
     while (MAP_I2C_isBusBusy (EUSCI_B1_BASE));
 
-    uint8_t firstByte = writeValue >> 8;
-    uint8_t secondByte = writeValue & 0xFF;
+    uint8_t firstByte = i_u16WriteValue >> 8;
+    uint8_t secondByte = i_u16WriteValue & 0xFF;
 
     //------ Send Register Address ------
 
-    MAP_I2C_masterSendMultiByteStart(EUSCI_B1_BASE, regAddr);
+    MAP_I2C_masterSendMultiByteStart(EUSCI_B1_BASE, i_u8RegAddr);
 
     //------ Send Data ------
 
@@ -107,7 +107,7 @@ void comm::i2c::write16(uint8_t regAddr, uint16_t writeValue)
     __enable_irq();
 }
 
-uint8_t comm::i2c::read8(uint8_t regAddr)
+uint8_t communication::i2c::Read8(uint8_t i_u8RegAddr)
 {
     __disable_irq();
 
@@ -125,7 +125,7 @@ uint8_t comm::i2c::read8(uint8_t regAddr)
 
     //------ Send Register Address ------
 
-    MAP_I2C_masterSendSingleByte(EUSCI_B1_BASE, regAddr);
+    MAP_I2C_masterSendSingleByte(EUSCI_B1_BASE, i_u8RegAddr);
 
     // Wait for Stop to be sent
     while (MAP_I2C_masterIsStopSent(EUSCI_B1_BASE) == EUSCI_B_I2C_SENDING_STOP);
@@ -139,7 +139,7 @@ uint8_t comm::i2c::read8(uint8_t regAddr)
     return rxData;
 }
 
-uint16_t comm::i2c::read16(uint16_t regAddr)
+uint16_t communication::i2c::Read16(uint16_t i_u16RegAddr)
 {
     __disable_irq();
 
@@ -157,7 +157,7 @@ uint16_t comm::i2c::read16(uint16_t regAddr)
 
     //------ Send Register Address ------
 
-    MAP_I2C_masterSendSingleByte(EUSCI_B1_BASE, regAddr);
+    MAP_I2C_masterSendSingleByte(EUSCI_B1_BASE, i_u16RegAddr);
 
     // Wait for Stop to be sent
     while (MAP_I2C_masterIsStopSent(EUSCI_B1_BASE) == EUSCI_B_I2C_SENDING_STOP);

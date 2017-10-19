@@ -52,6 +52,7 @@
  ******************************************************************************/
 
 // Standard Includes
+#include <hd/peripherals.hh>
 #include <stdint.h>
 #include <stdbool.h>
 #include <math.h>
@@ -71,20 +72,17 @@
 #include "tasks/virtual_horizon_tasks.hh"
 
 //----- Hardware dependent (hd) -----
-#include "hd/periph.hh"
 
 
 //----- Global object declarations -----
 
 //Hardware dependent (hd)
-periph::Timer timer(TIMER32_0_BASE, TIME_TICKS_PER_SECOND);
-periph::OutputGPIO ErrorLight(GPIO_PORT_P2, GPIO_PIN0);   //Red
-periph::OutputGPIO TimeoutLight(GPIO_PORT_P2, GPIO_PIN1); // Green
+peripherals::Timer Timer32(TIMER32_0_BASE, TIME_TICKS_PER_SECOND);
+peripherals::OutputGPIO ErrorLight(GPIO_PORT_P2, GPIO_PIN0);   //Red
+peripherals::OutputGPIO TimeoutLight(GPIO_PORT_P2, GPIO_PIN1); // Green
 
 //Hardware independent (hi)
 volatile uint64_t g_SystemTicks = 0; // - The system counter.
-
-Scheduler g_MainScheduler;           // - Instantiate a Scheduler
 
 //IRQ related tasks (global for ISR access)
 AdcIRQTask g_AdcIRQTask;
@@ -107,12 +105,12 @@ static return_e HardwareInit(void)
     MAP_FPU_enableModule();
 
     //Timer32 configuration
-    timer.enableInterrupt();
-    timer.start();
+    Timer32.EnableInterrupt();
+    Timer32.Start();
 
     //Error LEDs initial off state
-    ErrorLight.reset();
-    TimeoutLight.reset();
+    ErrorLight.Reset();
+    TimeoutLight.Reset();
 
     //Enable interrupts
     MAP_Interrupt_enableMaster();
@@ -124,7 +122,9 @@ static return_e HardwareInit(void)
 
 int main(void)
 {
-    return_e rt;
+    return_e l_eReturnCode;
+
+    Scheduler l_MainScheduler;           // - Instantiate a Scheduler
 
     // Define tasks
     CalcHorizonTask l_CalcHorizonTask;
@@ -133,50 +133,50 @@ int main(void)
 
 
     //Initialize hardware peripherals
-    rt = HardwareInit();
-    if (rt != RETURN_OK)
+    l_eReturnCode = HardwareInit();
+    if (l_eReturnCode != RETURN_OK)
         goto  error_handling;
 
 
     // Attach and set up tasks
-    rt = g_MainScheduler.attach(&g_AdcIRQTask);
-    if (rt != RETURN_OK)
+    l_eReturnCode = l_MainScheduler.attach(&g_AdcIRQTask);
+    if (l_eReturnCode != RETURN_OK)
         goto  error_handling;
 
-    rt = g_MainScheduler.attach(&l_CalcHorizonTask);
-    if (rt != RETURN_OK)
+    l_eReturnCode = l_MainScheduler.attach(&l_CalcHorizonTask);
+    if (l_eReturnCode != RETURN_OK)
         goto  error_handling;
     
-    rt = g_MainScheduler.attach(&l_LcdIssueTask);
-    if (rt != RETURN_OK)
+    l_eReturnCode = l_MainScheduler.attach(&l_LcdIssueTask);
+    if (l_eReturnCode != RETURN_OK)
         goto  error_handling;
 
-    rt = g_MainScheduler.attach(&l_LcdDrawTask);
-    if (rt != RETURN_OK)
+    l_eReturnCode = l_MainScheduler.attach(&l_LcdDrawTask);
+    if (l_eReturnCode != RETURN_OK)
         goto  error_handling;
 
-    rt = g_MainScheduler.setup();
-    if (rt != RETURN_OK)
+    l_eReturnCode = l_MainScheduler.setup();
+    if (l_eReturnCode != RETURN_OK)
         goto error_handling;
 
 
     // Prepare schedule before first iteration.
-    rt = g_MainScheduler.PostAmble();
-    if (rt != RETURN_OK)
+    l_eReturnCode = l_MainScheduler.PostAmble();
+    if (l_eReturnCode != RETURN_OK)
       goto  error_handling;
 
     while (1)
     {
-        if (g_SystemTicks != g_MainScheduler.m_u64ticks)
+        if (g_SystemTicks != l_MainScheduler.m_u64ticks)
         {
             //- Only execute the tasks if one tick has passed.
-            g_MainScheduler.m_u64ticks = g_SystemTicks;
-            rt = g_MainScheduler.run();
-            if (rt != RETURN_OK)
+            l_MainScheduler.m_u64ticks = g_SystemTicks;
+            l_eReturnCode = l_MainScheduler.run();
+            if (l_eReturnCode != RETURN_OK)
                 goto  error_handling;
 	    
-            rt = g_MainScheduler.PostAmble();
-            if (rt != RETURN_OK)
+            l_eReturnCode = l_MainScheduler.PostAmble();
+            if (l_eReturnCode != RETURN_OK)
                 goto  error_handling;
         }
     }
@@ -184,12 +184,14 @@ int main(void)
 
  error_handling:
      // Set error light
-     ErrorLight.set();
+     ErrorLight.Set();
 
-    if (rt == RETURN_TIMEOUT){
+    if (l_eReturnCode == RETURN_TIMEOUT){
         // In case of timeout, show yellow
-        TimeoutLight.set();
+        TimeoutLight.Set();
     }
+
+    while(1);
 
     return 42;
 }
