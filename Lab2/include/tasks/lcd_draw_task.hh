@@ -22,8 +22,8 @@
 #define INCLUDE_HI_TASKS_LCD_DRAW_TASK_HH_
 
 #include <stdlib.h>
+#include "../hd/peripherals.hh"
 
-#include "hd/periph.hh"
 #include "hd/lcd_driver/optimized_driver.hh"
 
 #include "hi/hi_def.hh"
@@ -34,8 +34,8 @@ class LcdDrawTask : public Task
 {
 public:
     LcdDrawTask(void);
-    virtual return_e run(void);
-    virtual return_e setup(Heap* i_Heap);
+    virtual return_e Run(void);
+    virtual return_e Setup(Heap* i_Heap);
 
 private:
   uint16_t m_u16Pitch;

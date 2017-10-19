@@ -21,9 +21,9 @@
 #ifndef INCLUDE_HD_ACCEL_ADC_HH_
 #define INCLUDE_HD_ACCEL_ADC_HH_
 
-#include "hd/periph.hh"
+#include "peripherals.hh"
 
-namespace periph
+namespace peripherals
 {
 
 class AccelADC {
@@ -41,7 +41,7 @@ public:
     /* Check if there is a pending interrupt request from some ADC
      * memory position register and clean the interrupt flag
      */
-    static bool CheckAndCleanIRQ(uint32_t ADC_MEM_Interrupt);
+    static bool CheckAndCleanIRQ(uint32_t i_u32ADC_MEM_Interrupt);
 private:
     Timer m_SamplingTimer;
 };

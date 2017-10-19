@@ -20,9 +20,9 @@
 #ifndef INCLUDE_HD_GPIO_HH_
 #define INCLUDE_HD_GPIO_HH_
 
-#include "hd/periph.hh"
+#include "peripherals.hh"
 
-namespace periph
+namespace peripherals
 {
 
 /*
@@ -32,13 +32,13 @@ namespace periph
 class GPIO
 {
 public:
-    GPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins);
-    GPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins, uint8_t mode);
+    GPIO(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pins);
+    GPIO(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pins, uint8_t i_u8Mode);
 
 protected:
-    uint8_t GPIO_Port_;
-    uint8_t GPIO_Pins_;
-    uint8_t mode_; //Primary, secondary or tertiary mode
+    uint8_t m_u8GPIO_Port;
+    uint8_t m_u8GPIO_Pins;
+    uint8_t m_u8Mode; //Primary, secondary or tertiary mode
 };
 
 /*
@@ -49,17 +49,17 @@ protected:
 class OutputGPIO: GPIO
 {
 public:
-    OutputGPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins);
-    OutputGPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins, uint8_t mode);
+    OutputGPIO(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pins);
+    OutputGPIO(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pins, uint8_t i_u8Mode);
 
     //Set GPIO Output value to 1
-    void set(void);
+    void Set(void);
 
     //Set GPIO Output value to 0
-    void reset(void);
+    void Reset(void);
 
     //Toggle GPIO Output value
-    void toggle(void);
+    void Toggle(void);
 };
 
 /*
@@ -70,28 +70,28 @@ public:
 class InputGPIO: GPIO
 {
 public:
-    InputGPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins);
-    InputGPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins, uint8_t mode);
+    InputGPIO(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pins);
+    InputGPIO(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pins, uint8_t i_u8Mode);
 
     //Configure GPIO pins with a Pull Up resistor
-    void configPullUp(void);
+    void ConfigPullUp(void);
 
     //Configure GPIO pins with a Pull Down resistor
-    void configPullDown(void);
+    void ConfigPullDown(void);
 
     //Activate Input GPIO interrupt and set signal edge for trigger
-    void enableInterrupt(uint8_t edgeSelect);
+    void EnableInterrupt(uint8_t i_u8EdgeSelect);
 
     //Deactivate Input GPIO
-    void disableInterrupt(void);
+    void DisableInterrupt(void);
 
     //Read GPIO Input value as a boolean
-    bool read(void);
+    bool Read(void);
 
     /*Check if there is a pending interrupt request from some
      *GPIO Port/Pins and clean the interrupt flag
      */
-    static bool checkAndCleanIRQ(uint8_t GPIO_Port, uint16_t GPIO_Pin);
+    static bool CheckAndCleanIRQ(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pin);
 };
 
 }

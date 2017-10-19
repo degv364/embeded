@@ -48,11 +48,11 @@ typedef enum message_type_e
 
 typedef struct message_t
 {
-    task_name_e sender; // Who sends the message
-    task_name_e receiver; // Who should receive the message
-    message_type_e message_type; // Message type
-    uint8_t length; // Length of the message
-    uint32_t* data; // Pointer to the passed data
+    task_name_e m_eSender; // Who sends the message
+    task_name_e m_eReceiver; // Who should receive the message
+    message_type_e m_eMessageType; // Message type
+    uint8_t m_u8Length; // Length of the message
+    uint32_t* m_pData; // Pointer to the passed data
 } message_t;
 
 typedef enum task_type_e

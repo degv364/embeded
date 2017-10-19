@@ -17,105 +17,105 @@
 
  **/
 
-#include "hd/periph.hh"
+#include <hd/peripherals.hh>
 
 /*************** Class GPIO Definition ***************/
 
-periph::GPIO::GPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins) :
-        GPIO_Port_(GPIO_Port), GPIO_Pins_(GPIO_Pins)
+peripherals::GPIO::GPIO(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pins) :
+        m_u8GPIO_Port(i_u8GPIO_Port), m_u8GPIO_Pins(i_u8GPIO_Pins)
 {
 }
 
-periph::GPIO::GPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins, uint8_t mode) :
-        GPIO_Port_(GPIO_Port), GPIO_Pins_(GPIO_Pins), mode_(mode)
+peripherals::GPIO::GPIO(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pins, uint8_t i_u8Mode) :
+        m_u8GPIO_Port(i_u8GPIO_Port), m_u8GPIO_Pins(i_u8GPIO_Pins), m_u8Mode(i_u8Mode)
 {
 }
 
 /*************** Class OutputGPIO Definition ***************/
 
-periph::OutputGPIO::OutputGPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins) :
-        GPIO(GPIO_Port, GPIO_Pins)
+peripherals::OutputGPIO::OutputGPIO(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pins) :
+        GPIO(i_u8GPIO_Port, i_u8GPIO_Pins)
 {
-    MAP_GPIO_setAsOutputPin(GPIO_Port_, GPIO_Pins_);
+    MAP_GPIO_setAsOutputPin(m_u8GPIO_Port, m_u8GPIO_Pins);
 }
 
-periph::OutputGPIO::OutputGPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins,
-                               uint8_t mode) :
-        GPIO(GPIO_Port, GPIO_Pins, mode)
+peripherals::OutputGPIO::OutputGPIO(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pins,
+                               uint8_t i_u8Mode) :
+        GPIO(i_u8GPIO_Port, i_u8GPIO_Pins, i_u8Mode)
 {
-    MAP_GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_Port_, GPIO_Pins_,
-                                                    mode_);
+    MAP_GPIO_setAsPeripheralModuleFunctionOutputPin(m_u8GPIO_Port, m_u8GPIO_Pins,
+                                                    m_u8Mode);
 }
 
-void periph::OutputGPIO::set(void)
+void peripherals::OutputGPIO::Set(void)
 {
-    MAP_GPIO_setOutputHighOnPin(GPIO_Port_, GPIO_Pins_);
+    MAP_GPIO_setOutputHighOnPin(m_u8GPIO_Port, m_u8GPIO_Pins);
 }
 
-void periph::OutputGPIO::reset(void)
+void peripherals::OutputGPIO::Reset(void)
 {
-    MAP_GPIO_setOutputLowOnPin(GPIO_Port_, GPIO_Pins_);
+    MAP_GPIO_setOutputLowOnPin(m_u8GPIO_Port, m_u8GPIO_Pins);
 }
 
-void periph::OutputGPIO::toggle(void)
+void peripherals::OutputGPIO::Toggle(void)
 {
-    MAP_GPIO_toggleOutputOnPin(GPIO_Port_, GPIO_Pins_);
+    MAP_GPIO_toggleOutputOnPin(m_u8GPIO_Port, m_u8GPIO_Pins);
 }
 
 /*************** Class InputGPIO Definition ***************/
 
-periph::InputGPIO::InputGPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins) :
-        GPIO(GPIO_Port, GPIO_Pins)
+peripherals::InputGPIO::InputGPIO(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pins) :
+        GPIO(i_u8GPIO_Port, i_u8GPIO_Pins)
 {
-    MAP_GPIO_setAsInputPin(GPIO_Port_, GPIO_Pins_);
+    MAP_GPIO_setAsInputPin(m_u8GPIO_Port, m_u8GPIO_Pins);
 }
 
-periph::InputGPIO::InputGPIO(uint8_t GPIO_Port, uint16_t GPIO_Pins,
-                             uint8_t mode) :
-        GPIO(GPIO_Port, GPIO_Pins, mode)
+peripherals::InputGPIO::InputGPIO(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pins,
+                             uint8_t i_u8Mode) :
+        GPIO(i_u8GPIO_Port, i_u8GPIO_Pins, i_u8Mode)
 {
-    MAP_GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_Port_, GPIO_Pins_,
-                                                   mode_);
+    MAP_GPIO_setAsPeripheralModuleFunctionInputPin(m_u8GPIO_Port, m_u8GPIO_Pins,
+                                                   m_u8Mode);
 }
 
-void periph::InputGPIO::configPullDown(void)
+void peripherals::InputGPIO::ConfigPullDown(void)
 {
-    MAP_GPIO_setAsInputPinWithPullDownResistor(GPIO_Port_, GPIO_Pins_);
+    MAP_GPIO_setAsInputPinWithPullDownResistor(m_u8GPIO_Port, m_u8GPIO_Pins);
 }
 
-void periph::InputGPIO::configPullUp(void)
+void peripherals::InputGPIO::ConfigPullUp(void)
 {
-    MAP_GPIO_setAsInputPinWithPullUpResistor(GPIO_Port_, GPIO_Pins_);
+    MAP_GPIO_setAsInputPinWithPullUpResistor(m_u8GPIO_Port, m_u8GPIO_Pins);
 }
 
-void periph::InputGPIO::enableInterrupt(uint8_t edgeSelect)
+void peripherals::InputGPIO::EnableInterrupt(uint8_t i_u8EdgeSelect)
 {
-    MAP_GPIO_clearInterruptFlag(GPIO_Port_, GPIO_Pins_);
-    MAP_GPIO_enableInterrupt(GPIO_Port_, GPIO_Pins_);
-    MAP_GPIO_interruptEdgeSelect(GPIO_Port_, GPIO_Pins_, edgeSelect);
+    MAP_GPIO_clearInterruptFlag(m_u8GPIO_Port, m_u8GPIO_Pins);
+    MAP_GPIO_enableInterrupt(m_u8GPIO_Port, m_u8GPIO_Pins);
+    MAP_GPIO_interruptEdgeSelect(m_u8GPIO_Port, m_u8GPIO_Pins, i_u8EdgeSelect);
 
     //Calculates interrupt port from corresponding GPIO Port
-    uint32_t INT_Port = (INT_PORT1 - GPIO_PORT_P1) + GPIO_Port_;
+    uint32_t l_u32INT_Port = (INT_PORT1 - GPIO_PORT_P1) + m_u8GPIO_Port;
     assert(INT_Port >= INT_PORT1 && INT_Port <= INT_PORT6);
 
-    MAP_Interrupt_enableInterrupt(INT_Port);
+    MAP_Interrupt_enableInterrupt(l_u32INT_Port);
 }
 
-void periph::InputGPIO::disableInterrupt(void)
+void peripherals::InputGPIO::DisableInterrupt(void)
 {
-    MAP_GPIO_disableInterrupt(GPIO_Port_, GPIO_Pins_);
+    MAP_GPIO_disableInterrupt(m_u8GPIO_Port, m_u8GPIO_Pins);
 }
 
-bool periph::InputGPIO::read(void)
+bool peripherals::InputGPIO::Read(void)
 {
-    return MAP_GPIO_getInputPinValue(GPIO_Port_, GPIO_Pins_);
+    return MAP_GPIO_getInputPinValue(m_u8GPIO_Port, m_u8GPIO_Pins);
 }
 
-bool periph::InputGPIO::checkAndCleanIRQ(uint8_t GPIO_Port, uint16_t GPIO_Pin)
+bool peripherals::InputGPIO::CheckAndCleanIRQ(uint8_t i_u8GPIO_Port, uint8_t i_u8GPIO_Pin)
 {
-    uint64_t status = MAP_GPIO_getEnabledInterruptStatus(GPIO_Port);
-    MAP_GPIO_clearInterruptFlag(GPIO_Port, status);
+    uint64_t l_u64Status = MAP_GPIO_getEnabledInterruptStatus(i_u8GPIO_Port);
+    MAP_GPIO_clearInterruptFlag(i_u8GPIO_Port, l_u64Status);
     //Returns true if Interrupt flag corresponds to specified GPIO_Pin
-    return (status & GPIO_Pin);
+    return (l_u64Status & i_u8GPIO_Pin);
 }
 

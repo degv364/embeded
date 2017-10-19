@@ -52,6 +52,7 @@
  ******************************************************************************/
 
 // Standard Includes
+#include <hd/peripherals.hh>
 #include <stdint.h>
 #include <stdbool.h>
 #include <math.h>
@@ -71,15 +72,14 @@
 #include "tasks/virtual_horizon_tasks.hh"
 
 //----- Hardware dependent (hd) -----
-#include "hd/periph.hh"
 
 
 //----- Global object declarations -----
 
 //Hardware dependent (hd)
-periph::Timer timer(TIMER32_0_BASE, TIME_TICKS_PER_SECOND);
-periph::OutputGPIO ErrorLight(GPIO_PORT_P2, GPIO_PIN0);   //Red
-periph::OutputGPIO TimeoutLight(GPIO_PORT_P2, GPIO_PIN1); // Green
+peripherals::Timer Timer32(TIMER32_0_BASE, TIME_TICKS_PER_SECOND);
+peripherals::OutputGPIO ErrorLight(GPIO_PORT_P2, GPIO_PIN0);   //Red
+peripherals::OutputGPIO TimeoutLight(GPIO_PORT_P2, GPIO_PIN1); // Green
 
 //Hardware independent (hi)
 volatile uint64_t g_SystemTicks = 0; // - The system counter.
@@ -107,12 +107,12 @@ static return_e HardwareInit(void)
     MAP_FPU_enableModule();
 
     //Timer32 configuration
-    timer.enableInterrupt();
-    timer.start();
+    Timer32.EnableInterrupt();
+    Timer32.Start();
 
     //Error LEDs initial off state
-    ErrorLight.reset();
-    TimeoutLight.reset();
+    ErrorLight.Reset();
+    TimeoutLight.Reset();
 
     //Enable interrupts
     MAP_Interrupt_enableMaster();
@@ -184,11 +184,11 @@ int main(void)
 
  error_handling:
      // Set error light
-     ErrorLight.set();
+     ErrorLight.Set();
 
     if (rt == RETURN_TIMEOUT){
         // In case of timeout, show yellow
-        TimeoutLight.set();
+        TimeoutLight.Set();
     }
 
     while(1);
