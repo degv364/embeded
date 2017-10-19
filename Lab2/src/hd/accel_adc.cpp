@@ -17,15 +17,15 @@
 
  **/
 
-#include "hd/periph.hh"
+#include <hd/peripherals.hh>
 
-periph::AccelADC::AccelADC(uint16_t i_u16SamplesPerSecond) :
+peripherals::AccelADC::AccelADC(uint16_t i_u16SamplesPerSecond) :
     m_SamplingTimer(TIMER32_1_BASE, i_u16SamplesPerSecond)
 {
 }
 
 
-void periph::AccelADC::Setup(void)
+void peripherals::AccelADC::Setup(void)
 {
     // Configures Pin 4.0, 4.2, and 6.1 as ADC input
     MAP_GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P4, GPIO_PIN0 | GPIO_PIN2,
@@ -61,32 +61,32 @@ void periph::AccelADC::Setup(void)
     MAP_ADC14_enableInterrupt(ADC_INT2);
 
     //Enable Sampling Timer32 Interrupts
-    m_SamplingTimer.enableInterrupt();
+    m_SamplingTimer.EnableInterrupt();
 
 }
 
-void periph::AccelADC::Start(void)
+void peripherals::AccelADC::Start(void)
 {
     MAP_ADC14_enableConversion();
     MAP_Interrupt_enableInterrupt(INT_ADC14);
-    m_SamplingTimer.start();
+    m_SamplingTimer.Start();
 }
 
 
-void periph::AccelADC::Stop(void)
+void peripherals::AccelADC::Stop(void)
 {
     MAP_ADC14_disableConversion();
     MAP_Interrupt_disableInterrupt(INT_ADC14);
-    m_SamplingTimer.stop();
+    m_SamplingTimer.Stop();
 }
 
 
-bool periph::AccelADC::CheckAndCleanIRQ(uint32_t ADC_MEM_Interrupt)
+bool peripherals::AccelADC::CheckAndCleanIRQ(uint32_t i_u32ADC_MEM_Interrupt)
 {
-    uint64_t status = MAP_ADC14_getEnabledInterruptStatus();
-    MAP_ADC14_clearInterruptFlag(status);
+    uint64_t l_u64Status = MAP_ADC14_getEnabledInterruptStatus();
+    MAP_ADC14_clearInterruptFlag(l_u64Status);
 
-    return (status & ADC_MEM_Interrupt);
+    return (l_u64Status & i_u32ADC_MEM_Interrupt);
 }
 
 

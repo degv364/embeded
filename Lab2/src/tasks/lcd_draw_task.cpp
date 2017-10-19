@@ -29,7 +29,7 @@ LcdDrawTask::LcdDrawTask(void)
     m_u32Colors |= (uint32_t) (LCDColorTranslate(GRAPHICS_COLOR_DEEP_SKY_BLUE));
 }
 
-return_e LcdDrawTask::setup(Heap* i_Heap)
+return_e LcdDrawTask::Setup(Heap* i_Heap)
 {
     return_e rt;
 
@@ -53,7 +53,7 @@ return_e LcdDrawTask::setup(Heap* i_Heap)
 
 
 return_e
-LcdDrawTask::run(){
+LcdDrawTask::Run(){
     return_e rt;
     message_t l_stInputMessage;
 
@@ -70,17 +70,17 @@ LcdDrawTask::run(){
             if (rt != RETURN_OK)
                 return rt;
 
-            if (l_stInputMessage.message_type == HORIZON_PARAMS
-                    && l_stInputMessage.sender == LCD_ISSUE)
+            if (l_stInputMessage.m_eMessageType == HORIZON_PARAMS
+                    && l_stInputMessage.m_eSender == LCD_ISSUE)
             {
-                m_u16Pitch = (uint16_t) l_stInputMessage.data[0];
-                m_fSlope = *((float*) &l_stInputMessage.data[1]);
+                m_u16Pitch = (uint16_t) l_stInputMessage.m_pData[0];
+                m_fSlope = *((float*) &l_stInputMessage.m_pData[1]);
             }
-            else if (l_stInputMessage.message_type == RECTANGLES_TO_DRAW
-                    && l_stInputMessage.sender == LCD_ISSUE)
+            else if (l_stInputMessage.m_eMessageType == RECTANGLES_TO_DRAW
+                    && l_stInputMessage.m_eSender == LCD_ISSUE)
             {
-                m_u8RectanglesToDraw = (uint8_t) l_stInputMessage.length;
-                m_aCoordinates = (uint16_t*) l_stInputMessage.data;
+                m_u8RectanglesToDraw = (uint8_t) l_stInputMessage.m_u8Length;
+                m_aCoordinates = (uint16_t*) l_stInputMessage.m_pData;
                 m_u8CurrentRectangle = 0;
             }
             else

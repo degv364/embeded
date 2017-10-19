@@ -68,7 +68,7 @@ return_e Scheduler::run(void)
         {
             if (m_aSchedule[l_u8Slot].bExecute)
             {
-                rt = m_aSchedule[l_u8Slot].pToAttach->run();
+                rt = m_aSchedule[l_u8Slot].pToAttach->Run();
                 if (rt != RETURN_OK)
                 {
                     return rt;
@@ -95,7 +95,7 @@ return_e Scheduler::setup(void)
     for (uint8_t l_u8Slot = 1; l_u8Slot < LAST_TASK; l_u8Slot++){
        if (m_aSchedule[l_u8Slot].pToAttach != ((uintptr_t) 0))
        {
-           l_eReturnCode = m_aSchedule[l_u8Slot].pToAttach->setup(&m_InternalHeap);
+           l_eReturnCode = m_aSchedule[l_u8Slot].pToAttach->Setup(&m_InternalHeap);
            if (l_eReturnCode != RETURN_OK){
                return l_eReturnCode;
            }
@@ -116,7 +116,7 @@ inline return_e Scheduler::HandleExternalMessages(uint8_t i_u8CurrentSlot){
           return rt;
       }
       // Check if the message is for the scheduler
-      if (l_stTempMessage.receiver == SCHEDULER){
+      if (l_stTempMessage.m_eReceiver == SCHEDULER){
           rt = InternalMessageQueue.AddMessage(l_stTempMessage);
           if (rt != RETURN_OK){
               return rt;
@@ -124,7 +124,7 @@ inline return_e Scheduler::HandleExternalMessages(uint8_t i_u8CurrentSlot){
       }
       else {
           // Send to the specific task
-          rt =  m_aSchedule[l_stTempMessage.receiver].pToAttach->Incoming.AddMessage(l_stTempMessage);
+          rt =  m_aSchedule[l_stTempMessage.m_eReceiver].pToAttach->Incoming.AddMessage(l_stTempMessage);
           if (rt != RETURN_OK){
               return rt;
           }
@@ -173,11 +173,11 @@ return_e Scheduler::HandleInternalMessages(void)
     {
         if (rt == RETURN_OK)
         {
-            switch (l_stCurrentMessage.message_type)
+            switch (l_stCurrentMessage.m_eMessageType)
             {
             case ADD_TO_EXECUTION:
                 // Get the name of the task to execute
-                l_eCurrentTaskName = (task_name_e) *l_stCurrentMessage.data;
+                l_eCurrentTaskName = (task_name_e) *l_stCurrentMessage.m_pData;
                 if (l_eCurrentTaskName >= LAST_TASK){
                     return RETURN_FAIL;
                 }

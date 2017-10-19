@@ -20,7 +20,7 @@
 #ifndef INCLUDE_HD_LCD_DRIVER_OPTIMIZED_HH_
 #define INCLUDE_HD_LCD_DRIVER_OPTIMIZED_HH_
 
-#include "hd/periph.hh"
+#include "../peripherals.hh"
 
 // LCD Screen Dimensions
 #define LCD_VERTICAL_MAX                   128

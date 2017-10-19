@@ -29,7 +29,7 @@ LcdIssueTask::LcdIssueTask(void)
     m_fHorizonSlope = m_fNextHorizonSlope = 0.0f;
 }
 
-return_e LcdIssueTask::setup(Heap* i_Heap)
+return_e LcdIssueTask::Setup(Heap* i_Heap)
 {
     return_e rt;
 
@@ -46,7 +46,7 @@ return_e LcdIssueTask::setup(Heap* i_Heap)
 }
 
 
-return_e LcdIssueTask::run(void)
+return_e LcdIssueTask::Run(void)
 {
     return_e rt;
     message_t l_stInputMessage;
@@ -55,9 +55,9 @@ return_e LcdIssueTask::run(void)
 
     rt = Task::Incoming.PopMessage(&l_stInputMessage);
     while(rt != RETURN_EMPTY){
-        if (l_stInputMessage.message_type == HORIZON_PARAMS) {
-            m_u16NextHorizonLevelY = (uint16_t) l_stInputMessage.data[0];
-            m_fNextHorizonSlope = *((float*) &l_stInputMessage.data[1]);
+        if (l_stInputMessage.m_eMessageType == HORIZON_PARAMS) {
+            m_u16NextHorizonLevelY = (uint16_t) l_stInputMessage.m_pData[0];
+            m_fNextHorizonSlope = *((float*) &l_stInputMessage.m_pData[1]);
             l_bGotValidMessage = true;
         }
         rt = Task::Incoming.PopMessage(&l_stInputMessage);

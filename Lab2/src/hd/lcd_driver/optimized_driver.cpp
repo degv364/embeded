@@ -17,10 +17,11 @@
 
  **/
 
+#include <hd/peripherals.hh>
 #include "hd/lcd_driver/optimized_driver.hh"
-#include "hd/periph.hh"
 
-
+// This variables are required by driver lib. So they do not follow
+// naming conventions
 uint8_t Lcd_Orientation;
 uint16_t Lcd_ScreenWidth, Lcd_ScreenHeigth;
 uint8_t Lcd_PenSolid, Lcd_FontSolid, Lcd_FlagRead;

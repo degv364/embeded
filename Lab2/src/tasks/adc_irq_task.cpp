@@ -27,7 +27,7 @@ AdcIRQTask::AdcIRQTask(void) :
 }
 
 
-return_e AdcIRQTask::setup(Heap* i_Heap){
+return_e AdcIRQTask::Setup(Heap* i_Heap){
 
   this->SetTaskExecutionCondition(false);
   this->SetTaskTickInterval(0);

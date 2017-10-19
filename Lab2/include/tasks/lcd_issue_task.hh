@@ -20,7 +20,7 @@
 #ifndef INCLUDE_HI_TASKS_LCD_ISSUE_TASK_HH_
 #define INCLUDE_HI_TASKS_LCD_ISSUE_TASK_HH_
 
-#include "hd/periph.hh"
+#include "../hd/peripherals.hh"
 #include "hi/hi_def.hh"
 #include "hi/task.hh"
 
@@ -28,8 +28,8 @@ class LcdIssueTask : public Task
 {
 public:
     LcdIssueTask(void);
-    virtual return_e run(void);
-    virtual return_e setup(Heap* i_Heap);
+    virtual return_e Run(void);
+    virtual return_e Setup(Heap* i_Heap);
 private:
     void CheckRectanglesToDraw(void);
     void SetToDrawAllRectangles(void);

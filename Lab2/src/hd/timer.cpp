@@ -17,57 +17,57 @@
 
  **/
 
-#include "hd/periph.hh"
+#include <hd/peripherals.hh>
 
 /*************** Class Timer Definition ***************/
 
-periph::Timer::Timer(uint32_t timer32_base, uint16_t interrupts_per_second):
-    timer32_base_(timer32_base),
-    interrupts_per_second_(interrupts_per_second)
+peripherals::Timer::Timer(uint32_t i_u32Timer32Base, uint16_t i_u16InterruptsPerSecond):
+    m_u32Timer32Base(i_u32Timer32Base),
+    m_u16InterruptsPerSecond(i_u16InterruptsPerSecond)
 {
-    assert(timer32_base_ == TIMER32_0_BASE || timer32_base_ == TIMER32_1_BASE);
+    assert(m_u32Timer32Base == TIMER32_0_BASE || m_u32Timer32Base == TIMER32_1_BASE);
     /* Periodic mode allows to set a max timer count, which is required to
      * control the number of interrupts per second
      */
-    MAP_Timer32_initModule(timer32_base_, TIMER32_PRESCALER_16,
+    MAP_Timer32_initModule(m_u32Timer32Base, TIMER32_PRESCALER_16,
                            TIMER32_32BIT, TIMER32_PERIODIC_MODE);
 }
 
-void periph::Timer::start(void)
+void peripherals::Timer::Start(void)
 {
-    uint32_t T32_MaxCount = MAP_CS_getMCLK()/
-            (TIMER32_PRESCALE * interrupts_per_second_);
-    assert(T32_MaxCount >= 1);
+    uint32_t l_u32Timer32MaxCount = MAP_CS_getMCLK()/
+            (TIMER32_PRESCALE * m_u16InterruptsPerSecond);
+    assert(l_u32Timer32MaxCount >= 1);
 
     /* Configures the max timer count to generate the required
      * number of interrupts per second
      */
-    MAP_Timer32_setCount(timer32_base_, T32_MaxCount);
+    MAP_Timer32_setCount(m_u32Timer32Base, l_u32Timer32MaxCount);
     //Starts the Timer32 module in continuous mode (false)
-    MAP_Timer32_startTimer(timer32_base_, false);
+    MAP_Timer32_startTimer(m_u32Timer32Base, false);
 }
 
-void periph::Timer::stop(void)
+void peripherals::Timer::Stop(void)
 {
-    MAP_Timer32_haltTimer(timer32_base_);
+    MAP_Timer32_haltTimer(m_u32Timer32Base);
 }
 
-uint16_t periph::Timer::getInterruptsPerSecond(void)
+uint16_t peripherals::Timer::GetInterruptsPerSecond(void)
 {
-    return interrupts_per_second_;
+    return m_u16InterruptsPerSecond;
 }
 
-void periph::Timer::enableInterrupt(void)
+void peripherals::Timer::EnableInterrupt(void)
 {
-    uint8_t timer32_interrupt = (timer32_base_ == TIMER32_0_BASE)?
-                                    INT_T32_INT1 :
-                                (timer32_base_ == TIMER32_1_BASE)?
-                                    INT_T32_INT2 : 0;
+  uint8_t l_u8Timer32Interrupt = (m_u32Timer32Base == TIMER32_0_BASE)?
+    INT_T32_INT1 :
+    (m_u32Timer32Base == TIMER32_1_BASE)?
+    INT_T32_INT2 : 0;
 
-    MAP_Interrupt_enableInterrupt(timer32_interrupt);
+    MAP_Interrupt_enableInterrupt(l_u8Timer32Interrupt);
 }
 
-void periph::Timer::cleanIRQ(uint32_t timer32_base)
+void peripherals::Timer::CleanIRQ(uint32_t i_u32Timer32Base)
 {
-    MAP_Timer32_clearInterruptFlag(timer32_base);
+    MAP_Timer32_clearInterruptFlag(i_u32Timer32Base);
 }

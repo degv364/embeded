@@ -27,7 +27,7 @@ CalcHorizonTask::CalcHorizonTask(void)
     m_stLastAccel = {0,0,0};
 }
 
-return_e CalcHorizonTask::setup(Heap* i_Heap)
+return_e CalcHorizonTask::Setup(Heap* i_Heap)
 {
     return_e rt;
 
@@ -40,7 +40,7 @@ return_e CalcHorizonTask::setup(Heap* i_Heap)
     return (rt == RETURN_NO_SPACE) ? RETURN_FAIL : RETURN_OK;
 }
 
-return_e CalcHorizonTask::run(void)
+return_e CalcHorizonTask::Run(void)
 {
     return_e rt;
     message_t l_stInputMessage;
@@ -48,10 +48,10 @@ return_e CalcHorizonTask::run(void)
     rt = Task::Incoming.PopMessage(&l_stInputMessage);
 
     while(rt != RETURN_EMPTY){
-        if (l_stInputMessage.message_type == ACCEL_DATA) {
-            m_stLastAccel.x = (int16_t) l_stInputMessage.data[0];
-            m_stLastAccel.y = (int16_t) l_stInputMessage.data[1];
-            m_stLastAccel.z = (int16_t) l_stInputMessage.data[2];
+        if (l_stInputMessage.m_eMessageType == ACCEL_DATA) {
+            m_stLastAccel.m_i16X = (int16_t) l_stInputMessage.m_pData[0];
+            m_stLastAccel.m_i16Y = (int16_t) l_stInputMessage.m_pData[1];
+            m_stLastAccel.m_i16Z = (int16_t) l_stInputMessage.m_pData[2];
         }
         rt = Task::Incoming.PopMessage(&l_stInputMessage);
     }
@@ -79,23 +79,24 @@ inline float CalcHorizonTask::CalcPitchAngle(void){
 
     //Flipped axes to achieve correct horizon orientation
 
-    float gz = -m_stLastAccel.y;
-    float gx = -m_stLastAccel.x;
-    float gy = -m_stLastAccel.z;
+    float l_fGravityZ = -m_stLastAccel.m_i16Y;
+    float l_fGravityX = -m_stLastAccel.m_i16X;
+    float l_fGravityY = -m_stLastAccel.m_i16Z;
 
-    float result = atan2(gy,gz)*(180.0f/M_PI);
 
-    return max(min(result, 90.0f),-90.0f);
+    float l_fResult = atan2(l_fGravityY,l_fGravityZ)*(180.0f/M_PI);
+
+    return max(min(l_fResult, 90.0f),-90.0f);
 }
 
 inline float CalcHorizonTask::CalcRollAngleSlope(void){
 
     //Flipped axes to achieve correct horizon orientation
-    float gz = -m_stLastAccel.y;
-    float gx = -m_stLastAccel.x;
-    float gy = -m_stLastAccel.z;
-    float result = gx/sqrt(gz*gz+gy*gy);
+    float l_fGravityZ = -m_stLastAccel.m_i16Y;
+    float l_fGravityX = -m_stLastAccel.m_i16X;
+    float l_fGravityY = -m_stLastAccel.m_i16Z;
+    float l_fResult = l_fGravityX/sqrt(l_fGravityZ*l_fGravityZ+l_fGravityY*l_fGravityY);
     
-    return max(min(result, 128.0f),-128.0f);
+    return max(min(l_fResult, 128.0f),-128.0f);
 }
 
