@@ -113,6 +113,7 @@ void LCDDrawCompleteHorizontalRect(uint16_t i_u16Y0, uint16_t i_u16Y1, uint16_t 
 /*uint32_t*/ uint16_t LCDColorTranslate(uint32_t i_u32Value);
 
 #define RECTANGLE_SIZE 32
+#define GRAPHICS_COLOR_BROWN_16BITS 0xAA00
 
 /**
  * Draw divided rectangle.

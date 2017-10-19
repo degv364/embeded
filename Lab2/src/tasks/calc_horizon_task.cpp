@@ -34,10 +34,6 @@ return_e CalcHorizonTask::setup(Heap* i_Heap)
     Task::SetTaskExecutionCondition(false);
     this->SetTaskTickInterval(0);
 
-    //Setup MeanFilter
-    m_LCDFilterPitch.Setup(63);
-    m_LCDFilterRoll.Setup(63);
-
     //Messages memory allocation
     rt = i_Heap->Allocate(HEAP_MEM_SIZE, &m_pHeapMem);
 
@@ -50,6 +46,7 @@ return_e CalcHorizonTask::run(void)
     message_t l_stInputMessage;
     Task::m_bIsFinished = false;
     rt = Task::Incoming.PopMessage(&l_stInputMessage);
+
     while(rt != RETURN_EMPTY){
         if (l_stInputMessage.message_type == ACCEL_DATA) {
             m_stLastAccel.x = (int16_t) l_stInputMessage.data[0];
@@ -58,23 +55,13 @@ return_e CalcHorizonTask::run(void)
         }
         rt = Task::Incoming.PopMessage(&l_stInputMessage);
     }
+
     uint16_t l_u16HorizonY = (uint16_t) (63.0*((CalcPitchAngle()/90.0) + 1.0));
     float l_fHorizonSlope =  CalcRollAngleSlope();
-    uint16_t l_u16FilteredHorizonPitch;
-    float l_fFilteredHorizonSlope;
 
-    // Filter Pitch
-    l_u16FilteredHorizonPitch = l_u16HorizonY;
-    //m_LCDFilterPitch.AddValue(l_u16HorizonY);
-    //m_LCDFilterPitch.GetFilteredValue(&l_u16FilteredHorizonPitch);
+    m_pHeapMem[0] = (uint32_t) l_u16HorizonY;
+    m_pHeapMem[1] = *reinterpret_cast<uint32_t*>(&l_fHorizonSlope); //Cast pointer to not change the bits
 
-    //Filter Roll. FIXME: re-enable after debugging
-    //m_LCDFilterRoll.AddValue((uint16_t) (l_i16HorizonSlope+128));
-    //m_LCDFilterRoll.GetFilteredValue(&l_u16FilteredHorizonSlope);
-    l_fFilteredHorizonSlope = l_fHorizonSlope;
-
-    m_pHeapMem[0] = (uint32_t) l_u16FilteredHorizonPitch;
-    m_pHeapMem[1] = *reinterpret_cast<uint32_t*>(&l_fFilteredHorizonSlope); //Cast pointer to not change the bits
 
     message_t l_stHorizonMessage = {CALC_HORIZON,
                                     LCD_ISSUE,
@@ -96,7 +83,7 @@ inline float CalcHorizonTask::CalcPitchAngle(void){
     float gx = -m_stLastAccel.x;
     float gy = -m_stLastAccel.z;
 
-    float result = atan(gy/gz)*(180.0f/M_PI);
+    float result = atan2(gy,gz)*(180.0f/M_PI);
 
     return max(min(result, 90.0f),-90.0f);
 }

@@ -679,280 +679,94 @@ void LCDDrawDividedRectangle(uint16_t i_u16XLeft, uint16_t i_u16YTop,
                     i_u16YTop + RECTANGLE_SIZE-1);
     LCDWriteCommand(CM_RAMWR);
 
-  // Note that slopes above 64 are slower. Because we draw by row
-  for (int16_t l_i16YIndex = (int16_t) i_u16YTop;
-       l_i16YIndex <= (int16_t) i_u16YTop+RECTANGLE_SIZE-1; l_i16YIndex++) {
 
-    // Solve equation for when there is a color shift
-    if (i_fSlope == 0.0f){
-      //Avoid exception
-      l_i16RemainingPixelsForShift = INT16_MAX;
-      l_u16UpdateValue = -1;
+    uint16_t l_u16LowX;
+    uint16_t l_u16HighX;
+
+
+    if (i_fSlope >= 0) {
+        l_u16LowX = 0;
+        l_u16HighX = 127;
     }
-    // Negative slope, start with blue, then turn brown
-    else if(i_fSlope<0){
-      l_u16UpdateValue = -1;
-      l_i16RemainingPixelsForShift = (int16_t) ((float)(l_i16YIndex-l_i16B)/i_fSlope) -
-	(int16_t)i_u16XLeft;
-    }
-    //Positive Slope, start with brown then turn blue
-    else{ // i_fSlope>0
-      l_u16UpdateValue = 1;
-      l_i16RemainingPixelsForShift = (int16_t) ((float)(l_i16YIndex-l_i16B)/i_fSlope) -
-	(int16_t)i_u16XLeft;
-    }
-    
-    //FIXME: Unroll when sure draw is working properly
-
-    for(uint16_t i = 0; i < 32; i++) {
-        // Boring unoptimized solution.
-
-        //Get the current x position.
-        uint16_t l_u16DivisionY;
-        uint16_t l_u16CurrentX = i+i_u16XLeft;
-        //Get Y value for given X
-        int32_t l_i32TemporalDivision = (int32_t) ((float)l_u16CurrentX*i_fSlope)+l_i16B;
-        if (l_i32TemporalDivision<=0){
-            l_u16DivisionY = 0;
-        }
-        else{
-            l_u16DivisionY = (uint16_t) l_i32TemporalDivision;
-        }
-
-        // If Y lcd position is lower than equation, draw sky, else draw ground
-        if (l_i16YIndex<l_u16DivisionY){
-            l_u16SelectedColor = (uint16_t)(i_u32Colors);
-        }
-        else{
-            l_u16SelectedColor = (uint16_t)(i_u32Colors >> 16);
-        }
-        //Write data
-        LCDWriteData(l_u16SelectedColor >> 8);
-        LCDWriteData(l_u16SelectedColor);
-
-#ifdef CLEVER_BIT_SHIFTING
-        // When Remaining pixels is negative its MSB becomes 1. This bit shifts
-        //when the color shift should hapen.
-
-           // Update remaining bits
-           l_i16RemainingPixelsForShift+=l_u16UpdateValue;
-
-           l_u16ShouldShift = ((uint16_t)l_i16RemainingPixelsForShift) >> 15;
-
-           // If we should shift, shift 16 bits to select the next color
-           l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-
-
-           //Write data
-           LCDWriteData(l_u16SelectedColor >> 8);
-           LCDWriteData(l_u16SelectedColor);
-#endif
+    else {
+        l_u16LowX = 127;
+        l_u16HighX = 0;
     }
 
-#ifdef SUPER_OPTIMIZATION
-//    // Send Pixel 0
-//
-//    // When Remaining pixels becomes negative its MSB becomes 1. This happens when the
-//    // Color shift should happen. In that case the color is shifted to select the second one.
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//
-//    // If we should shift, shift 16 bits to select the next color
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//
-//    // Update remaining bits
-//    l_i16RemainingPixelsForShift--;
-//    //Write data
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//
-//    //1
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//
-//    //2
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //3
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //4
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //5
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //6
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //7
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //8
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //9
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //10
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //11
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //12
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //13
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //14
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //15
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //16
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //17
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //18
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //19
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //20
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //21
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //22
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //23
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //24
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //25
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //26
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //27
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //28
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //29
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //30
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-//    //31
-//    l_u16ShouldShift = l_i16RemainingPixelsForShift >> 15;
-//    l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
-//    l_i16RemainingPixelsForShift--;
-//    LCDWriteData(l_u16SelectedColor >> 8);
-//    LCDWriteData(l_u16SelectedColor);
-#endif
-  }
-  
+
+    int32_t l_i16IntersectLowY = (int32_t) ((float)l_u16LowX * i_fSlope) + l_i16B;
+    int32_t l_i16IntersectHighY = (int32_t) ((float)l_u16HighX * i_fSlope) + l_i16B;
+
+
+    int16_t l_i16NumSky = max(min(l_i16IntersectLowY -(int16_t)i_u16YTop, RECTANGLE_SIZE), 0);
+    int16_t l_i16NumGround = max(min((int16_t)(i_u16YTop+RECTANGLE_SIZE-1)-l_i16IntersectHighY, RECTANGLE_SIZE), 0);
+    int16_t l_i16NumMixed = max(RECTANGLE_SIZE - l_i16NumSky - l_i16NumGround, 0);
+
+
+    int16_t l_i16YIndex;
+
+
+    //Draw sure sky section
+    l_u16SelectedColor = (uint16_t)(i_u32Colors); //Sky color
+
+    for (l_i16YIndex = (int16_t) i_u16YTop;
+            l_i16YIndex < (int16_t) i_u16YTop + l_i16NumSky; l_i16YIndex++) {
+
+        for(uint16_t l_u16i = 0; l_u16i < 32; l_u16i++) {
+              //Write data
+              LCDWriteData(l_u16SelectedColor >> 8);
+              LCDWriteData(l_u16SelectedColor);
+        }
+    }
+
+
+    //Draw mixed section (sky/ground)
+
+    //Flip colors if required
+    if (i_fSlope >= 0) {
+        i_u32Colors = (uint32_t)((i_u32Colors & 0xFFFF0000)>>16) | (uint32_t)((i_u32Colors & 0x0000FFFF)<<16);
+    }
+
+
+    for (; l_i16YIndex < ((int16_t) i_u16YTop
+                            + l_i16NumSky
+                            + l_i16NumMixed); l_i16YIndex++) {
+
+        l_i16RemainingPixelsForShift = (int16_t) ((float)(l_i16YIndex-l_i16B)/i_fSlope) -
+                                             (int16_t)i_u16XLeft;
+
+
+        for(uint16_t l_u16i = 0; l_u16i < RECTANGLE_SIZE; l_u16i++) {
+
+            l_u16ShouldShift = ((uint16_t)l_i16RemainingPixelsForShift--) >> 15;
+
+            // If we should shift, shift 16 bits to select the next color
+            l_u16SelectedColor = (uint16_t)(i_u32Colors >> (l_u16ShouldShift<<4));
+
+            //Write data
+            LCDWriteData(l_u16SelectedColor >> 8);
+            LCDWriteData(l_u16SelectedColor);
+
+        }
+    }
+
+    //Flip colors if required
+    if (i_fSlope >= 0) {
+        i_u32Colors = (uint32_t)((i_u32Colors & 0xFFFF0000)>>16) | (uint32_t)((i_u32Colors & 0x0000FFFF)<<16);
+    }
+
+    //Draw sure ground section
+    l_u16SelectedColor = (uint16_t)(i_u32Colors >> 16);
+
+    for (; l_i16YIndex < ((int16_t) i_u16YTop
+                             + l_i16NumSky
+                             + l_i16NumMixed
+                             + l_i16NumGround); l_i16YIndex++) {
+
+        for(uint16_t l_u16i = 0; l_u16i < 32; l_u16i++) {
+              //Write data
+              LCDWriteData(l_u16SelectedColor >> 8);
+              LCDWriteData(l_u16SelectedColor);
+        }
+    }
 }

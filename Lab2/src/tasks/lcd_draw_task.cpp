@@ -25,7 +25,7 @@ LcdDrawTask::LcdDrawTask(void)
     Task::SetTaskType(ONE_SHOT);
     m_u32Colors = 0;
     //Initialize sky as MSB and ground as LSB
-    m_u32Colors = (uint32_t) (LCDColorTranslate(GRAPHICS_COLOR_BROWN)<<16);
+    m_u32Colors = (uint32_t) (GRAPHICS_COLOR_BROWN_16BITS<<16);
     m_u32Colors |= (uint32_t) (LCDColorTranslate(GRAPHICS_COLOR_DEEP_SKY_BLUE));
 }
 

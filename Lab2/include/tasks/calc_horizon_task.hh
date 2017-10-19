@@ -43,8 +43,6 @@ private:
 
     static constexpr uint8_t HEAP_MEM_SIZE = 2;
 
-    MeanFilter m_LCDFilterPitch;
-    MeanFilter m_LCDFilterRoll;
     AccelAxes m_stLastAccel;
     uint32_t* m_pHeapMem;
 };
