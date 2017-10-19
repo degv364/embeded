@@ -84,7 +84,7 @@ periph::OutputGPIO TimeoutLight(GPIO_PORT_P2, GPIO_PIN1); // Green
 //Hardware independent (hi)
 volatile uint64_t g_SystemTicks = 0; // - The system counter.
 
-Scheduler g_MainScheduler;           // - Instantiate a Scheduler
+//Scheduler g_MainScheduler;           // - Instantiate a Scheduler
 
 //IRQ related tasks (global for ISR access)
 AdcIRQTask g_AdcIRQTask;
@@ -125,6 +125,8 @@ static return_e HardwareInit(void)
 int main(void)
 {
     return_e rt;
+
+    Scheduler g_MainScheduler;           // - Instantiate a Scheduler
 
     // Define tasks
     CalcHorizonTask l_CalcHorizonTask;

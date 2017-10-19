@@ -28,7 +28,7 @@ volatile bool g_bTimeoutCondition;   // Variable to determine timeout condition
 Scheduler::Scheduler()
 {
     m_u8NextSlot = 0;
-    for (int index = 0; index < NUMBER_OF_SLOTS; index++)
+    for (int index = 0; index < LAST_TASK; index++)
     {
         m_aSchedule[index].pToAttach = (uintptr_t) 0; // Init to an invalid pointer
     }
