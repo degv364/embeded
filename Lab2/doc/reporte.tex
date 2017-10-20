@@ -112,12 +112,15 @@ x/\sqrt{(y^2+z^2)}$. Los resultados se envian al LCD\_issue.
 
 Como parte de las optimizaciones realizadas, se dividió la pantalla en 16 cuadrados iguales. Esto
 permite tener una tamaño fijo de frame aunque cambie el porcentaje de la pantalla que se debe
-re-dibujar, aparte que permite reducir el tamaño del frame. Este task periódico calcula a partir de la
-información de Pitch y Roll, cuales son los cuadrados que deben ser re-dibujados, y genera una lista
-que le pasa por medio de mensajes a LCD\_draw. Solicita al scheduler ejecutar LCD\_draw. 
+re-dibujar, aparte que permite reducir el tamaño del frame. Este task periódico calcula a partir de
+la información de Pitch y Roll, cuales son los cuadrados que deben ser re-dibujados, y genera una
+lista que le pasa por medio de mensajes a LCD\_draw junto con la información de Pitch y
+Roll. Solicita al scheduler ejecutar LCD\_draw.
 \subsubsection{Task: LCD draw}
 \label{sec:lcd_draw}
-
+Este task toma la lista que le pasó LCD\_issue y va dibujando un cuadro por frame. Si aun no se han
+dibujado todos los cuadros de la lista, entonces se le envía una solicitud al scheduler para que en el
+siguiente frame se ejecute este task, y de esta manera dibujar el siguiente cuadro. 
 
 \subsection{Driver optimizado}
 Driverlib ofrece un API para accesar a la pantalla LCD. 
