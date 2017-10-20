@@ -37,9 +37,6 @@ debajo se dibuja café.
 
 \subsection{Timer}
 
-\subsection{Sensor de luz con I2C}
-
-
 \subsection{ ADC}
 
 \subsection{Acelerómetro}
@@ -112,6 +109,12 @@ x/\sqrt{(y^2+z^2)}$. Los resultados se envian al LCD\_issue.
 
 \subsubsection{Task: LCD issue}
 \label{sec:lcd_issue}
+
+Como parte de las optimizaciones realizadas, se dividió la pantalla en 16 cuadrados iguales. Esto
+permite tener una tamaño fijo de frame aunque cambie el porcentaje de la pantalla que se debe
+re-dibujar, aparte que permite reducir el tamaño del frame. Este task periódico calcula a partir de la
+información de Pitch y Roll, cuales son los cuadrados que deben ser re-dibujados, y genera una lista
+que le pasa por medio de mensajes a LCD\_draw. Solicita al scheduler ejecutar LCD\_draw. 
 \subsubsection{Task: LCD draw}
 \label{sec:lcd_draw}
 
