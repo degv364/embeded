@@ -47,16 +47,46 @@ debajo se dibuja café.
 %--------------------------------
 \section{Implementación}
 %-------------------------------
+La implementación del código se encuentra disponible en  \url{https://github.com/degv364/embeded}.
+
 
 \subsection{Scheduler}
+\label{sec:scheduler}
+El scheduler tiene como miembro un arreglo de tasks (sección \ref{sec:tasks}). Estas son todas las
+tareas que puede ejecutar pero no necesariamente las ejecuta todas en cada frame. La prioridad de
+ejecución se define por el nombre del task. Esto se hace aprovechando el hecho que el nombre se
+implementa como un enum y por lo tanto ya tiene un orden intrínseco, cuanto menor se el valor del
+enum, mayor es la prioridad. El nombre del task define la posición dentro del arreglo de tasks que
+tiene el scheduler. De esta manera se optimiza bastante los procesos de búsqueda y ordenamiento de
+tasks ($O(1)$).
+
+El scheduler le agrega a cada task información extra. Primero agrega un contador que en el caso de
+las tareas periódicas indica cuántos frames faltan para que la tarea se deba ejecutar de nuevo . El
+otro dato es una bandera que indica si el task debe ser ejecutado al siguiente frame.
+
+En cada frame se itera por las tareas y se ejecutan en caso que su bandera de ejecución esté
+activada. Cabe destacar que como los tasks se indexan por nombre, que a su vez indica la
+prioridad. Siempre se ejecutan primero los tasks de mayor prioridad. También durante el postamble se
+atienden los tasks de mayor prioridad primero. 
+
+Las tareas misceláneas del scheduler se ejecutan durante el postamble. Primero se itera por todos
+los tasks y se toman los mensajes que colocaron en su message\_queue de salida, y se pasan a los
+tasks destinatarios. En caso que sean para el scheduler, se guardan en el message\_queue
+interno. También se actualizan los contadores para ejecución de los tasks periódicos, y se les
+activa la bandera de ejecución en caso que sea necesario. Luego se procesan los mensajes internos.
+Hay un tipo de mensaje que le indica al scheduler que agregue un task específico a la ejecución del
+siguiente frame. Este es el único método para ejecutar tasks del tipo one\_shot.
 
 
-\subsection{Task: de cálculo de ángulos}
+\subsection{Tasks}
+\label{sec:tasks}
 
-\subsection{Task: LCD issue}
-
-\subsection{Task: LCD draw}
-
+\subsubsection{Task: Calc angle}
+\label{sec:calc_angle}
+\subsubsection{Task: LCD issue}
+\label{sec:lcd_issue}
+\subsubsection{Task: LCD draw}
+\label{sec:lcd_draw}
 \subsection{Driver optimizado}
 
 %-------------------------------
