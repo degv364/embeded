@@ -9,13 +9,29 @@ Profesor: Esteban Ortiz  \hfill Fecha: 19-Octubre-2017 \\
 
 \section{Problema a Resolver}
 
+Utilizar la tarjeta MSP432 junto con el kit de expansión para desarrollar un indicador
+de atitud. Este debe ser presentado al usuario por medio de la pantalla LCD que ya está incorporada
+al kit de expansión. Debe ser capaz de indicar el pitch y el roll con una velocidad máxima de 90
+grados por segundo y un rango máximo de 180 grados.  
 
 \section{Contexto de Mercado}
 
 
 \section{Solución Propuesta}
 
+Como se deben realizar varias tareas de forma simultánea se propone la utilización de un scheduler
+simple. Esto es un programa que se encarga de decidir qué tareas se deben ser ejecutadas y de la
+sincronización general de las mismas. De esta manera se garantiza el cumplimiento de las
+restricciones de temporización de cada proceso. Este scheduler permite el paso de mensajes entre las
+tareas que debe sincronizar y además proporciona un método para reservar memoria para la
+transferencia de datos por mensajes. También soporta 2 tipos de tareas, las que son periódicas, que
+el scheduler debe ejecutar cada cierto tiempo, y las que son one shot, que el scheduler debe
+ejecutar cada vez que sucede cierto evento.
 
+El sistema que soluciona este laboratorio toma los datos de la dirección del vector de gravedad y a
+partir de ellos calcula el Pitch y el Roll. Luego eso lo transforma en una ecuación lineal que es la
+que define cómo se deben dibujar los colores en la pantalla LCD. Sobre la ecuación se dibuja azul, y
+debajo se dibuja café. 
 
 \section{Configuración de periféricos}
 
