@@ -99,7 +99,16 @@ mensaje de la interrupción. Estas son los únicos tasks globales.
 
 \subsubsection{Task: Calc angle}
 \label{sec:calc_angle}
+Esta es una tarea One\_shot, que se ejecuta cuando el scheduler recibe el mensaje por parte del
+callback de manejo de interrupciones del ADC. Además durante el manejo de dicha interrupción se
+envía un mensaje a esta tarea con los datos del acelerómetro.
 
+El trabajo de esta tarea es tomar los datos del acelerómetro y generar los ángulos de Pitch y
+Roll. Como la información que se necesita para dibujar en la pantalla en la ecuación de una recta
+queda más cómodo considerar que primero se aplica Pitch y luego Roll (contrario a como normalmente se
+hace). Además nos e calcula el Roll como tal, sino la pendiente (tangente). Del vector de gravedad
+se obtiene el pitch como $P = atan(y/z)$. La pendiente debida al Roll se obtiene como $m =
+x/\sqrt{(y^2+z^2)}$. Los resultados se envian al LCD\_issue. 
 
 \subsubsection{Task: LCD issue}
 \label{sec:lcd_issue}
