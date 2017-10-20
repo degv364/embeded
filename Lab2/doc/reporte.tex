@@ -134,6 +134,20 @@ optimizaciones del compilador, so logró aumentar la frecuencia de $135$ frames 
 \section{Problemas encontrados y posibles mejoras}
 % -------------------------------
 
+Actualmente se re-dibuja toda la pantalla cada vez que se ejecuta lcd\_issue. Esto por problemas a la
+hora de identificar los cuadros que necesitan actualización. Para arreglarlo se deben identificar
+las condiciones y una manera eficiente de computarlas.
+
+Para ciertos ángulos de roll se obtienen resultados erráticos de Pitch. Esto porque es posible que
+pitch para el pitch se utilicen datos del tipo $0/0$. Una manera de corregirlo es agregarle un
+pequeño factor que depende del eje $x$ de la aceleración, de manera que no solo dependa de dos ejes,
+y no se indefinan sus valores de cálculo.
+
+En este momento solo se contempla una recta para el dibuajdo, pero si se quiere hacer pitch y roll
+completo es necesario agregar las rectas en $180$ y $-180$. Aunque matemáticamente son equivalentes,
+a la hora de implementarlo proporcionan una manera cómoda de lidiar con las condiciones inversas
+(café arriba, azul abajo) de dibujado de colores cuando la tarjeta se encuentra ``de cabeza''.
+
 
 %----------------------
 \textbf{ Bibliografía}
