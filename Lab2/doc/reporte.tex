@@ -81,13 +81,29 @@ siguiente frame. Este es el único método para ejecutar tasks del tipo one\_sho
 \subsection{Tasks}
 \label{sec:tasks}
 
+Todos los tasks tienen un nombre, que define su prioridad. Además, en el caso de los tasks
+periódicos se les define un periodo. Los message\_queque de salida y de entrada se utilizan para
+enviar y recibir mensajes respectivamente.
+
+El método de setup se encarga de inicializar varios miembros de la clase. Además se solicita al heap
+una porción de memoria para ser utilizada para el paso de mensajes. Durante el método de run, se
+revisan los mensajes entrantes y se atienden, luego se ejecutan las tareas propias del task.
+
+\subsubsection{Task: IRQ\_alocator}
+\label{sec:IRQ_allocator}
+
 \subsubsection{Task: Calc angle}
 \label{sec:calc_angle}
+
+
 \subsubsection{Task: LCD issue}
 \label{sec:lcd_issue}
 \subsubsection{Task: LCD draw}
 \label{sec:lcd_draw}
+
+
 \subsection{Driver optimizado}
+Driverlib ofrece un API para accesar a la pantalla LCD. 
 
 %-------------------------------
 \section{Problemas encontrados y posibles mejoras}
