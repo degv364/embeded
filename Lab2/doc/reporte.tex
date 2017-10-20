@@ -92,6 +92,11 @@ revisan los mensajes entrantes y se atienden, luego se ejecutan las tareas propi
 \subsubsection{Task: IRQ\_alocator}
 \label{sec:IRQ_allocator}
 
+Este no es un tasks específico, sino que es un tipo de task, que se utiliza para el manejo de
+interrupciones. Existen casos en los que las interrupciones deben enviar mensajes para activar
+tareas específicas, entonces estos tasks reservan la memoria del heap, que se necesitan para el
+mensaje de la interrupción. Estas son los únicos tasks globales. 
+
 \subsubsection{Task: Calc angle}
 \label{sec:calc_angle}
 
