@@ -123,7 +123,12 @@ dibujado todos los cuadros de la lista, entonces se le envía una solicitud al s
 siguiente frame se ejecute este task, y de esta manera dibujar el siguiente cuadro. 
 
 \subsection{Driver optimizado}
-Driverlib ofrece un API para accesar a la pantalla LCD. 
+Driverlib ofrece un API para controlar a la pantalla LCD, sin embargo no es lo suficientemente
+rápido. Por otra parte no ofrece funciones para dibujar líneas inclinadas, por lo que se optó por
+implementar una versión optimizada del driver. Esta versión permite dibujar cuadrados de $32\times
+32$ pixeles, donde un sector del cuadrdo puede ser de otro color. Ambos sectores definidos por la
+recta que se obtiene de Pitch y Roll. Al utilizar este driver optimizado y compilar con
+optimizaciones del compilador, so logró aumentar la frecuencia de $135$ frames pro segundo a $330$.
 
 %-------------------------------
 \section{Problemas encontrados y posibles mejoras}
