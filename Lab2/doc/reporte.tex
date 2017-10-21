@@ -9,144 +9,215 @@ Profesor: Esteban Ortiz  \hfill Fecha: 19-Octubre-2017 \\
 
 \section{Problema a Resolver}
 
-Utilizar la tarjeta MSP432 junto con el kit de expansión para desarrollar un indicador
-de atitud. Este debe ser presentado al usuario por medio de la pantalla LCD que ya está incorporada
-al kit de expansión. Debe ser capaz de indicar el pitch y el roll con una velocidad máxima de 90
-grados por segundo y un rango máximo de 180 grados.  
+Utilizar la tarjeta MSP432 junto con el kit de expansión para desarrollar un
+indicador de actitud. Este debe ser presentado al usuario por medio de la
+pantalla LCD que ya está incorporada al kit de expansión. Debe ser capaz de
+indicar el pitch y el roll con una velocidad mínima de 90 grados por segundo y
+un rango máximo de 180 grados.
 
 \section{Contexto de Mercado}
 
 
 \section{Solución Propuesta}
 
-Como se deben realizar varias tareas de forma simultánea se propone la utilización de un scheduler
-simple. Esto es un programa que se encarga de decidir qué tareas se deben ser ejecutadas y de la
-sincronización general de las mismas. De esta manera se garantiza el cumplimiento de las
-restricciones de temporización de cada proceso. Este scheduler permite el paso de mensajes entre las
-tareas que debe sincronizar y además proporciona un método para reservar memoria para la
-transferencia de datos por mensajes. También soporta 2 tipos de tareas, las que son periódicas, que
-el scheduler debe ejecutar cada cierto tiempo, y las que son one shot, que el scheduler debe
-ejecutar cada vez que sucede cierto evento.
+Como se deben realizar varias tareas de forma simultánea se requiere la
+utilización de un scheduler simple. Esto es un programa que se encarga de
+decidir qué tareas se deben ser ejecutadas y de la sincronización general de las
+mismas. De esta manera se garantiza el cumplimiento de las restricciones de
+temporización de cada proceso. Este scheduler permite el paso de mensajes entre
+las tareas que debe sincronizar y además proporciona un método para reservar
+memoria para la transferencia de datos por mensajes. El diseño planteado soporta
+3 tipos de tareas, las que son periódicas, que el scheduler debe ejecutar cada
+cierto tiempo, las que son one shot, que el scheduler debe ejecutar cada vez
+que sucede cierto evento y las de interrupción, que se emplean para poder enviar
+mensajes a otras tareas o al scheduler dentro de rutinas de atención a interrupción.
 
-El sistema que soluciona este laboratorio toma los datos de la dirección del vector de gravedad y a
-partir de ellos calcula el Pitch y el Roll. Luego eso lo transforma en una ecuación lineal que es la
-que define cómo se deben dibujar los colores en la pantalla LCD. Sobre la ecuación se dibuja azul, y
-debajo se dibuja café. 
+El sistema que soluciona este laboratorio toma los datos de la dirección del
+vector de gravedad y a partir de ellos calcula los ángulos de Pitch y el Roll.
+Luego eso lo transforma en una ecuación lineal que es la que define cómo se
+deben dibujar los colores en la pantalla LCD. Sobre la ecuación se dibuja azul
+(cielo), y debajo se dibuja café (tierra).
 
 \section{Configuración de periféricos}
+Para la implementación del sistema propuesto se utilizaron los periféricos de la
+MSP432 correspondientes al Timer32, el ADC14 y los GPIOs para los LEDs. Los
+mismos fueron configurados mediante la API de Driverlib.
+\subsection{Timer32}
+El módulo del Timer32 se utiliza en el diseño para establecer la frecuencia del
+tick del scheduler, el cual define cada cuanto tiempo se comienza a ejecutar un
+nuevo frame, actualizando un contador de ticks en su rutina de interrupción
+correspondiente. Para esto el mismo se configura en modo periódico, tal que al
+terminar el conteo descendente hasta 0 se reinicie el valor máximo de conteo, el
+cual a su vez permite establecer la cantidad de interrupciones por segundo en
+conjunto con la frecuencia del MCLK (con preescalado de 16). En función de las
+tareas a realizar en programa final, se logró llegar a una frecuencia de tick de
+310 Hz.
 
-\subsection{Timer}
+También, se emplea el otro Timer32 para establecer la frecuencia de muestreo del
+ADC, tal como se explica a continuación.
 
-\subsection{ ADC}
+\subsection{ADC/Acelerómetro}
+Para capturar los datos del acelerómetro, el cual funciona de manera analógica,
+es necesario utilizar el módulo ADC14 del MSP432. De esta forma, para capturar
+los valores de los 3 canales del acelerómetro se configura el ADC en el modo de
+secuencia múltiple, de manera que se lleve a cabo la conversión dichos canales
+de forma secuencial pero rápida (el muestreo de un canal se configura tal que
+ocurre apenas el ADC termine de realizar la conversión del anterior), guardando
+los resultados en 3 registros del ADC (MEM0, MEM1 y MEM2). Este muestreo de la
+secuencia de canales se activa mediante una señal de software, de manera que una
+interrupción de un Timer32 establece la frecuencia promedio con la que se
+muestrea el acelerómetro, ya que el tiempo de muestreo de los 3 canales es muy
+pequeño con respecto al tiempo entre interrupciones del Timer32. En la
+configuración final implementada se utilizó una frecuencia de 310 Hz para el
+Timer32.
 
-\subsection{Acelerómetro}
+Además de esto se requirió configurar la interrupción del ADC de manera que se
+active cuando se termina la conversión del último canal (MEM2), lo cual indica
+que los valores de los registros del ADC se encuentran actualizados y deben ser
+capturados por el programa principal.
+
+También, cabe destacar que se requirió configurar los pines GPIO P4.0, P4.2 y P6.1
+como entradas para así poder capturar los valores del acelerómetro, así como
+mapear dichos pines como entradas de los canales del ADC.
+
+\subsection{LEDs}
+Para poder reconocer visualmente cuando se generaba una situación de error en el
+software implementado (scheduler y tasks), así como cuando el tiempo de
+ejecución de las tareas superaba el tiempo máximo del frame, se utilizaron dos
+de los LEDs RGB de la tarjeta de desarrollo. Para esto los mismos se configuran
+como salidas GPIO y se activan por software en una situación de error de
+software (rojo) o de timeout (amarillo).
 
 %--------------------------------
 \section{Implementación}
 %-------------------------------
-La implementación del código se encuentra disponible en  \url{https://github.com/degv364/embeded}.
-
+La implementación del código se encuentra disponible en
+\url{https://github.com/degv364/embeded}.
 
 \subsection{Scheduler}
 \label{sec:scheduler}
-El scheduler tiene como miembro un arreglo de tasks (sección \ref{sec:tasks}). Estas son todas las
-tareas que puede ejecutar pero no necesariamente las ejecuta todas en cada frame. La prioridad de
-ejecución se define por el nombre del task. Esto se hace aprovechando el hecho que el nombre se
-implementa como un enum y por lo tanto ya tiene un orden intrínseco, cuanto menor se el valor del
-enum, mayor es la prioridad. El nombre del task define la posición dentro del arreglo de tasks que
-tiene el scheduler. De esta manera se optimiza bastante los procesos de búsqueda y ordenamiento de
-tasks ($O(1)$).
+El scheduler tiene como miembro un arreglo de tasks (sección \ref{sec:tasks}).
+Estas son todas las tareas que puede ejecutar pero no necesariamente las ejecuta
+todas en cada frame. La prioridad de ejecución se define por el nombre del task.
+Esto se hace aprovechando el hecho que el nombre se implementa como un enum y
+por lo tanto ya tiene un orden intrínseco, cuanto menor sea el valor del enum,
+mayor es la prioridad. El nombre del task define la posición dentro del arreglo
+de tasks que tiene el scheduler. De esta manera se optimiza bastante los
+procesos de búsqueda y ordenamiento de tasks ($O(1)$). En particular, el
+scheduler tiene asignado la primera posición del enum para poder indicarlo como
+destinatario de mensajes.
 
-El scheduler le agrega a cada task información extra. Primero agrega un contador que en el caso de
-las tareas periódicas indica cuántos frames faltan para que la tarea se deba ejecutar de nuevo . El
-otro dato es una bandera que indica si el task debe ser ejecutado al siguiente frame.
+El scheduler le agrega a cada task información extra. Primero agrega un contador
+que en el caso de las tareas periódicas indica cuántos frames faltan para que la
+tarea se deba ejecutar de nuevo. El otro dato es una bandera que indica si el
+task debe ser ejecutado al siguiente frame.
 
-En cada frame se itera por las tareas y se ejecutan en caso que su bandera de ejecución esté
-activada. Cabe destacar que como los tasks se indexan por nombre, que a su vez indica la
-prioridad. Siempre se ejecutan primero los tasks de mayor prioridad. También durante el postamble se
-atienden los tasks de mayor prioridad primero. 
+En cada frame se itera por las tareas y se ejecutan en caso que su bandera de
+ejecución esté activada. Cabe destacar que como los tasks se indexan por nombre,
+que a su vez indica la prioridad. Siempre se ejecutan primero los tasks de mayor
+prioridad. También durante el postamble se atienden los tasks de mayor prioridad
+primero.
 
-Las tareas misceláneas del scheduler se ejecutan durante el postamble. Primero se itera por todos
-los tasks y se toman los mensajes que colocaron en su message\_queue de salida, y se pasan a los
-tasks destinatarios. En caso que sean para el scheduler, se guardan en el message\_queue
-interno. También se actualizan los contadores para ejecución de los tasks periódicos, y se les
-activa la bandera de ejecución en caso que sea necesario. Luego se procesan los mensajes internos.
-Hay un tipo de mensaje que le indica al scheduler que agregue un task específico a la ejecución del
-siguiente frame. Este es el único método para ejecutar tasks del tipo one\_shot.
+Las tareas misceláneas del scheduler se ejecutan durante el postamble. Primero
+el scheduler itera por todos los tasks y los mensajes que estos colocaron en su
+message\_queue de salida, se pasan a los tasks destinatarios. Cabe destacar que
+cada task escribe el contenido de dichos mensajes en un espacio de memoria
+brindado mediante un puntero por parte del scheduler que gestiona un espacio de
+memoria estático tipo ``heap'' para distribuir entre las tareas.
+
+En caso de que los mensajes sean para el scheduler, se guardan en el
+message\_queue interno al scheduler. También se actualizan los contadores para
+ejecución de los tasks periódicos, y se les activa la bandera de ejecución en
+caso que sea necesario. Luego se procesan los mensajes internos, tales como los
+que le indican al scheduler que agregue un task específico (tipo one-shot) a la
+ejecución del siguiente frame.
 
 
 \subsection{Tasks}
 \label{sec:tasks}
 
-Todos los tasks tienen un nombre, que define su prioridad. Además, en el caso de los tasks
-periódicos se les define un periodo. Los message\_queque de salida y de entrada se utilizan para
-enviar y recibir mensajes respectivamente.
+Todos los tasks tienen un nombre, que define su prioridad. Además, en el caso de
+los tasks periódicos se les define un periodo. Los message\_queque de salida y
+de entrada se utilizan para enviar y recibir mensajes respectivamente.
 
-El método de setup se encarga de inicializar varios miembros de la clase. Además se solicita al heap
-una porción de memoria para ser utilizada para el paso de mensajes. Durante el método de run, se
-revisan los mensajes entrantes y se atienden, luego se ejecutan las tareas propias del task.
+El método de setup se encarga de inicializar varios miembros de la clase. Además
+se solicita al heap una porción de memoria para ser utilizada para el paso de
+mensajes. Durante el método de run, se revisan los mensajes entrantes y se
+atienden, luego se ejecutan las tareas propias del task.
 
-\subsubsection{Task: IRQ\_alocator}
-\label{sec:IRQ_allocator}
+\subsubsection{Task: ADC\_IRQ}
+\label{sec:adc_irq}
 
-Este no es un tasks específico, sino que es un tipo de task, que se utiliza para el manejo de
-interrupciones. Existen casos en los que las interrupciones deben enviar mensajes para activar
-tareas específicas, entonces estos tasks reservan la memoria del heap, que se necesitan para el
-mensaje de la interrupción. Estas son los únicos tasks globales. 
+Este task se encarga de gestionar la transmisión de los datos del acelerómetro a
+la tarea \texttt{CALC\_HORIZON}, de manera que no se ejecuta su método
+\texttt{Run}, sino se creó para poder asignarle un espacio de memoria en el heap
+que le permitiera enviar mensajes. Además, se encarga de indicarle al scheduler
+que ejecute la tarea \texttt{CALC\_HORIZON} (tipo one-shot).
 
-\subsubsection{Task: Calc angle}
-\label{sec:calc_angle}
-Esta es una tarea One\_shot, que se ejecuta cuando el scheduler recibe el mensaje por parte del
-callback de manejo de interrupciones del ADC. Además durante el manejo de dicha interrupción se
-envía un mensaje a esta tarea con los datos del acelerómetro.
+\subsubsection{Task: CALC\_HORIZON}
+\label{sec:calc_horizon}
+Esta es una tarea tipo one-shot que se ejecuta cuando el scheduler recibe el
+mensaje por parte de la rutina de atención a interrupciones del ADC14. Esta se
+encarga de tomar los datos del acelerómetro y generar la información relacionada
+a los ángulos de Pitch (nivel de horizonte) y Roll (pendiente del horizonte).
+Del vector de gravedad se obtiene el ángulo de pitch como $P = atan(y/z)$, que
+luego es mapeado linealmente al nivel de horizonte en el eje Y de la LCD. La
+pendiente debida al Roll se obtiene como $m = x/\sqrt{(y^2+z^2)}$. Los
+resultados se envían a la tarea \texttt{LCD\_ISSUE}.
 
-El trabajo de esta tarea es tomar los datos del acelerómetro y generar los ángulos de Pitch y
-Roll. Como la información que se necesita para dibujar en la pantalla en la ecuación de una recta
-queda más cómodo considerar que primero se aplica Pitch y luego Roll (contrario a como normalmente se
-hace). Además nos e calcula el Roll como tal, sino la pendiente (tangente). Del vector de gravedad
-se obtiene el pitch como $P = atan(y/z)$. La pendiente debida al Roll se obtiene como $m =
-x/\sqrt{(y^2+z^2)}$. Los resultados se envian al LCD\_issue. 
-
-\subsubsection{Task: LCD issue}
+\subsubsection{Task: LCD\_ISSUE}
 \label{sec:lcd_issue}
 
-Como parte de las optimizaciones realizadas, se dividió la pantalla en 16 cuadrados iguales. Esto
-permite tener una tamaño fijo de frame aunque cambie el porcentaje de la pantalla que se debe
-re-dibujar, aparte que permite reducir el tamaño del frame. Este task periódico calcula a partir de
-la información de Pitch y Roll, cuales son los cuadrados que deben ser re-dibujados, y genera una
-lista que le pasa por medio de mensajes a LCD\_draw junto con la información de Pitch y
-Roll. Solicita al scheduler ejecutar LCD\_draw.
-\subsubsection{Task: LCD draw}
-\label{sec:lcd_draw}
-Este task toma la lista que le pasó LCD\_issue y va dibujando un cuadro por frame. Si aun no se han
-dibujado todos los cuadros de la lista, entonces se le envía una solicitud al scheduler para que en el
-siguiente frame se ejecute este task, y de esta manera dibujar el siguiente cuadro. 
+Como parte de las optimizaciones realizadas, se dividió la pantalla en 16
+cuadrados iguales. Esto permite tener una tamaño fijo de frame aunque cambie el
+porcentaje de la pantalla que se debe re-dibujar, aparte que permite reducir el
+tamaño del frame. Este task periódico calcula a partir de la información de
+Pitch y Roll, cuales son los cuadrados que deben ser re-dibujados, y genera una
+lista que le pasa por medio de mensajes a \texttt{LCD\_DRAW} junto con la
+información de Pitch y Roll. Solicita al scheduler ejecutar \texttt{LCD\_DRAW}
+(tipo one-shot).
 
-\subsection{Driver optimizado}
-Driverlib ofrece un API para controlar a la pantalla LCD, sin embargo no es lo suficientemente
-rápido. Por otra parte no ofrece funciones para dibujar líneas inclinadas, por lo que se optó por
-implementar una versión optimizada del driver. Esta versión permite dibujar cuadrados de $32\times
-32$ pixeles, donde un sector del cuadrdo puede ser de otro color. Ambos sectores definidos por la
-recta que se obtiene de Pitch y Roll. Al utilizar este driver optimizado y compilar con
-optimizaciones del compilador, so logró aumentar la frecuencia de $135$ frames pro segundo a $330$.
+\subsubsection{Task: LCD\_DRAW}
+\label{sec:lcd_draw}
+Este task toma la lista de las coordenadas de los cuadros que le pasó
+\texttt{LCD\_ISSUE} y va dibujando un cuadro de tamaño fijo por frame. Si aún no
+se han dibujado todos los cuadros de la lista, entonces se le envía una
+solicitud al scheduler para que en el siguiente frame se ejecute otra vez el
+mismo task (auto-trigger), y de esta manera dibujar todos los cuadros
+requeridos.
+
+\subsection{Driver LCD optimizado}
+Driverlib ofrece un API para controlar a la pantalla LCD, sin embargo según lo
+observado no era lo suficientemente rápido para la aplicación requerida. Por
+otra parte no ofrece funciones para dibujar líneas inclinadas, por lo que se
+optó por implementar una versión optimizada del driver. Esta versión permite
+dibujar cuadrados de $32\times 32$ píxeles, en donde hay dos sectores de color
+(celeste y café), en función de la información de la recta definida por los
+ángulos de Pitch y Roll. Al utilizar este driver optimizado y compilar con
+optimizaciones del compilador, se logró aumentar la frecuencia de $135$ frames
+por segundo a $330$.
 
 %-------------------------------
 \section{Problemas encontrados y posibles mejoras}
 % -------------------------------
 
-Actualmente se re-dibuja toda la pantalla cada vez que se ejecuta lcd\_issue. Esto por problemas a la
-hora de identificar los cuadros que necesitan actualización. Para arreglarlo se deben identificar
-las condiciones y una manera eficiente de computarlas.
+Actualmente se re-dibuja toda la pantalla cada vez que se ejecuta lcd\_issue.
+Esto por problemas a la hora de identificar los cuadros que necesitan
+actualización. Para arreglarlo se deben identificar adecuadamente las
+condiciones de re-dibujado y una manera eficiente de computarlas.
 
-Para ciertos ángulos de roll se obtienen resultados erráticos de Pitch. Esto porque es posible que
-pitch para el pitch se utilicen datos del tipo $0/0$. Una manera de corregirlo es agregarle un
-pequeño factor que depende del eje $x$ de la aceleración, de manera que no solo dependa de dos ejes,
-y no se indefinan sus valores de cálculo.
+Para ciertos ángulos de roll se obtienen resultados erráticos de Pitch. Esto
+porque es posible que para el cálculo del mismo se generen indeterminaciones del
+tipo $0/0$. Una manera de corregirlo es agregarle un pequeño factor de
+aproximación que depende del eje $x$ de la aceleración, de manera que no solo
+dependa de dos ejes, y entonces no se indefinan sus valores de cálculo.
 
-En este momento solo se contempla una recta para el dibuajdo, pero si se quiere hacer pitch y roll
-completo es necesario agregar las rectas en $180$ y $-180$. Aunque matemáticamente son equivalentes,
-a la hora de implementarlo proporcionan una manera cómoda de lidiar con las condiciones inversas
-(café arriba, azul abajo) de dibujado de colores cuando la tarjeta se encuentra ``de cabeza''.
+En este momento solo se contempla una recta para el dibujado, pero si se quiere
+hacer pitch y roll completo ($360$ grados) es necesario agregar rectas en $180$
+y $-180$. Aunque matemáticamente son equivalentes, a la hora de implementarlo
+proporcionan una manera cómoda de lidiar con las condiciones inversas (café
+arriba, azul abajo) de dibujado de colores cuando la tarjeta se encuentra ``de
+cabeza''.
 
 
 %----------------------
