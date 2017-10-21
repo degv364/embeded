@@ -16,7 +16,28 @@ indicar el pitch y el roll con una velocidad mínima de 90 grados por segundo y
 un rango máximo de 180 grados.
 
 \section{Contexto de Mercado}
+Un indicator de actitud, es utilizado en aeronaves para informarle al piloto
+sobre la orientación de la aeronave con respecto a la Tierra. De esta forma,
+indica visualmente los ángulos de Pitch y Roll (Bank) y es fundamental para el
+vuelo bajo condiciones meteorológicas, que pueden llegar a distorsionar el
+sentido de orientación del piloto. Generalmente, estos están basados en un
+giroscopio, el cual tiene dos grados de libertad para poder representar los dos
+ángulos ya indicados, lo cual se visualiza mediante una línea de horizonte y
+unas escalas de medición en la pantalla. Debido a los requerimientos de
+confiabilidad para la industria aeronáutica, estos equipos pueden llegar a tener
+un alto precio. Ejemplos de este tipo de indicadores corresponden a la serie
+RCA26 EK de Kelly Manufacturing Co., en donde estos se encuentran en un rango
+de precios de alrededor de \$2000.
 
+El sistema diseñado, debido a sus características constructivas como el hardware
+disponible (limitada precisión de los sensores y de velocidad de escritura a la
+LCD), solo simula de forma aproximada el comportamiento de un indicador de
+actitud, por lo que no se podría llegar a pensar en la utilización del mismo en
+una aplicación aeronáutica. Sin embargo, debido a que el mismo se basa en
+scheduling corresponde a un sistema versátil y extensible que se podría emplear
+en aplicaciones relacionadas con entretenimiento, tales como videojuegos,
+simulación y realidad virtual, agregando otros tasks que implementen la
+funcionalidad requerida.
 
 \section{Solución Propuesta}
 
