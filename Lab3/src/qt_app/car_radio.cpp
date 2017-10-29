@@ -9,8 +9,8 @@
 int main(int argc, char **argv){
     QApplication app(argc, argv);
 
-    Window window;
-    window.showFullScreen();
+    WelcomeWindow welcome;
+    welcome.showFullScreen();
 
     return app.exec();
 }
