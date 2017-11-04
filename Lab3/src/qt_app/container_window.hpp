@@ -25,6 +25,7 @@ public:
 
 private slots:
   void showRadio();
+  void returnFromRadio();
 				      
 private:
 

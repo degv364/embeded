@@ -36,6 +36,7 @@ ContainerWindow::ContainerWindow(QWidget *parent):
 
   // radio transition
   connect(welcome->radioButton(), SIGNAL(clicked()), this , SLOT(showRadio()) );
+  connect(radio->returnButton(), SIGNAL(clicked()), this, SLOT(returnFromRadio()) );
   
 }
 
@@ -62,4 +63,12 @@ ContainerWindow::showRadio(){
 					   DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
   
   radio->setGeometry(transformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+}
+
+void
+ContainerWindow::returnFromRadio(){
+  radio->setGeometry(transformResolution(30, DEFAULT_SCREEN_HEIGHT,
+					   DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+  
+  welcome->setGeometry(transformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
 }

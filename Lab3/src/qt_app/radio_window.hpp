@@ -20,6 +20,8 @@ class RadioWindow : public QWidget{
   Q_OBJECT  
 public:
   explicit RadioWindow(QRect i_screenSize,QWidget *parent = 0);
+
+  QPushButton* returnButton(){return m_returnButton;};							      
 				      
 private slots:
   void goIncrease();
@@ -34,7 +36,8 @@ private:
   float m_fCurrentFM;
   float m_fCurrentAM;
   bool m_bIsFM;
-  
+
+  QPushButton *m_returnButton;
   QPushButton *m_increaseButton;
   QPushButton *m_decreaseButton;
   QPushButton *m_toggleAMFMButton;

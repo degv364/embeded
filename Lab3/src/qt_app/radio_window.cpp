@@ -9,7 +9,18 @@ RadioWindow::RadioWindow(QRect i_screenSize,QWidget *parent):
   m_fCurrentFM = 107.5;
   m_fCurrentAM = 97.5;
 
-  m_screenSize = i_screenSize;  
+  m_screenSize = i_screenSize;
+
+  // Return Button
+  QIcon l_returnIcon("../../media/icons/goUp.png");
+  m_returnButton = new QPushButton(this);
+  m_returnButton->setIcon(l_returnIcon);
+  m_returnButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
+  m_returnButton->setFlat(true);
+  m_returnButton->setGeometry(transformResolution(2*DEFAULT_SCREEN_WIDTH/5,
+						  0,
+						  BIG_BUTTON_WIDTH,
+						  BIG_BUTTON_HEIGHT));
 
   // ForwardButton
   QIcon l_forwardIcon("../../media/icons/forward.png");
