@@ -14,4 +14,12 @@
 #define BIG_BUTTON_WIDTH (1366/5)
 #define BIG_BUTTON_HEIGHT (1366/5)
 
+#define LITTLE_BUTTON_WIDTH 40
+#define LITTLE_BUTTON_HEIGHT 40
+
+// TODO: this default should be overwritten with actual values
+#define DEFAULT_SONG_LENGTH
+#define DEFAULT_TIMER_INTERVAL
+
+
 #endif
