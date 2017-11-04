@@ -1,25 +1,11 @@
-#include "window.hpp"
+#include "welcome_window.hpp"
 
 
 
-WelcomeWindow::WelcomeWindow(QWidget *parent):
+WelcomeWindow::WelcomeWindow(QRect i_screenSize, QWidget *parent):
   QWidget(parent){
 
-  QScreen* l_Screen = QGuiApplication::primaryScreen();
-  m_screenSize = l_Screen->geometry();
-
-  m_mainLabel = new QLabel(this);
-  QPixmap backgroundImage("../../media/leather_metal.jpg");
-  m_mainLabel->setPixmap(backgroundImage);
-  
-  // QuitButton
-  
-  QIcon l_quitIcon("../../media/icons/quit.png");
-  m_Quit = new QPushButton(this);
-  m_Quit->setIcon(l_quitIcon);
-  m_Quit->setIconSize(QSize(30,30));
-  m_Quit->setFlat(true);
-  m_Quit->setGeometry(transformResolution(DEFAULT_SCREEN_WIDTH-30,1,30,30));
+  m_screenSize = i_screenSize;
 
   // radioButton
   QIcon l_radioIcon("../../media/icons/radio.png");
@@ -55,8 +41,6 @@ WelcomeWindow::WelcomeWindow(QWidget *parent):
   connect(m_radioButton, SIGNAL(clicked()), this, SLOT(radioSelected()) );
 
   connect(m_mp3Button, SIGNAL(clicked()), this, SLOT(mp3Selected()) );
-  
-  connect(m_Quit, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()) );
   
 }
 

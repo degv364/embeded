@@ -4,13 +4,13 @@
 #include <QLabel>
 #include <QPushButton>
 
-#include "window.hpp"
+#include "container_window.hpp"
 
 int main(int argc, char **argv){
     QApplication app(argc, argv);
 
-    WelcomeWindow welcome;
-    welcome.showFullScreen();
+    ContainerWindow container;
+    container.showFullScreen();
 
     return app.exec();
 }

@@ -1,5 +1,5 @@
-#ifndef WINDOW_H
-#define WINDOW_H
+#ifndef RADIO_H
+#define RADIO_H
 
 #include <QWidget>
 #include <QApplication>
@@ -16,30 +16,36 @@
 
 #include "def.hpp"
 
-class WelcomeWindow : public QWidget{
+class RadioWindow : public QWidget{
   Q_OBJECT  
 public:
-  explicit WelcomeWindow(QWidget *parent = 0);
+  explicit RadioWindow(QRect i_screenSize,QWidget *parent = 0);
 				      
 private slots:
-  void radioSelected();
-  void mp3Selected();
+  void goIncrease();
+  void goDecrease();
+  void toggleAMFM();
   
 private:
 
   QRect transformResolution(int x, int y, int width, int height);
-  
-  QPushButton *m_radioButton;
-  QPushButton *m_mp3Button;
+  void updateStationIndicator();
 
-  //background
-  QLabel *m_mainLabel;
-  QImage *m_background;
+  float m_fCurrentFM;
+  float m_fCurrentAM;
+  bool m_bIsFM;
+  
+  QPushButton *m_increaseButton;
+  QPushButton *m_decreaseButton;
+  QPushButton *m_toggleAMFMButton;
+
+  QIcon m_fmIcon;
+  QIcon m_amIcon;
+  
   // This is QT5 specific. Can we use that with yocto?
   QRect m_screenSize;
   // FIXME: This button is for development
-  QPushButton *m_Quit;
-  QTextEdit *m_TextMessage;
+  QTextEdit *m_stationIndicator;
 };
 
 #endif

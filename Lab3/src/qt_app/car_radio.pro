@@ -1,8 +1,12 @@
 TEMPLATE += app
 QT += widgets
   
-HEADERS += window.hpp
+HEADERS += welcome_window.hpp
+HEADERS += radio_window.hpp
+HEADERS += container_window.hpp
 HEADERS += def.hpp
-SOURCES += car_radio.cpp
-SOURCES += window.cpp
 
+SOURCES += welcome_window.cpp
+SOURCES += radio_window.cpp
+SOURCES += container_window.cpp
+SOURCES += car_radio.cpp
