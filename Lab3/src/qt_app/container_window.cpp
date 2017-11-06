@@ -41,6 +41,8 @@ ContainerWindow::ContainerWindow(QWidget *parent):
   // radio transition
   connect(welcome->radioButton(), SIGNAL(clicked()), this , SLOT(showRadio()) );
   connect(radio->returnButton(), SIGNAL(clicked()), this, SLOT(returnFromRadio()) );
+  connect(welcome->mp3Button(), SIGNAL(clicked()), this , SLOT(showMp3()) );
+  connect(mp3->returnButton(), SIGNAL(clicked()), this, SLOT(returnFromMp3()) );
   
 }
 
@@ -73,6 +75,22 @@ void
 ContainerWindow::returnFromRadio(){
   radio->setGeometry(transformResolution(30, DEFAULT_SCREEN_HEIGHT,
 					   DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+  
+  welcome->setGeometry(transformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+}
+
+void
+ContainerWindow::showMp3(){
+  welcome->setGeometry(transformResolution(30, -DEFAULT_SCREEN_HEIGHT,
+					   DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+  
+  mp3->setGeometry(transformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+}
+
+void
+ContainerWindow::returnFromMp3(){
+  mp3->setGeometry(transformResolution(30, DEFAULT_SCREEN_HEIGHT,
+					 DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
   
   welcome->setGeometry(transformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
 }

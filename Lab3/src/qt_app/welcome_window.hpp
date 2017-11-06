@@ -21,7 +21,8 @@ class WelcomeWindow : public QWidget{
 public:
   explicit WelcomeWindow(QRect i_screenSize,QWidget *parent = 0);
 
-  QPushButton* radioButton(){return m_radioButton;};								
+  QPushButton* radioButton(){return m_radioButton;};
+  QPushButton* mp3Button(){return m_mp3Button;};
 				      
 private slots:
   void radioSelected();

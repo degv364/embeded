@@ -27,6 +27,8 @@ public:
 private slots:
   void showRadio();
   void returnFromRadio();
+  void showMp3();
+  void returnFromMp3();
 				      
 private:
 
