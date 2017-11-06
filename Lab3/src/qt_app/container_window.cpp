@@ -31,6 +31,10 @@ ContainerWindow::ContainerWindow(QWidget *parent):
   radio = new RadioWindow(m_screenSize, this);
   radio->setGeometry(transformResolution(30,1000,DEFAULT_SCREEN_WIDTH-60, DEFAULT_SCREEN_HEIGHT-60));
 
+  // Mp3 Window
+  mp3 = new Mp3Window(m_screenSize, this);
+  mp3->setGeometry(transformResolution(30,1000,DEFAULT_SCREEN_WIDTH-60, DEFAULT_SCREEN_HEIGHT-60));
+  
   // Do the connection
   connect(m_Quit, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()) );
 

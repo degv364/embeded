@@ -1,5 +1,5 @@
-#ifndef RADIO_H
-#define RADIO_H
+#ifndef MP3_H
+#define MP3_H
 
 #include <QWidget>
 #include <QApplication>
@@ -11,45 +11,52 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QIcon>
+#include <QTimer>
 // Included for debugging. Final product wont print to stdout
 #include <iostream>
 
 #include "def.hpp"
 
-class RadioWindow : public QWidget{
+class Mp3Window : public QWidget{
   Q_OBJECT  
 public:
-  explicit RadioWindow(QRect i_screenSize,QWidget *parent = 0);
+  explicit Mp3Window(QRect i_screenSize,QWidget *parent = 0);
 
   QPushButton* returnButton(){return m_returnButton;};							      
 				      
 private slots:
-  void goIncrease();
-  void goDecrease();
-  void toggleAMFM();
+  void goNext();
+  void goPrev();
+  void play_pause();
   
 private:
 
   QRect transformResolution(int x, int y, int width, int height);
-  void updateStationIndicator();
+  void updateSongIndicator();
 
-  float m_fCurrentFM;
-  float m_fCurrentAM;
-  bool m_bIsFM;
-  
+  bool playing;
+
+  int currentSong;
+
+  QIcon m_playIcon;
+  QIcon m_pauseIcon;
+  //QIcon *m_likeIcon;
+  //QIcon *m_likedIcon;
 
   QPushButton *m_returnButton;
-  QPushButton *m_increaseButton;
-  QPushButton *m_decreaseButton;
-  QPushButton *m_toggleAMFMButton;
+  QPushButton *m_nextButton;
+  QPushButton *m_prevButton;
+  QPushButton *m_playButton;
+  //QPushButton *m_pauseButton;
+  QPushButton *m_stopButton;
 
-  QIcon m_fmIcon;
-  QIcon m_amIcon;
+  QTimer *m_timer;
+  QProgressBar* progressBar;
   
   // This is QT5 specific. Can we use that with yocto?
   QRect m_screenSize;
-  // FIXME: This button is for development
-  QTextEdit *m_stationIndicator;
+  
+  QTextEdit *m_songIndicator;
 };
 
 #endif

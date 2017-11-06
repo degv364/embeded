@@ -17,6 +17,7 @@
 #include "def.hpp"
 #include "welcome_window.hpp"
 #include "radio_window.hpp"
+#include "mp3_window.hpp"
 
 class ContainerWindow : public QWidget{
   Q_OBJECT  
@@ -32,6 +33,7 @@ private:
   QRect transformResolution(int x, int y, int width, int height);
   WelcomeWindow  *welcome;
   RadioWindow *radio;
+  Mp3Window *mp3;
   
   //background
   QLabel *m_mainLabel;
