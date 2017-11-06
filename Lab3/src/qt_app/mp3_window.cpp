@@ -25,31 +25,42 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
   m_nextButton->setFlat(true);
   m_nextButton->setGeometry(transformResolution(3*DEFAULT_SCREEN_WIDTH/5,
 						2*DEFAULT_SCREEN_HEIGHT/5,
-						BIG_BUTTON_WIDTH,
-						BIG_BUTTON_HEIGHT));
+						LITTLE_BUTTON_WIDTH,
+						LITTLE_BUTTON_HEIGHT));
 
   // Backward Button
   QIcon l_backwardIcon("../../media/icons/back.png");
   m_prevButton = new QPushButton(this);
   m_prevButton->setIcon(l_backwardIcon);
-  m_prevButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
+  m_prevButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
   m_prevButton->setFlat(true);
   m_prevButton->setGeometry(transformResolution(DEFAULT_SCREEN_WIDTH/5,
 						2*DEFAULT_SCREEN_HEIGHT/5,
-						BIG_BUTTON_WIDTH,
-						BIG_BUTTON_HEIGHT));
+						LITTLE_BUTTON_WIDTH,
+						LITTLE_BUTTON_HEIGHT));
   // Play Button
   playing = false;
   m_playIcon = QIcon("../../media/icons/play.png");
   m_pauseIcon = QIcon("../../media/icons/pause.png");
   m_playButton = new QPushButton(this);
   m_playButton->setIcon(m_playIcon);
-  m_playButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5, DEFAULT_SCREEN_HEIGHT/5));
+  m_playButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
   m_playButton->setCheckable(true);
-  m_playButton->setGeometry(transformResolution(2*DEFAULT_SCREEN_WIDTH/5,
-						3*DEFAULT_SCREEN_HEIGHT/5,
-						DEFAULT_SCREEN_WIDTH/5,
-						DEFAULT_SCREEN_HEIGHT/5));
+  m_playButton->setGeometry(transformResolution(4*DEFAULT_SCREEN_WIDTH/5,
+						4*DEFAULT_SCREEN_HEIGHT/5,
+						LITTLE_BUTTON_WIDTH,
+						LITTLE_BUTTON_HEIGHT));
+
+  // Sop Button
+  QIcon l_stopIcon("../../media/icons/stop.png");
+  m_stopButton = new QPushButton(this);
+  m_stopButton->setIcon(l_stopIcon);
+  m_stopButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
+  m_stopButton->setFlat(true);
+  m_stopButton->setGeometry(transformResolution(DEFAULT_SCREEN_WIDTH/5,
+						DEFAULT_SCREEN_HEIGHT/5,
+						LITTLE_BUTTON_WIDTH,
+						LITTLE_BUTTON_HEIGHT));
 
   // like Button
   /*
@@ -85,6 +96,7 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
   connect(m_nextButton, SIGNAL(clicked()), this, SLOT(goNext()) );
   connect(m_prevButton, SIGNAL(clicked()), this, SLOT(goPrev()) );
   connect(m_playButton, SIGNAL(clicked()), this, SLOT(play_pause()) );
+  connect(m_stopButton, SIGNAL(clicked()), this, SLOT(stop()) );
   
 }
 
@@ -107,11 +119,13 @@ Mp3Window::transformResolution(int x, int y, int width, int height){
 
 void Mp3Window::goNext(){
   currentSong++;
+  playing = false;
   updateSongIndicator();
 }
 
 void Mp3Window::goPrev(){
   currentSong--;
+  playing = false;
   if (currentSong < 0){
     currentSong = 0;
   }
@@ -120,6 +134,12 @@ void Mp3Window::goPrev(){
 
 void Mp3Window::play_pause(){
   playing = !playing;
+  updateSongIndicator();
+}
+
+void Mp3Window::stop(){
+  playing = false;
+  //FIXME: RESET SONG PROGRESS
   updateSongIndicator();
 }
 
@@ -138,3 +158,5 @@ void Mp3Window::updateSongIndicator(){
   newIndicator = QString("%1").arg(currentSong);
   m_songIndicator->setText(newIndicator);
 }
+
+

@@ -28,6 +28,7 @@ private slots:
   void goNext();
   void goPrev();
   void play_pause();
+  void stop();
   
 private:
 
