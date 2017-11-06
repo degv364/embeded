@@ -24,9 +24,6 @@ public:
   QPushButton* radioButton(){return m_radioButton;};
   QPushButton* mp3Button(){return m_mp3Button;};
 				      
-private slots:
-  void radioSelected();
-  void mp3Selected();
   
 private:
 
@@ -38,8 +35,6 @@ private:
 
   // This is QT5 specific. Can we use that with yocto?
   QRect m_screenSize;
-  // FIXME: This message is for development
-  QTextEdit *m_TextMessage;
 };
 
 #endif

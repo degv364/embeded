@@ -29,19 +29,7 @@ WelcomeWindow::WelcomeWindow(QRect i_screenSize, QWidget *parent):
 					       BIG_BUTTON_WIDTH,
 					       BIG_BUTTON_HEIGHT));
 
-  // Info
-  m_TextMessage = new QTextEdit("Hello", this);
-  m_TextMessage->setGeometry(transformResolution(500,500,400,30));
-  m_TextMessage->setReadOnly(true);
-
-  
-
-  // Do the connection
-  
-  connect(m_radioButton, SIGNAL(clicked()), this, SLOT(radioSelected()) );
-
-  connect(m_mp3Button, SIGNAL(clicked()), this, SLOT(mp3Selected()) );
-  
+ 
 }
 
 // To simplify the fact that this should work with many resolutions
@@ -59,13 +47,3 @@ WelcomeWindow::transformResolution(int x, int y, int width, int height){
   return QRect((int)new_x, (int)new_y, (int)new_width, (int)new_height);
 }
 
-// Slots
-
-void WelcomeWindow::radioSelected(){
-  m_TextMessage->setText("Radio Window should open");
-  return;
-}
-void WelcomeWindow::mp3Selected(){
-  m_TextMessage->setText("MP3 Window shopuld open");
-  return;
-}
