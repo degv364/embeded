@@ -15,7 +15,7 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
   m_returnButton->setGeometry(transformResolution(2*DEFAULT_SCREEN_WIDTH/5,
 						  0,
 						  BIG_BUTTON_WIDTH,
-						  BIG_BUTTON_HEIGHT));
+						  BIG_BUTTON_HEIGHT-50));
 
   // ForwardButton
   QIcon l_forwardIcon("../../media/icons/forward.png");
@@ -45,7 +45,7 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
   m_playButton = new QPushButton(this);
   m_playButton->setIcon(m_playIcon);
   m_playButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
-  m_playButton->setCheckable(true);
+  //m_playButton->setCheckable(true);
   m_playButton->setGeometry(transformResolution(640,
 						480,
 						LITTLE_BUTTON_WIDTH,
@@ -76,6 +76,18 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
 						DEFAULT_SCREEN_HEIGHT/5));
   */
 
+  // Song progress
+  m_songProgressBar = new QProgressBar(this);
+  m_songProgressBar->setGeometry(transformResolution(280,440,800,40));
+  m_songProgressBar->setRange(0,100);
+  m_songProgressBar->setValue(0);
+
+  // timer
+  m_fProgress = 0;
+  m_timer = new QTimer(this);
+  // FIXME: revisit this interval in the future
+  m_timer->start(DEFAULT_TIMER_INTERVAL);
+
   // Info
   currentSong = 0;
   m_songIndicator = new QTextEdit("default", this);
@@ -97,6 +109,7 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
   connect(m_prevButton, SIGNAL(clicked()), this, SLOT(goPrev()) );
   connect(m_playButton, SIGNAL(clicked()), this, SLOT(play_pause()) );
   connect(m_stopButton, SIGNAL(clicked()), this, SLOT(stop()) );
+  connect(m_timer, SIGNAL(timeout()), this, SLOT(updateProgress()) );
   
 }
 
@@ -139,7 +152,7 @@ void Mp3Window::play_pause(){
 
 void Mp3Window::stop(){
   playing = false;
-  //FIXME: RESET SONG PROGRESS
+  m_fProgress = 0;
   updateSongIndicator();
 }
 
@@ -148,15 +161,26 @@ void Mp3Window::updateSongIndicator(){
   QString newIndicator;
   if (playing){
     m_playButton->setIcon(m_pauseIcon);
-    m_playButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5, DEFAULT_SCREEN_HEIGHT/5));
+    m_playButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
   }
   else {
     m_playButton->setIcon(m_playIcon);
-    m_playButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5, DEFAULT_SCREEN_HEIGHT/5));
-
+    m_playButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
   }
   newIndicator = QString("%1").arg(currentSong);
   m_songIndicator->setText(newIndicator);
 }
 
+void Mp3Window::updateProgress(){
+  if (playing){
+    m_fProgress+=DEFAULT_TIMER_INTERVAL;
+  }
+  m_iShownProgress = m_fProgress*(100.0/DEFAULT_SONG_LENGTH);
 
+  if (m_iShownProgress>=100){
+    playing = false;
+    m_fProgress = 0;
+    updateSongIndicator();
+  }
+  m_songProgressBar->setValue(m_iShownProgress);
+}

@@ -17,9 +17,9 @@
 #define LITTLE_BUTTON_WIDTH 40
 #define LITTLE_BUTTON_HEIGHT 40
 
-// TODO: this default should be overwritten with actual values
-#define DEFAULT_SONG_LENGTH
-#define DEFAULT_TIMER_INTERVAL
+// FIXME: this default should be overwritten with actual values
+#define DEFAULT_SONG_LENGTH 30000 //30s
+#define DEFAULT_TIMER_INTERVAL 100 // 100ms
 
 
 #endif

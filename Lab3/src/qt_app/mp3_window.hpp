@@ -29,6 +29,7 @@ private slots:
   void goPrev();
   void play_pause();
   void stop();
+  void updateProgress();
   
 private:
 
@@ -38,6 +39,8 @@ private:
   bool playing;
 
   int currentSong;
+  float m_fProgress;
+  int m_iShownProgress;
 
   QIcon m_playIcon;
   QIcon m_pauseIcon;
@@ -52,7 +55,7 @@ private:
   QPushButton *m_stopButton;
 
   QTimer *m_timer;
-  QProgressBar* progressBar;
+  QProgressBar* m_songProgressBar;
   
   // This is QT5 specific. Can we use that with yocto?
   QRect m_screenSize;
