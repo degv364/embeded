@@ -22,9 +22,9 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
   m_nextButton = new QPushButton(this);
   m_nextButton->setIcon(l_forwardIcon);
   m_nextButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
-  m_nextButton->setFlat(true);
-  m_nextButton->setGeometry(transformResolution(3*DEFAULT_SCREEN_WIDTH/5,
-						2*DEFAULT_SCREEN_HEIGHT/5,
+  //m_nextButton->setFlat(true);
+  m_nextButton->setGeometry(transformResolution(1040,
+						480,
 						LITTLE_BUTTON_WIDTH,
 						LITTLE_BUTTON_HEIGHT));
 
@@ -33,9 +33,9 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
   m_prevButton = new QPushButton(this);
   m_prevButton->setIcon(l_backwardIcon);
   m_prevButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
-  m_prevButton->setFlat(true);
-  m_prevButton->setGeometry(transformResolution(DEFAULT_SCREEN_WIDTH/5,
-						2*DEFAULT_SCREEN_HEIGHT/5,
+  //m_prevButton->setFlat(true);
+  m_prevButton->setGeometry(transformResolution(280,
+						480,
 						LITTLE_BUTTON_WIDTH,
 						LITTLE_BUTTON_HEIGHT));
   // Play Button
@@ -46,8 +46,8 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
   m_playButton->setIcon(m_playIcon);
   m_playButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
   m_playButton->setCheckable(true);
-  m_playButton->setGeometry(transformResolution(4*DEFAULT_SCREEN_WIDTH/5,
-						4*DEFAULT_SCREEN_HEIGHT/5,
+  m_playButton->setGeometry(transformResolution(640,
+						480,
 						LITTLE_BUTTON_WIDTH,
 						LITTLE_BUTTON_HEIGHT));
 
@@ -56,9 +56,9 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
   m_stopButton = new QPushButton(this);
   m_stopButton->setIcon(l_stopIcon);
   m_stopButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
-  m_stopButton->setFlat(true);
-  m_stopButton->setGeometry(transformResolution(DEFAULT_SCREEN_WIDTH/5,
-						DEFAULT_SCREEN_HEIGHT/5,
+  //m_stopButton->setFlat(true);
+  m_stopButton->setGeometry(transformResolution(680,
+						480,
 						LITTLE_BUTTON_WIDTH,
 						LITTLE_BUTTON_HEIGHT));
 
@@ -79,10 +79,10 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
   // Info
   currentSong = 0;
   m_songIndicator = new QTextEdit("default", this);
-  m_songIndicator->setGeometry(transformResolution(2*DEFAULT_SCREEN_WIDTH/5,
-						   2*DEFAULT_SCREEN_HEIGHT/5,
-						   DEFAULT_SCREEN_WIDTH/5,
-						   DEFAULT_SCREEN_HEIGHT/5));
+  m_songIndicator->setGeometry(transformResolution(280,
+						   160,
+						   800,
+						   280));
   
   m_songIndicator->setReadOnly(true);
   m_songIndicator->setFontPointSize(80);
