@@ -1,56 +1,23 @@
 #include <gst/gst.h>
 #include <glib.h>
 
-// Message handler callback
-static gboolean
-bus_call (GstBus     *bus,
-          GstMessage *msg,
-          gpointer    data)
-{
-  GMainLoop *loop = (GMainLoop *) data;
-
-  switch (GST_MESSAGE_TYPE (msg)) {
-
-    case GST_MESSAGE_EOS:
-      g_print ("End of stream\n");
-      g_main_loop_quit (loop);
-      break;
-
-    case GST_MESSAGE_ERROR: {
-      gchar  *debug;
-      GError *error;
-
-      gst_message_parse_error (msg, &error, &debug);
-      g_free (debug);
-
-      g_printerr ("Error: %s\n", error->message);
-      g_error_free (error);
-
-      g_main_loop_quit (loop);
-      break;
-    }
-    default:
-      break;
-  }
-
-  return TRUE;
-}
-
 
 int
 main (int   argc,
       char *argv[])
 {
-  GMainLoop *loop;
+  //GMainLoop *loop;
+  bool terminate=false;
+  GstMessage *msg;
 
   GstElement *pipeline, *source, *parser, *decoder, *conv, *sink;
   GstBus *bus;
-  guint bus_watch_id;
+  //guint bus_watch_id;
 
   /* Initialisation */
   gst_init (&argc, &argv);
 
-  loop = g_main_loop_new (NULL, FALSE);
+  //loop = g_main_loop_new (NULL, FALSE);
 
   /* Create gstreamer elements */
   pipeline = gst_pipeline_new("mp3_player");
@@ -70,12 +37,7 @@ main (int   argc,
   /* we set the input filename to the source element */
   g_object_set (G_OBJECT (source), "location",
 		"../../media/music/Tours_-_01_-_Enthusiast.mp3", NULL);
-
-  // Message handler
-  bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
-  bus_watch_id = gst_bus_add_watch (bus, bus_call, loop);
-  gst_object_unref (bus);
-
+  
   // Add elements to pipeline
   gst_bin_add_many (GST_BIN(pipeline), source, parser, decoder, conv, sink, NULL);
 
@@ -87,19 +49,60 @@ main (int   argc,
   gst_element_set_state (pipeline, GST_STATE_PLAYING);
 
 
-  // Loop
+  // Loop---------------------------------------------
   g_print ("Running...\n");
-  g_main_loop_run (loop);
+  bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
+  do {
+    // Pop one by one
+    msg = gst_bus_timed_pop (bus, GST_CLOCK_TIME_NONE);
 
+    /* Parse message */
+    if (msg != NULL) {
+      GError *err;
+      gchar *debug_info;
+      
+      switch (GST_MESSAGE_TYPE (msg)) {
+      case GST_MESSAGE_ERROR:
+	gst_message_parse_error (msg, &err, &debug_info);
+	g_printerr ("Error received from element %s: %s\n", GST_OBJECT_NAME (msg->src), err->message);
+	g_printerr ("Debugging information: %s\n", debug_info ? debug_info : "none");
+	g_clear_error (&err);
+	g_free (debug_info);
+	terminate = true;
+	break;
+      case GST_MESSAGE_EOS:
+	g_print ("End-Of-Stream reached.\n");
+	terminate = true;
+	break;
+      case GST_MESSAGE_STATE_CHANGED:
+	/* We are only interested in state-changed messages from the pipeline */
+	if (GST_MESSAGE_SRC (msg) == GST_OBJECT (pipeline)) {
+	  GstState old_state, new_state, pending_state;
+	  gst_message_parse_state_changed (msg, &old_state, &new_state, &pending_state);
+	  g_print ("Pipeline state changed from %s to %s:\n",
+		   gst_element_state_get_name (old_state), gst_element_state_get_name (new_state));
+	}
+	break;
+      default:
+	// Do not handle any other message
+	g_printerr ("INFO: unhandled message\n");
+	break;
+      }
+      gst_message_unref (msg);
+    }
+  } while (!terminate);
+  
+  
+  
 
   // Deinitialization
   g_print ("Returned, stopping playback\n");
+  gst_object_unref (bus);
   gst_element_set_state (pipeline, GST_STATE_NULL);
 
   g_print ("Deleting pipeline\n");
   gst_object_unref (GST_OBJECT (pipeline));
-  g_source_remove (bus_watch_id);
-  g_main_loop_unref (loop);
+  
 
   return 0;
 }
