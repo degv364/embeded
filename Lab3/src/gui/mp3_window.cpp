@@ -7,7 +7,7 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
   m_screenSize = i_screenSize;
 
   // Return Button
-  QIcon l_returnIcon("../../media/icons/goUp.png");
+  QIcon l_returnIcon("../media/icons/goUp.png");
   m_returnButton = new QPushButton(this);
   m_returnButton->setIcon(l_returnIcon);
   m_returnButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
@@ -18,7 +18,7 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
 						  BIG_BUTTON_HEIGHT-50));
 
   // ForwardButton
-  QIcon l_forwardIcon("../../media/icons/forward.png");
+  QIcon l_forwardIcon("../media/icons/forward.png");
   m_nextButton = new QPushButton(this);
   m_nextButton->setIcon(l_forwardIcon);
   m_nextButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
@@ -29,7 +29,7 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
 						LITTLE_BUTTON_HEIGHT));
 
   // Backward Button
-  QIcon l_backwardIcon("../../media/icons/back.png");
+  QIcon l_backwardIcon("../media/icons/back.png");
   m_prevButton = new QPushButton(this);
   m_prevButton->setIcon(l_backwardIcon);
   m_prevButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
@@ -40,8 +40,8 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
 						LITTLE_BUTTON_HEIGHT));
   // Play Button
   playing = false;
-  m_playIcon = QIcon("../../media/icons/play.png");
-  m_pauseIcon = QIcon("../../media/icons/pause.png");
+  m_playIcon = QIcon("../media/icons/play.png");
+  m_pauseIcon = QIcon("../media/icons/pause.png");
   m_playButton = new QPushButton(this);
   m_playButton->setIcon(m_playIcon);
   m_playButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
@@ -52,7 +52,7 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
 						LITTLE_BUTTON_HEIGHT));
 
   // Sop Button
-  QIcon l_stopIcon("../../media/icons/stop.png");
+  QIcon l_stopIcon("../media/icons/stop.png");
   m_stopButton = new QPushButton(this);
   m_stopButton->setIcon(l_stopIcon);
   m_stopButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
@@ -64,8 +64,8 @@ Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
 
   // like Button
   /*
-  m_likeIcon = QIcon("../../media/icons/like.png");
-  m_likedIcon = QIcon("../../media/icons/liked.png");
+  m_likeIcon = QIcon("../media/icons/like.png");
+  m_likedIcon = QIcon("../media/icons/liked.png");
   m_likeButton = new QPushButton(this);
   m_likeButton->setIcon(m_likeIcon);
   m_likeButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5, DEFAULT_SCREEN_HEIGHT/5));

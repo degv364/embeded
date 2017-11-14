@@ -9,14 +9,14 @@ ContainerWindow::ContainerWindow(QWidget *parent):
   m_screenSize = l_Screen->geometry();
 
   m_mainLabel = new QLabel(this);
-  QPixmap backgroundImage("../../media/leather_metal.jpg");
+  QPixmap backgroundImage("../media/leather_metal.jpg");
   backgroundImage = backgroundImage.scaled(m_screenSize.width(),m_screenSize.height());
   m_mainLabel->setPixmap(backgroundImage);
   m_mainLabel->setGeometry(transformResolution(0,0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
   
   // QuitButton
   
-  QIcon l_quitIcon("../../media/icons/quit.png");
+  QIcon l_quitIcon("../media/icons/quit.png");
   m_Quit = new QPushButton(this);
   m_Quit->setIcon(l_quitIcon);
   m_Quit->setIconSize(QSize(30,30));

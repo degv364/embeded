@@ -12,7 +12,7 @@ RadioWindow::RadioWindow(QRect i_screenSize,QWidget *parent):
   m_screenSize = i_screenSize;
 
   // Return Button
-  QIcon l_returnIcon("../../media/icons/goUp.png");
+  QIcon l_returnIcon("../media/icons/goUp.png");
   m_returnButton = new QPushButton(this);
   m_returnButton->setIcon(l_returnIcon);
   m_returnButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
@@ -23,7 +23,7 @@ RadioWindow::RadioWindow(QRect i_screenSize,QWidget *parent):
 						  BIG_BUTTON_HEIGHT));
 
   // ForwardButton
-  QIcon l_forwardIcon("../../media/icons/forward.png");
+  QIcon l_forwardIcon("../media/icons/forward.png");
   m_increaseButton = new QPushButton(this);
   m_increaseButton->setIcon(l_forwardIcon);
   m_increaseButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
@@ -34,7 +34,7 @@ RadioWindow::RadioWindow(QRect i_screenSize,QWidget *parent):
 						   BIG_BUTTON_HEIGHT));
 
   // Backward Button
-  QIcon l_backwardIcon("../../media/icons/back.png");
+  QIcon l_backwardIcon("../media/icons/back.png");
   m_decreaseButton = new QPushButton(this);
   m_decreaseButton->setIcon(l_backwardIcon);
   m_decreaseButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
@@ -44,8 +44,8 @@ RadioWindow::RadioWindow(QRect i_screenSize,QWidget *parent):
 						    BIG_BUTTON_WIDTH,
 						    BIG_BUTTON_HEIGHT));
   // Toggle Button
-  m_fmIcon = QIcon("../../media/icons/fm.png");
-  m_amIcon = QIcon("../../media/icons/am.png");
+  m_fmIcon = QIcon("../media/icons/fm.png");
+  m_amIcon = QIcon("../media/icons/am.png");
   m_toggleAMFMButton = new QPushButton(this);
   m_toggleAMFMButton->setIcon(m_fmIcon);
   m_toggleAMFMButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5, DEFAULT_SCREEN_HEIGHT/5));

@@ -8,7 +8,7 @@ WelcomeWindow::WelcomeWindow(QRect i_screenSize, QWidget *parent):
   m_screenSize = i_screenSize;
 
   // radioButton
-  QIcon l_radioIcon("../../media/icons/radio.png");
+  QIcon l_radioIcon("../media/icons/radio.png");
   m_radioButton = new QPushButton(this);
   m_radioButton->setIcon(l_radioIcon);
   m_radioButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
@@ -19,7 +19,7 @@ WelcomeWindow::WelcomeWindow(QRect i_screenSize, QWidget *parent):
 						 BIG_BUTTON_HEIGHT));
 
   // mp3 Button
-  QIcon l_mp3Icon("../../media/icons/playList.png");
+  QIcon l_mp3Icon("../media/icons/playList.png");
   m_mp3Button = new QPushButton(this);
   m_mp3Button->setIcon(l_mp3Icon);
   m_mp3Button->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));

@@ -21,7 +21,7 @@ MP3Handler::Setup(void){
 
   // FIXME: hard coded name
   g_object_set (G_OBJECT (m_Source), "location",
-		"../../media/music/Tours_-_01_-_Enthusiast.mp3", NULL);
+		"../media/music/Tours_-_01_-_Enthusiast.mp3", NULL);
 
   // Add elements to pipeline
   gst_bin_add_many (GST_BIN(m_Pipeline), m_Source, m_Parser,
