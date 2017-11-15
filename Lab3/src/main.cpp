@@ -17,8 +17,7 @@ int main(int argc, char **argv){
 
     // Initialize intercommunication message
     status_message l_stStatusMessage;
-    l_stStatusMessage.Play = false;
-    l_stStatusMessage.Reset = false;
+    l_stStatusMessage.RequiredAction = PAUSE;
     l_stStatusMessage.Handled = true;
     
     ContainerWindow container(&l_stStatusMessage);

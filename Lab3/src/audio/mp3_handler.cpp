@@ -46,14 +46,12 @@ MP3Handler::Loop(void){
   gst_element_set_state (m_Pipeline, GST_STATE_PAUSED);
   do {
     before_step = std::chrono::high_resolution_clock::now();
-    g_print("Handle external messages.../n");
     if(!HandleExternalMessage()){
-      g_printerr("Error processing external messages");
+      g_printerr("Error handling external messages");
       return false;
     }
-    g_print("Handle internal messages.../n");
     if(!HandleInternalMessage()){
-      g_printerr("Error processing internal messages");
+      g_printerr("Error handling internal messages");
       return false;
     }
     after_step = std::chrono::high_resolution_clock::now();
@@ -71,7 +69,6 @@ MP3Handler::Loop(void){
 bool
 MP3Handler::HandleInternalMessage(void){
   bool l_bHandledErrors=false;
-  g_print("pop message\n");
   m_InternalMsg = gst_bus_pop (m_Bus);
   /* Parse message */
   if (m_InternalMsg != NULL) {
@@ -80,7 +77,7 @@ MP3Handler::HandleInternalMessage(void){
     
     switch (GST_MESSAGE_TYPE (m_InternalMsg)) {
     case GST_MESSAGE_ERROR:
-      g_printerr("Error ocurred");
+      g_printerr("***Error ocurred***\n");
       l_bHandledErrors = true;
       gst_message_parse_error (m_InternalMsg, &err, &debug_info);
       g_printerr ("Error received from element %s: %s\n", GST_OBJECT_NAME (m_InternalMsg->src), err->message);
@@ -94,7 +91,6 @@ MP3Handler::HandleInternalMessage(void){
       m_bTerminate = true;
       break;
     case GST_MESSAGE_STATE_CHANGED:
-      g_printerr("State change");
       /* We are only interested in state-changed messages from the pipeline */
       if (GST_MESSAGE_SRC (m_InternalMsg) == GST_OBJECT (m_Pipeline)) {
 	GstState old_state, new_state, pending_state;
@@ -115,15 +111,25 @@ MP3Handler::HandleInternalMessage(void){
 bool
 MP3Handler::HandleExternalMessage(void){
   if (m_pStatusMessage->Handled) {
-    g_print("Handled\n");
     return true;
   }
-  g_printerr("Received Gui COmmand\n");
-  if (m_pStatusMessage->Play){
+  g_printerr("Received Gui Command\n");
+  switch (m_pStatusMessage->RequiredAction){
+  case PLAY:
     gst_element_set_state (m_Pipeline, GST_STATE_PLAYING);
-  }
-  else{
+    break;
+  case PAUSE:
     gst_element_set_state (m_Pipeline, GST_STATE_PAUSED);
+    break;
+  case STOP:
+    gst_element_set_state (m_Pipeline, GST_STATE_NULL);
+    break;
+  case FORWARD:
+  case BACKWARD:
+    g_print("WIP: not implemented yet");
+    break;
+  default:
+    g_printerr("Invalid action");
   }
   //FIXME: implement handler for Reset and FileID
   m_pStatusMessage->locker.lock();

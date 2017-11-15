@@ -135,6 +135,12 @@ Mp3Window::transformResolution(int x, int y, int width, int height){
 void Mp3Window::goNext(){
   currentSong++;
   playing = false;
+  // send  message
+  m_pStatusMessage->locker.lock();
+  m_pStatusMessage->RequiredAction = FORWARD;
+  m_pStatusMessage->Handled = false;
+  m_pStatusMessage->locker.unlock();
+  // Update display
   updateSongIndicator();
 }
 
@@ -144,6 +150,12 @@ void Mp3Window::goPrev(){
   if (currentSong < 0){
     currentSong = 0;
   }
+    // send  message
+  m_pStatusMessage->locker.lock();
+  m_pStatusMessage->RequiredAction = BACKWARD;
+  m_pStatusMessage->Handled = false;
+  m_pStatusMessage->locker.unlock();
+  // Update display
   updateSongIndicator();
 }
 
@@ -151,7 +163,7 @@ void Mp3Window::play_pause(){
   playing = !playing;
   // send message
   m_pStatusMessage->locker.lock();
-  m_pStatusMessage->Play = playing;
+  m_pStatusMessage->RequiredAction = (playing)? PLAY:PAUSE;
   m_pStatusMessage->Handled = false;
   m_pStatusMessage->locker.unlock();
   //update gui
@@ -161,6 +173,12 @@ void Mp3Window::play_pause(){
 void Mp3Window::stop(){
   playing = false;
   m_fProgress = 0;
+  // send message
+  m_pStatusMessage->locker.lock();
+  m_pStatusMessage->RequiredAction = STOP;
+  m_pStatusMessage->Handled = false;
+  m_pStatusMessage->locker.unlock();
+  //update gui
   updateSongIndicator();
 }
 
@@ -192,3 +210,4 @@ void Mp3Window::updateProgress(){
   }
   m_songProgressBar->setValue(m_iShownProgress);
 }
+

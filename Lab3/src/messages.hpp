@@ -4,9 +4,17 @@
 #include <mutex>
 #include "file_names.hpp"
 
+typedef enum action_e{
+  PLAY = 0,
+  PAUSE,
+  STOP,
+  FORWARD,
+  BACKWARD,
+  LAST_ACTION
+}action_e;
+
 typedef struct status_message{
-  bool Play;
-  bool Reset;
+  action_e RequiredAction;
   file_e FileId;
   std::mutex locker;
   bool Handled;
