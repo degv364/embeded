@@ -6,6 +6,8 @@ TEMPLATE += app
 
   QMAKE_LFLAGS += -Wall -pedantic -pthread -I/usr/include/gstreamer-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -lgstreamer-1.0 -lgobject-2.0 -lglib-2.0
 
+  HEADERS += file_names.hpp
+  HEADERS += messages.hpp
   
   HEADERS += gui/welcome_window.hpp
   HEADERS += gui/radio_window.hpp
@@ -14,7 +16,6 @@ TEMPLATE += app
   HEADERS += gui/def.hpp
   
   HEADERS += audio/audio_server.hpp
-  HEADERS += audio/file_names.hpp
   HEADERS += audio/mp3_handler.hpp
   
   

@@ -3,9 +3,12 @@
 
 #include <gst/gst.h>
 #include <glib.h>
+
+#include "file_names.hpp"
+#include "messages.hpp"
 #include "mp3_handler.hpp"
 
-void AudioServer(void);
+void AudioServer(status_message* i_pStatusMessage);
 
 
 #endif

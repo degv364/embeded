@@ -14,6 +14,9 @@
 // Included for debugging. Final product wont print to stdout
 #include <iostream>
 
+#include "file_names.hpp"
+#include "messages.hpp"
+
 #include "def.hpp"
 #include "welcome_window.hpp"
 #include "radio_window.hpp"
@@ -22,7 +25,7 @@
 class ContainerWindow : public QWidget{
   Q_OBJECT  
 public:
-  explicit ContainerWindow(QWidget *parent = 0);
+  explicit ContainerWindow(status_message* i_pStatusMessage,QWidget *parent = 0);
 
 private slots:
   void showRadio();
@@ -44,6 +47,8 @@ private:
   QRect m_screenSize;
   // FIXME: This button is for development
   QPushButton *m_Quit;
+
+  status_message* m_pStatusMessage;
 };
 
 #endif

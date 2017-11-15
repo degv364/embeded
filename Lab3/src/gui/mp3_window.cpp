@@ -2,9 +2,11 @@
 
 
 
-Mp3Window::Mp3Window(QRect i_screenSize,QWidget *parent):
+Mp3Window::Mp3Window(QRect i_screenSize,  status_message* i_pStatusMessage, QWidget *parent):
   QWidget(parent){
   m_screenSize = i_screenSize;
+
+  m_pStatusMessage = i_pStatusMessage;
 
   // Return Button
   QIcon l_returnIcon("../media/icons/goUp.png");
@@ -147,6 +149,12 @@ void Mp3Window::goPrev(){
 
 void Mp3Window::play_pause(){
   playing = !playing;
+  // send message
+  m_pStatusMessage->locker.lock();
+  m_pStatusMessage->Play = playing;
+  m_pStatusMessage->Handled = false;
+  m_pStatusMessage->locker.unlock();
+  //update gui
   updateSongIndicator();
 }
 

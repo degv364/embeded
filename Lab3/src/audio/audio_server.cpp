@@ -1,11 +1,14 @@
 #include "audio_server.hpp"
 
 void
-AudioServer (void){
+AudioServer (status_message* i_pStatusMessage){
   // Initialization
-  //gst_init (&argc, &argv);
+  if (i_pStatusMessage == NULL){
+    g_printerr("Got invalid message");
+    return;
+  }
 
-  MP3Handler l_handler;
+  MP3Handler l_handler(i_pStatusMessage);
   l_handler.Setup();
   l_handler.Loop();
   l_handler.Deinit();

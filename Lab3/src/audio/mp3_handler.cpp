@@ -1,7 +1,8 @@
 #include "mp3_handler.hpp"
 
-MP3Handler::MP3Handler(void){
+MP3Handler::MP3Handler(status_message* i_pStatusMessage){
   m_bTerminate = false;
+  m_pStatusMessage = i_pStatusMessage;
 }
 
 bool
@@ -42,13 +43,15 @@ MP3Handler::Loop(void){
   std::chrono::high_resolution_clock::time_point before_step;
   std::chrono::high_resolution_clock::time_point after_step;
   g_print("start Loop...");
-  gst_element_set_state (m_Pipeline, GST_STATE_PLAYING);
+  gst_element_set_state (m_Pipeline, GST_STATE_PAUSED);
   do {
     before_step = std::chrono::high_resolution_clock::now();
+    g_print("Handle external messages.../n");
     if(!HandleExternalMessage()){
       g_printerr("Error processing external messages");
       return false;
     }
+    g_print("Handle internal messages.../n");
     if(!HandleInternalMessage()){
       g_printerr("Error processing internal messages");
       return false;
@@ -60,6 +63,7 @@ MP3Handler::Loop(void){
     usleep(PERIOD);
   }while(!m_bTerminate);
   // Get ready for next stream
+  g_print("Termianted loop.../n");
   m_bTerminate =false;
   return true; 
 }
@@ -67,7 +71,8 @@ MP3Handler::Loop(void){
 bool
 MP3Handler::HandleInternalMessage(void){
   bool l_bHandledErrors=false;
-  m_InternalMsg = gst_bus_timed_pop (m_Bus, GST_CLOCK_TIME_NONE);
+  g_print("pop message\n");
+  m_InternalMsg = gst_bus_pop (m_Bus);
   /* Parse message */
   if (m_InternalMsg != NULL) {
     GError *err;
@@ -75,6 +80,7 @@ MP3Handler::HandleInternalMessage(void){
     
     switch (GST_MESSAGE_TYPE (m_InternalMsg)) {
     case GST_MESSAGE_ERROR:
+      g_printerr("Error ocurred");
       l_bHandledErrors = true;
       gst_message_parse_error (m_InternalMsg, &err, &debug_info);
       g_printerr ("Error received from element %s: %s\n", GST_OBJECT_NAME (m_InternalMsg->src), err->message);
@@ -88,6 +94,7 @@ MP3Handler::HandleInternalMessage(void){
       m_bTerminate = true;
       break;
     case GST_MESSAGE_STATE_CHANGED:
+      g_printerr("State change");
       /* We are only interested in state-changed messages from the pipeline */
       if (GST_MESSAGE_SRC (m_InternalMsg) == GST_OBJECT (m_Pipeline)) {
 	GstState old_state, new_state, pending_state;
@@ -107,7 +114,21 @@ MP3Handler::HandleInternalMessage(void){
 }
 bool
 MP3Handler::HandleExternalMessage(void){
-  //FIXME: implement this
+  if (m_pStatusMessage->Handled) {
+    g_print("Handled\n");
+    return true;
+  }
+  g_printerr("Received Gui COmmand\n");
+  if (m_pStatusMessage->Play){
+    gst_element_set_state (m_Pipeline, GST_STATE_PLAYING);
+  }
+  else{
+    gst_element_set_state (m_Pipeline, GST_STATE_PAUSED);
+  }
+  //FIXME: implement handler for Reset and FileID
+  m_pStatusMessage->locker.lock();
+  m_pStatusMessage->Handled = true;
+  m_pStatusMessage->locker.unlock(); 
   return true;
 }
 

@@ -3,6 +3,9 @@
 #include <chrono>
 #include <unistd.h>
 
+#include "file_names.hpp"
+#include "messages.hpp"
+
 #ifndef MP3_HANDLER_H
 #define MP3_HANDLER_H
 
@@ -21,12 +24,14 @@ private:
   bool m_bTerminate;
   GstMessage* m_InternalMsg;
 
+  status_message * m_pStatusMessage;
+
   bool HandleInternalMessage(void);
   bool HandleExternalMessage(void);
   bool LoopStep(void);
 
 public:
-  MP3Handler(void);
+  MP3Handler(status_message* i_pStatusMessage);
 
   bool Setup(void);
 

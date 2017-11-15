@@ -15,12 +15,15 @@
 // Included for debugging. Final product wont print to stdout
 #include <iostream>
 
+#include "file_names.hpp"
+#include "messages.hpp"
+
 #include "def.hpp"
 
 class Mp3Window : public QWidget{
   Q_OBJECT  
 public:
-  explicit Mp3Window(QRect i_screenSize,QWidget *parent = 0);
+  explicit Mp3Window(QRect i_screenSize, status_message* i_pStatusMessage,QWidget *parent = 0);
 
   QPushButton* returnButton(){return m_returnButton;};							      
 				      
@@ -61,6 +64,8 @@ private:
   QRect m_screenSize;
   
   QTextEdit *m_songIndicator;
+
+  status_message* m_pStatusMessage;
 };
 
 #endif

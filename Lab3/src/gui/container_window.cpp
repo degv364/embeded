@@ -2,9 +2,11 @@
 
 
 
-ContainerWindow::ContainerWindow(QWidget *parent):
+ContainerWindow::ContainerWindow(status_message* i_pStatusMessage,QWidget *parent):
   QWidget(parent){
 
+  m_pStatusMessage = i_pStatusMessage;
+  
   QScreen* l_Screen = QGuiApplication::primaryScreen();
   m_screenSize = l_Screen->geometry();
 
@@ -32,7 +34,7 @@ ContainerWindow::ContainerWindow(QWidget *parent):
   radio->setGeometry(transformResolution(30,1000,DEFAULT_SCREEN_WIDTH-60, DEFAULT_SCREEN_HEIGHT-60));
 
   // Mp3 Window
-  mp3 = new Mp3Window(m_screenSize, this);
+  mp3 = new Mp3Window(m_screenSize, m_pStatusMessage, this);
   mp3->setGeometry(transformResolution(30,1000,DEFAULT_SCREEN_WIDTH-60, DEFAULT_SCREEN_HEIGHT-60));
   
   // Do the connection
