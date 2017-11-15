@@ -3,10 +3,14 @@
 MP3Handler::MP3Handler(status_message* i_pStatusMessage){
   m_bTerminate = false;
   m_pStatusMessage = i_pStatusMessage;
+  m_iCurrentSong = 0;
 }
 
 bool
 MP3Handler::Setup(void){
+
+  InitializeFilePaths();
+  
   g_print("Initializing Pipeline...\n");
   m_Pipeline = gst_pipeline_new("mp3_handler");
   m_Source   = gst_element_factory_make ("filesrc","file-source");
@@ -20,9 +24,9 @@ MP3Handler::Setup(void){
     return false;
   }
 
-  // FIXME: hard coded name
+  g_print("file %s",m_FilePaths[0]);
   g_object_set (G_OBJECT (m_Source), "location",
-		"../media/music/Tours_-_01_-_Enthusiast.mp3", NULL);
+		m_FilePaths[m_iCurrentSong], NULL);
 
   // Add elements to pipeline
   gst_bin_add_many (GST_BIN(m_Pipeline), m_Source, m_Parser,
@@ -125,8 +129,22 @@ MP3Handler::HandleExternalMessage(void){
     gst_element_set_state (m_Pipeline, GST_STATE_NULL);
     break;
   case FORWARD:
+    m_iCurrentSong +=1;
+    if (m_iCurrentSong >= LAST_FILE){
+      m_iCurrentSong = LAST_FILE-1;
+    }
+    gst_element_set_state (m_Pipeline, GST_STATE_NULL);
+    g_object_set (G_OBJECT (m_Source), "location",
+		m_FilePaths[m_iCurrentSong], NULL);
+    break;
   case BACKWARD:
-    g_print("WIP: not implemented yet");
+    m_iCurrentSong -=1;
+    if (m_iCurrentSong < 0){
+      m_iCurrentSong = 0;
+    }
+    gst_element_set_state (m_Pipeline, GST_STATE_NULL);
+    g_object_set (G_OBJECT (m_Source), "location",
+		m_FilePaths[m_iCurrentSong], NULL);
     break;
   default:
     g_printerr("Invalid action");
@@ -149,4 +167,50 @@ MP3Handler::Deinit(void){
   gst_object_unref (GST_OBJECT (m_Pipeline));
 
   return true;
+}
+
+
+void MP3Handler::InitializeFilePaths(void){
+  strcpy(m_FilePaths[ALL_STAR_TRIO], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[ALL_STAR_TRIO], ALL_STAR_TRIO_STR);
+
+  strcpy(m_FilePaths[ART_OF_ESCAPISM], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[ART_OF_ESCAPISM], ART_OF_ESCAPISM_STR);
+
+  strcpy(m_FilePaths[TYPICAL_DAY], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[TYPICAL_DAY], TYPICAL_DAY_STR);
+
+  strcpy(m_FilePaths[ALL_BEGINS_HERE ], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[ALL_BEGINS_HERE ], ALL_BEGINS_HERE_STR);
+
+  strcpy(m_FilePaths[SHES_A_GIFT ], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[SHES_A_GIFT ], SHES_A_GIFT_STR);
+
+  strcpy(m_FilePaths[WELCOME ], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[WELCOME ], WELCOME_STR);
+  
+  strcpy(m_FilePaths[NIGHT_OWL ], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[NIGHT_OWL ], NIGHT_OWL_STR);
+  
+  strcpy(m_FilePaths[WITH_EASE ], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[WITH_EASE ], WITH_EASE_STR);
+  
+  strcpy(m_FilePaths[BEING_FINE ], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[BEING_FINE ], BEING_FINE_STR);
+  
+  strcpy(m_FilePaths[MOODY_BREAKFAST ], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[MOODY_BREAKFAST ], MOODY_BREAKFAST_STR);
+  
+  strcpy(m_FilePaths[THE_LAST_ONES ], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[THE_LAST_ONES ], THE_LAST_ONES_STR);
+  
+  strcpy(m_FilePaths[GOOD_GRIEF ], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[GOOD_GRIEF ], GOOD_GRIEF_STR);
+  
+  strcpy(m_FilePaths[PIANO_ROLL ], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[PIANO_ROLL ], PIANO_ROLL_STR);
+  
+  strcpy(m_FilePaths[ENTHUSIAST ], MUSIC_FILE_NAME_PREFIX);
+  strcat(m_FilePaths[ENTHUSIAST ], ENTHUSIAST_STR);
+
 }

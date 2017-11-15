@@ -7,6 +7,7 @@ Mp3Window::Mp3Window(QRect i_screenSize,  status_message* i_pStatusMessage, QWid
   m_screenSize = i_screenSize;
 
   m_pStatusMessage = i_pStatusMessage;
+  InitializeFileNames();
 
   // Return Button
   QIcon l_returnIcon("../media/icons/goUp.png");
@@ -99,10 +100,10 @@ Mp3Window::Mp3Window(QRect i_screenSize,  status_message* i_pStatusMessage, QWid
 						   280));
   
   m_songIndicator->setReadOnly(true);
-  m_songIndicator->setFontPointSize(80);
+  m_songIndicator->setFontPointSize(20);
   m_songIndicator->setAlignment(Qt::AlignCenter);
   // FIXME: show name of last played song
-  m_songIndicator->setText("default 0");
+  m_songIndicator->setText(m_MusicFileNames[0]);
 
   
 
@@ -134,7 +135,11 @@ Mp3Window::transformResolution(int x, int y, int width, int height){
 
 void Mp3Window::goNext(){
   currentSong++;
+  m_fProgress = 0;
   playing = false;
+  if (currentSong >= LAST_FILE){
+    currentSong = LAST_FILE-1;
+  }
   // send  message
   m_pStatusMessage->locker.lock();
   m_pStatusMessage->RequiredAction = FORWARD;
@@ -146,6 +151,7 @@ void Mp3Window::goNext(){
 
 void Mp3Window::goPrev(){
   currentSong--;
+  m_fProgress = 0;
   playing = false;
   if (currentSong < 0){
     currentSong = 0;
@@ -193,7 +199,7 @@ void Mp3Window::updateSongIndicator(){
     m_playButton->setIcon(m_playIcon);
     m_playButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
   }
-  newIndicator = QString("%1").arg(currentSong);
+  newIndicator = m_MusicFileNames[currentSong];
   m_songIndicator->setText(newIndicator);
 }
 
@@ -211,3 +217,32 @@ void Mp3Window::updateProgress(){
   m_songProgressBar->setValue(m_iShownProgress);
 }
 
+void Mp3Window::InitializeFileNames(void){
+  strcpy(m_MusicFileNames[ALL_STAR_TRIO], ALL_STAR_TRIO_STR);
+  
+  strcpy(m_MusicFileNames[ART_OF_ESCAPISM], ART_OF_ESCAPISM_STR);
+  
+  strcpy(m_MusicFileNames[TYPICAL_DAY], TYPICAL_DAY_STR);
+  
+  strcpy(m_MusicFileNames[ALL_BEGINS_HERE ], ALL_BEGINS_HERE_STR);
+  
+  strcpy(m_MusicFileNames[SHES_A_GIFT ], SHES_A_GIFT_STR);
+  
+  strcpy(m_MusicFileNames[WELCOME ], WELCOME_STR);
+  
+  strcpy(m_MusicFileNames[NIGHT_OWL ], NIGHT_OWL_STR);
+  
+  strcpy(m_MusicFileNames[WITH_EASE ], WITH_EASE_STR);
+  
+  strcpy(m_MusicFileNames[BEING_FINE ], BEING_FINE_STR);
+  
+  strcpy(m_MusicFileNames[MOODY_BREAKFAST ], MOODY_BREAKFAST_STR);
+  
+  strcpy(m_MusicFileNames[THE_LAST_ONES ], THE_LAST_ONES_STR);
+  
+  strcpy(m_MusicFileNames[GOOD_GRIEF ], GOOD_GRIEF_STR);
+  
+  strcpy(m_MusicFileNames[PIANO_ROLL ], PIANO_ROLL_STR);
+  
+  strcpy(m_MusicFileNames[ENTHUSIAST ], ENTHUSIAST_STR);
+}

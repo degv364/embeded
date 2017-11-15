@@ -36,6 +36,7 @@ private slots:
   
 private:
 
+  void InitializeFileNames(void);
   QRect transformResolution(int x, int y, int width, int height);
   void updateSongIndicator();
 
@@ -66,6 +67,8 @@ private:
   QTextEdit *m_songIndicator;
 
   status_message* m_pStatusMessage;
+
+  char  m_MusicFileNames[LAST_FILE][MAX_FILE_NAME_SIZE];
 };
 
 #endif

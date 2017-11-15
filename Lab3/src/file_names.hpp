@@ -1,7 +1,10 @@
 #ifndef FILE_NAMES
 #define FILE_NAMES
 
-#define FILE_NAME_PREFIX "../../media/music"
+#define MUSIC_FILE_NAME_PREFIX "../media/music/"
+#define ICON_FILE_NAME_PREFIX "../icons/"
+
+#define MAX_FILE_NAME_SIZE 80
 
 #define ALL_STAR_TRIO_STR "All-Star_Trio_-_01_-_Oh_By_Jingo.mp3"
 #define ART_OF_ESCAPISM_STR "Art_Of_Escapism_-_Star_of_the_Vikings.mp3"
@@ -30,7 +33,7 @@ typedef enum file_e {
   BEING_FINE ,
   MOODY_BREAKFAST, 
   THE_LAST_ONES ,
-  GOOD_GRIE ,
+  GOOD_GRIEF ,
   PIANO_ROLL ,
   ENTHUSIAST,
   LAST_FILE

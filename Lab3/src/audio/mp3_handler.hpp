@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <string.h>
 #include <gst/gst.h>
 #include <glib.h>
 #include <chrono>
@@ -26,9 +28,13 @@ private:
 
   status_message * m_pStatusMessage;
 
+  char m_FilePaths[LAST_FILE][MAX_FILE_NAME_SIZE];
+  int m_iCurrentSong;
+
   bool HandleInternalMessage(void);
   bool HandleExternalMessage(void);
   bool LoopStep(void);
+  void InitializeFilePaths(void);
 
 public:
   MP3Handler(status_message* i_pStatusMessage);
