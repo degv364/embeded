@@ -10,6 +10,7 @@ typedef enum action_e{
   STOP,
   FORWARD,
   BACKWARD,
+  QUIT,
   LAST_ACTION
 }action_e;
 

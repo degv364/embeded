@@ -92,7 +92,7 @@ MP3Handler::HandleInternalMessage(void){
       break;
     case GST_MESSAGE_EOS:
       g_print ("End-Of-Stream reached.\n");
-      m_bTerminate = true;
+      gst_element_set_state (m_Pipeline, GST_STATE_NULL);
       break;
     case GST_MESSAGE_STATE_CHANGED:
       /* We are only interested in state-changed messages from the pipeline */
@@ -145,6 +145,9 @@ MP3Handler::HandleExternalMessage(void){
     gst_element_set_state (m_Pipeline, GST_STATE_NULL);
     g_object_set (G_OBJECT (m_Source), "location",
 		m_FilePaths[m_iCurrentSong], NULL);
+    break;
+  case QUIT:
+     m_bTerminate = true;
     break;
   default:
     g_printerr("Invalid action");

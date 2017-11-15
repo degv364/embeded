@@ -32,6 +32,7 @@ private slots:
   void returnFromRadio();
   void showMp3();
   void returnFromMp3();
+  void sendQuitMessage();
 				      
 private:
 

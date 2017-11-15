@@ -39,6 +39,7 @@ ContainerWindow::ContainerWindow(status_message* i_pStatusMessage,QWidget *paren
   
   // Do the connection
   connect(m_Quit, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()) );
+  connect(m_Quit, SIGNAL(clicked()), this, SLOT(sendQuitMessage()) );
 
   // radio transition
   connect(welcome->radioButton(), SIGNAL(clicked()), this , SLOT(showRadio()) );
@@ -95,4 +96,14 @@ ContainerWindow::returnFromMp3(){
 					 DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
   
   welcome->setGeometry(transformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+}
+
+
+void
+ContainerWindow::sendQuitMessage(){
+  m_pStatusMessage->locker.lock();
+  m_pStatusMessage->RequiredAction = QUIT;
+  m_pStatusMessage->Handled = false;
+  m_pStatusMessage->locker.unlock();
+  
 }
