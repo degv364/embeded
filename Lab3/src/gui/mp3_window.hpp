@@ -56,6 +56,7 @@ private slots:
 private:
 
   void InitializeFileNames(void);
+  void InitializeFileTimes(void);
   QRect transformResolution(int x, int y, int width, int height);
   void updateSongIndicator();
 
@@ -88,6 +89,7 @@ private:
   status_message* m_pStatusMessage;
 
   char  m_MusicFileNames[LAST_FILE][MAX_FILE_NAME_SIZE];
+  int m_MusicFileTimes[LAST_FILE];
 };
 
 #endif

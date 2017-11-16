@@ -27,6 +27,7 @@ Mp3Window::Mp3Window(QRect i_screenSize,  status_message* i_pStatusMessage, QWid
 
   m_pStatusMessage = i_pStatusMessage;
   InitializeFileNames();
+  InitializeFileTimes();
 
   // Return Button
   QIcon l_returnIcon("../media/icons/goUp.png");
@@ -226,7 +227,7 @@ void Mp3Window::updateProgress(){
   if (playing){
     m_fProgress+=DEFAULT_TIMER_INTERVAL;
   }
-  m_iShownProgress = m_fProgress*(100.0/DEFAULT_SONG_LENGTH);
+  m_iShownProgress = m_fProgress*(100.0/(m_MusicFileTimes[currentSong]));
 
   if (m_iShownProgress>=100){
     playing = false;
@@ -264,4 +265,22 @@ void Mp3Window::InitializeFileNames(void){
   strcpy(m_MusicFileNames[PIANO_ROLL ], PIANO_ROLL_STR);
   
   strcpy(m_MusicFileNames[ENTHUSIAST ], ENTHUSIAST_STR);
+}
+
+
+void Mp3Window::InitializeFileTimes(void){
+  m_MusicFileTimes[ENTHUSIAST ] =ENTHUSIAST_TIME*1000;
+  m_MusicFileTimes[THE_LAST_ONES ] =THE_LAST_ONES_TIME*1000;
+  m_MusicFileTimes[GOOD_GRIEF ] =GOOD_GRIEF_TIME*1000;
+  m_MusicFileTimes[ALL_STAR_TRIO ] =ALL_STAR_TRIO_TIME*1000;
+  m_MusicFileTimes[ART_OF_ESCAPISM ] =ART_OF_ESCAPISM_TIME*1000;
+  m_MusicFileTimes[TYPICAL_DAY ] =TYPICAL_DAY_TIME*1000;
+  m_MusicFileTimes[ALL_BEGINS_HERE ] =ALL_BEGINS_HERE_TIME*1000;
+  m_MusicFileTimes[SHES_A_GIFT ] =SHES_A_GIFT_TIME*1000;
+  m_MusicFileTimes[WELCOME ] =WELCOME_TIME*1000;
+  m_MusicFileTimes[ NIGHT_OWL ] = NIGHT_OWL_TIME*1000;
+  m_MusicFileTimes[WITH_EASE ] =WITH_EASE_TIME*1000;
+  m_MusicFileTimes[BEING_FINE ] = BEING_FINE_TIME*1000;
+  m_MusicFileTimes[MOODY_BREAKFAST ] =MOODY_BREAKFAST_TIME*1000;
+  m_MusicFileTimes[PIANO_ROLL ] = PIANO_ROLL_TIME*1000;
 }
