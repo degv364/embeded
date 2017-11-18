@@ -44,7 +44,8 @@ class Mp3Window : public QWidget{
 public:
   explicit Mp3Window(QRect i_screenSize, status_message* i_pStatusMessage,QWidget *parent = 0);
 
-  QPushButton* returnButton(){return m_returnButton;};							      
+  QPushButton* returnButton(){return m_returnButton;};
+  void stopSong(void){return stop();};						    
 				      
 private slots:
   void goNext();

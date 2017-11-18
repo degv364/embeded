@@ -30,8 +30,11 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QIcon>
+#include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
 // Included for debugging. Final product wont print to stdout
 #include <iostream>
+
 
 #include "file_names.hpp"
 #include "messages.hpp"
@@ -56,6 +59,7 @@ private slots:
 private:
 
   QRect transformResolution(int x, int y, int width, int height);
+  void setUpAnimations();
   WelcomeWindow  *welcome;
   RadioWindow *radio;
   Mp3Window *mp3;
@@ -69,6 +73,22 @@ private:
   QPushButton *m_Quit;
 
   status_message* m_pStatusMessage;
+
+
+  // Animations
+  QPropertyAnimation* m_RadioIn;
+  QPropertyAnimation* m_RadioOut;
+  QPropertyAnimation* m_Mp3In;
+  QPropertyAnimation* m_Mp3Out;
+  QPropertyAnimation* m_WelcomeIn0;
+  QPropertyAnimation* m_WelcomeOut0;
+  QPropertyAnimation* m_WelcomeIn1;
+  QPropertyAnimation* m_WelcomeOut1;
+  QAnimationGroup* m_WelcomeToRadio;
+  QAnimationGroup* m_RadioToWelcome;
+  QAnimationGroup* m_Mp3ToWelcome;
+  QAnimationGroup* m_WelcomeToMp3;
+  
 };
 
 #endif
