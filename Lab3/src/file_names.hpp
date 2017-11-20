@@ -23,7 +23,7 @@
 #define MUSIC_FILE_NAME_PREFIX "../media/music/"
 #define ICON_FILE_NAME_PREFIX "../icons/"
 
-#define MAX_FILE_NAME_SIZE 80
+#define MAX_FILE_NAME_SIZE 200
 
 #define ENTHUSIAST_STR "Tours_-_01_-_Enthusiast.mp3"
 #define THE_LAST_ONES_STR "Jahzzar_-_01_-_The_last_ones.mp3"
