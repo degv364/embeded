@@ -50,6 +50,7 @@ private slots:
 private:
 
   QRect transformResolution(int x, int y, int width, int height);
+  int transformFontSize(int i_iSize);
   void updateStationIndicator();
 
   float m_fCurrentFM;

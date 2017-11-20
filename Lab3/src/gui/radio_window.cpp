@@ -78,7 +78,7 @@ RadioWindow::RadioWindow(QRect i_screenSize , char * media_path, QWidget *parent
   m_amIcon = QIcon(l_cPathToFile);
   m_toggleAMFMButton = new QPushButton(this);
   m_toggleAMFMButton->setIcon(m_fmIcon);
-  m_toggleAMFMButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5, DEFAULT_SCREEN_HEIGHT/5));
+  m_toggleAMFMButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5-100, DEFAULT_SCREEN_HEIGHT/5-100));
   m_toggleAMFMButton->setCheckable(true);
   m_toggleAMFMButton->setGeometry(transformResolution(2*DEFAULT_SCREEN_WIDTH/5,
 						      3*DEFAULT_SCREEN_HEIGHT/5,
@@ -94,10 +94,10 @@ RadioWindow::RadioWindow(QRect i_screenSize , char * media_path, QWidget *parent
 						      DEFAULT_SCREEN_HEIGHT/5));
   
   m_stationIndicator->setReadOnly(true);
-  m_stationIndicator->setFontPointSize(80);
+  m_stationIndicator->setFontPointSize(transformFontSize(60));
   m_stationIndicator->setAlignment(Qt::AlignCenter);
   m_stationIndicator->setText("107.5");
-
+  m_stationIndicator->setAlignment(Qt::AlignCenter);
   
 
   // Do the connection
@@ -122,6 +122,12 @@ RadioWindow::transformResolution(int x, int y, int width, int height){
   float new_height = ((float) height)/DEFAULT_SCREEN_HEIGHT*((float)m_screenSize.height());
 
   return QRect((int)new_x, (int)new_y, (int)new_width, (int)new_height);
+}
+
+int
+RadioWindow::transformFontSize(int i_iSize){
+  float l_fMean = m_screenSize.width()*0.5+m_screenSize.height()*0.5;
+  return (int) i_iSize*2.0f/(DEFAULT_SCREEN_WIDTH+DEFAULT_SCREEN_HEIGHT)*l_fMean;
 }
 
 // Slots
@@ -157,13 +163,17 @@ void RadioWindow::updateStationIndicator(){
   if (m_bIsFM){
     newIndicator = QString("%1").arg(m_fCurrentFM);
     m_toggleAMFMButton->setIcon(m_fmIcon);
-    m_toggleAMFMButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5, DEFAULT_SCREEN_HEIGHT/5));
+    m_toggleAMFMButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5-100, DEFAULT_SCREEN_HEIGHT/5-100));
   }
   else {
     newIndicator = QString("%1").arg(m_fCurrentAM);
     m_toggleAMFMButton->setIcon(m_amIcon);
-    m_toggleAMFMButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5, DEFAULT_SCREEN_HEIGHT/5));
+    m_toggleAMFMButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5-100, DEFAULT_SCREEN_HEIGHT/5-100));
 
   }
+  m_toggleAMFMButton->setGeometry(transformResolution(2*DEFAULT_SCREEN_WIDTH/5,
+						      3*DEFAULT_SCREEN_HEIGHT/5,
+						      DEFAULT_SCREEN_WIDTH/5,
+						      DEFAULT_SCREEN_HEIGHT/5));
   m_stationIndicator->setText(newIndicator);
 }
