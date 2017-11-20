@@ -38,7 +38,7 @@
 class WelcomeWindow : public QWidget{
   Q_OBJECT  
 public:
-  explicit WelcomeWindow(QRect i_screenSize,QWidget *parent = 0);
+  explicit WelcomeWindow(QRect i_screenSize,char* media_path, QWidget *parent = 0);
 
   QPushButton* radioButton(){return m_radioButton;};
   QPushButton* mp3Button(){return m_mp3Button;};

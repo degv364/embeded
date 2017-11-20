@@ -19,10 +19,12 @@
 
 #include "mp3_handler.hpp"
 
-MP3Handler::MP3Handler(status_message* i_pStatusMessage){
+MP3Handler::MP3Handler(status_message* i_pStatusMessage, char* media_path){
   m_bTerminate = false;
   m_pStatusMessage = i_pStatusMessage;
   m_iCurrentSong = 0;
+  strcpy(m_MediaPath, media_path);
+  strcat(m_MediaPath, "music/");
 }
 
 bool
@@ -193,46 +195,46 @@ MP3Handler::Deinit(void){
 
 
 void MP3Handler::InitializeFilePaths(void){
-  strcpy(m_FilePaths[ALL_STAR_TRIO], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[ALL_STAR_TRIO], m_MediaPath);
   strcat(m_FilePaths[ALL_STAR_TRIO], ALL_STAR_TRIO_STR);
 
-  strcpy(m_FilePaths[ART_OF_ESCAPISM], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[ART_OF_ESCAPISM], m_MediaPath);
   strcat(m_FilePaths[ART_OF_ESCAPISM], ART_OF_ESCAPISM_STR);
 
-  strcpy(m_FilePaths[TYPICAL_DAY], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[TYPICAL_DAY], m_MediaPath);
   strcat(m_FilePaths[TYPICAL_DAY], TYPICAL_DAY_STR);
 
-  strcpy(m_FilePaths[ALL_BEGINS_HERE ], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[ALL_BEGINS_HERE ], m_MediaPath);
   strcat(m_FilePaths[ALL_BEGINS_HERE ], ALL_BEGINS_HERE_STR);
 
-  strcpy(m_FilePaths[SHES_A_GIFT ], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[SHES_A_GIFT ], m_MediaPath);
   strcat(m_FilePaths[SHES_A_GIFT ], SHES_A_GIFT_STR);
 
-  strcpy(m_FilePaths[WELCOME ], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[WELCOME ], m_MediaPath);
   strcat(m_FilePaths[WELCOME ], WELCOME_STR);
   
-  strcpy(m_FilePaths[NIGHT_OWL ], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[NIGHT_OWL ], m_MediaPath);
   strcat(m_FilePaths[NIGHT_OWL ], NIGHT_OWL_STR);
   
-  strcpy(m_FilePaths[WITH_EASE ], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[WITH_EASE ], m_MediaPath);
   strcat(m_FilePaths[WITH_EASE ], WITH_EASE_STR);
   
-  strcpy(m_FilePaths[BEING_FINE ], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[BEING_FINE ], m_MediaPath);
   strcat(m_FilePaths[BEING_FINE ], BEING_FINE_STR);
   
-  strcpy(m_FilePaths[MOODY_BREAKFAST ], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[MOODY_BREAKFAST ], m_MediaPath);
   strcat(m_FilePaths[MOODY_BREAKFAST ], MOODY_BREAKFAST_STR);
   
-  strcpy(m_FilePaths[THE_LAST_ONES ], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[THE_LAST_ONES ], m_MediaPath);
   strcat(m_FilePaths[THE_LAST_ONES ], THE_LAST_ONES_STR);
   
-  strcpy(m_FilePaths[GOOD_GRIEF ], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[GOOD_GRIEF ], m_MediaPath);
   strcat(m_FilePaths[GOOD_GRIEF ], GOOD_GRIEF_STR);
   
-  strcpy(m_FilePaths[PIANO_ROLL ], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[PIANO_ROLL ], m_MediaPath);
   strcat(m_FilePaths[PIANO_ROLL ], PIANO_ROLL_STR);
   
-  strcpy(m_FilePaths[ENTHUSIAST ], MUSIC_FILE_NAME_PREFIX);
+  strcpy(m_FilePaths[ENTHUSIAST ], m_MediaPath);
   strcat(m_FilePaths[ENTHUSIAST ], ENTHUSIAST_STR);
 
 }

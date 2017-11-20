@@ -17,6 +17,7 @@
 
  **/
 
+#include<iostream>
 
 #include <QApplication>
 #include <QLabel>
@@ -31,21 +32,30 @@
 #include "gui/container_window.hpp"
 
 int main(int argc, char **argv){
-    QApplication app(argc, argv);
-    gst_init (&argc, &argv);
-
-    // Initialize intercommunication message
-    status_message l_stStatusMessage;
-    l_stStatusMessage.RequiredAction = PAUSE;
-    l_stStatusMessage.Handled = true;
-    
-    ContainerWindow container(&l_stStatusMessage);
-    container.showFullScreen();
-
-    std::thread l_AudioServer(AudioServer, &l_stStatusMessage);
-    
-    app.exec();
-    l_AudioServer.join();
-    return 0;
+  char* media_path;
+  QApplication app(argc, argv);
+  gst_init (&argc, &argv);
+  
+  if (argc != 2){
+    std::cout<<"Usage: ./main <path_to_media>"<<std::endl;
+    return 1;
+  }
+  media_path = argv[1];
+  std::cout<<"Media Path: "<<media_path<<std::endl;
+  
+  
+  // Initialize intercommunication message
+  status_message l_stStatusMessage;
+  l_stStatusMessage.RequiredAction = PAUSE;
+  l_stStatusMessage.Handled = true;
+  
+  ContainerWindow container(&l_stStatusMessage, media_path);
+  container.showFullScreen();
+  
+  std::thread l_AudioServer(AudioServer, &l_stStatusMessage, media_path);
+  
+  app.exec();
+  l_AudioServer.join();
+  return 0;
 }
 
