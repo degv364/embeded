@@ -47,7 +47,7 @@
 class ContainerWindow : public QWidget{
   Q_OBJECT  
 public:
-  explicit ContainerWindow(status_message* i_pStatusMessage,QWidget *parent = 0);
+  explicit ContainerWindow(status_message* i_pStatusMessage, char* media_path, QWidget *parent = 0);
 
 private slots:
   void showRadio();

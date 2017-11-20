@@ -21,16 +21,20 @@
 
 
 
-Mp3Window::Mp3Window(QRect i_screenSize,  status_message* i_pStatusMessage, QWidget *parent):
+Mp3Window::Mp3Window(QRect i_screenSize,  status_message* i_pStatusMessage,
+		     char*  media_path, QWidget *parent):
   QWidget(parent){
   m_screenSize = i_screenSize;
+  char l_cPathToFile[MAX_PATH_LENGTH];
 
   m_pStatusMessage = i_pStatusMessage;
   InitializeFileNames();
   InitializeFileTimes();
 
   // Return Button
-  QIcon l_returnIcon("../media/icons/goUp.png");
+   strcpy(l_cPathToFile, media_path);
+  strcat(l_cPathToFile, "icons/goUp.png");
+  QIcon l_returnIcon(l_cPathToFile);
   m_returnButton = new QPushButton(this);
   m_returnButton->setIcon(l_returnIcon);
   m_returnButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
@@ -41,7 +45,9 @@ Mp3Window::Mp3Window(QRect i_screenSize,  status_message* i_pStatusMessage, QWid
 						  BIG_BUTTON_HEIGHT-50));
 
   // ForwardButton
-  QIcon l_forwardIcon("../media/icons/forward.png");
+  strcpy(l_cPathToFile, media_path);
+  strcat(l_cPathToFile, "icons/forward.png");
+  QIcon l_forwardIcon(l_cPathToFile);
   m_nextButton = new QPushButton(this);
   m_nextButton->setIcon(l_forwardIcon);
   m_nextButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
@@ -52,7 +58,9 @@ Mp3Window::Mp3Window(QRect i_screenSize,  status_message* i_pStatusMessage, QWid
 						LITTLE_BUTTON_HEIGHT));
 
   // Backward Button
-  QIcon l_backwardIcon("../media/icons/back.png");
+  strcpy(l_cPathToFile, media_path);
+  strcat(l_cPathToFile, "icons/back.png");
+  QIcon l_backwardIcon(l_cPathToFile);
   m_prevButton = new QPushButton(this);
   m_prevButton->setIcon(l_backwardIcon);
   m_prevButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
@@ -63,8 +71,12 @@ Mp3Window::Mp3Window(QRect i_screenSize,  status_message* i_pStatusMessage, QWid
 						LITTLE_BUTTON_HEIGHT));
   // Play Button
   playing = false;
-  m_playIcon = QIcon("../media/icons/play.png");
-  m_pauseIcon = QIcon("../media/icons/pause.png");
+  strcpy(l_cPathToFile, media_path);
+  strcat(l_cPathToFile, "icons/play.png");
+  m_playIcon = QIcon(l_cPathToFile);
+  strcpy(l_cPathToFile, media_path);
+  strcat(l_cPathToFile, "icons/pause.png");
+  m_pauseIcon = QIcon(l_cPathToFile);
   m_playButton = new QPushButton(this);
   m_playButton->setIcon(m_playIcon);
   m_playButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
@@ -75,7 +87,9 @@ Mp3Window::Mp3Window(QRect i_screenSize,  status_message* i_pStatusMessage, QWid
 						LITTLE_BUTTON_HEIGHT));
 
   // Sop Button
-  QIcon l_stopIcon("../media/icons/stop.png");
+  strcpy(l_cPathToFile, media_path);
+  strcat(l_cPathToFile, "icons/stop.png");
+  QIcon l_stopIcon(l_cPathToFile);
   m_stopButton = new QPushButton(this);
   m_stopButton->setIcon(l_stopIcon);
   m_stopButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));

@@ -42,5 +42,7 @@
 
 #define DEFAULT_ANIMATION_DURATION 500 //0.5s
 
+#define MAX_PATH_LENGTH 80
+
 
 #endif

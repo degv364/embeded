@@ -38,7 +38,7 @@
 class RadioWindow : public QWidget{
   Q_OBJECT  
 public:
-  explicit RadioWindow(QRect i_screenSize,QWidget *parent = 0);
+  explicit RadioWindow(QRect i_screenSize , char *media_path,QWidget *parent = 0);
 
   QPushButton* returnButton(){return m_returnButton;};							      
 				      

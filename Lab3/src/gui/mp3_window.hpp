@@ -42,7 +42,8 @@
 class Mp3Window : public QWidget{
   Q_OBJECT  
 public:
-  explicit Mp3Window(QRect i_screenSize, status_message* i_pStatusMessage,QWidget *parent = 0);
+  explicit Mp3Window(QRect i_screenSize, status_message* i_pStatusMessage,
+		     char*  media_path, QWidget *parent = 0);
 
   QPushButton* returnButton(){return m_returnButton;};
   void stopSong(void){return stop();};						    

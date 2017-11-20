@@ -21,7 +21,7 @@
 
 
 
-ContainerWindow::ContainerWindow(status_message* i_pStatusMessage,QWidget *parent):
+ContainerWindow::ContainerWindow(status_message* i_pStatusMessage, char* media_path,QWidget *parent):
   QWidget(parent){
 
   m_pStatusMessage = i_pStatusMessage;
@@ -30,14 +30,19 @@ ContainerWindow::ContainerWindow(status_message* i_pStatusMessage,QWidget *paren
   m_screenSize = l_Screen->geometry();
 
   m_mainLabel = new QLabel(this);
-  QPixmap backgroundImage("../media/leather_metal.jpg");
+  char l_cPathToBackGround[MAX_PATH_LENGTH];
+  strcpy(l_cPathToBackGround, media_path);
+  strcat(l_cPathToBackGround, "leather_metal.jpg");
+  QPixmap backgroundImage(l_cPathToBackGround);
   backgroundImage = backgroundImage.scaled(m_screenSize.width(),m_screenSize.height());
   m_mainLabel->setPixmap(backgroundImage);
   m_mainLabel->setGeometry(transformResolution(0,0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
   
   // QuitButton
-  
-  QIcon l_quitIcon("../media/icons/quit.png");
+  char l_cPathToQuitIcon[MAX_PATH_LENGTH];
+  strcpy(l_cPathToQuitIcon, media_path);
+  strcat(l_cPathToQuitIcon, "icons/quit.png");
+  QIcon l_quitIcon(l_cPathToQuitIcon);
   m_Quit = new QPushButton(this);
   m_Quit->setIcon(l_quitIcon);
   m_Quit->setIconSize(QSize(30,30));
@@ -45,15 +50,15 @@ ContainerWindow::ContainerWindow(status_message* i_pStatusMessage,QWidget *paren
   m_Quit->setGeometry(transformResolution(DEFAULT_SCREEN_WIDTH-30,1,30,30));
 
   // Welocme window
-  welcome = new WelcomeWindow(m_screenSize, this);
+  welcome = new WelcomeWindow(m_screenSize, media_path, this);
   welcome->setGeometry(transformResolution(30,30,DEFAULT_SCREEN_WIDTH-60, DEFAULT_SCREEN_HEIGHT-60));
 
   // Radio Window
-  radio = new RadioWindow(m_screenSize, this);
+  radio = new RadioWindow(m_screenSize, media_path, this);
   radio->setGeometry(transformResolution(30,1000,DEFAULT_SCREEN_WIDTH-60, DEFAULT_SCREEN_HEIGHT-60));
 
   // Mp3 Window
-  mp3 = new Mp3Window(m_screenSize, m_pStatusMessage, this);
+  mp3 = new Mp3Window(m_screenSize, m_pStatusMessage,  media_path, this);
   mp3->setGeometry(transformResolution(30,1000,DEFAULT_SCREEN_WIDTH-60, DEFAULT_SCREEN_HEIGHT-60));
 
   setUpAnimations();

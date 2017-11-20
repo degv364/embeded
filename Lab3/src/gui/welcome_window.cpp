@@ -20,14 +20,16 @@
 #include "welcome_window.hpp"
 
 
-
-WelcomeWindow::WelcomeWindow(QRect i_screenSize, QWidget *parent):
+WelcomeWindow::WelcomeWindow(QRect i_screenSize, char* media_path, QWidget *parent):
   QWidget(parent){
 
   m_screenSize = i_screenSize;
+  char l_cPathToFile[MAX_PATH_LENGTH];
 
   // radioButton
-  QIcon l_radioIcon("../media/icons/radio.png");
+  strcpy(l_cPathToFile, media_path);
+  strcat(l_cPathToFile, "icons/radio.png");
+  QIcon l_radioIcon(l_cPathToFile);
   m_radioButton = new QPushButton(this);
   m_radioButton->setIcon(l_radioIcon);
   m_radioButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
@@ -38,7 +40,9 @@ WelcomeWindow::WelcomeWindow(QRect i_screenSize, QWidget *parent):
 						 BIG_BUTTON_HEIGHT));
 
   // mp3 Button
-  QIcon l_mp3Icon("../media/icons/playList.png");
+  strcpy(l_cPathToFile, media_path);
+  strcat(l_cPathToFile, "icons/playList.png");
+  QIcon l_mp3Icon(l_cPathToFile);
   m_mp3Button = new QPushButton(this);
   m_mp3Button->setIcon(l_mp3Icon);
   m_mp3Button->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
