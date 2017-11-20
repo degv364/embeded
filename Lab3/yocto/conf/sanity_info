@@ -1,0 +1,4 @@
+SANITY_VERSION 1
+TMPDIR /home/ezamoraa/Documents/poky/build/tmp
+SSTATE_DIR /home/ezamoraa/Documents/poky/build/sstate-cache
+NATIVELSBSTRING ubuntu-14.04

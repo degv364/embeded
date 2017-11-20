@@ -1,0 +1,2 @@
+--- Starting bitbake server pid 17490 at 2017-11-20 03:53:38.357919 ---
+ERROR: Layer directory '/home/ezamoraa/Documents/poky/meta-yocto' does not exist! Please check BBLAYERS in /home/ezamoraa/Documents/conf/bblayers.conf
