@@ -52,7 +52,7 @@ int main(int argc, char **argv){
   ContainerWindow container(&l_stStatusMessage, media_path);
   container.showFullScreen();
   
-  std::thread l_AudioServer(AudioServer, &l_stStatusMessage);
+  std::thread l_AudioServer(AudioServer, &l_stStatusMessage, media_path);
   
   app.exec();
   l_AudioServer.join();

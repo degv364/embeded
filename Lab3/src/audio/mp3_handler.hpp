@@ -50,13 +50,15 @@ private:
   char m_FilePaths[LAST_FILE][MAX_FILE_NAME_SIZE];
   int m_iCurrentSong;
 
+  char m_MediaPath[MAX_FILE_NAME_SIZE];
+
   bool HandleInternalMessage(void);
   bool HandleExternalMessage(void);
   bool LoopStep(void);
   void InitializeFilePaths(void);
 
 public:
-  MP3Handler(status_message* i_pStatusMessage);
+  MP3Handler(status_message* i_pStatusMessage, char* media_path);
 
   bool Setup(void);
 
