@@ -27,4 +27,4 @@ TEMPLATE += app
   SOURCES += audio/mp3_handler.cpp
 
 
-SOURCES += main.cpp
+SOURCES += qt_radio.cpp
