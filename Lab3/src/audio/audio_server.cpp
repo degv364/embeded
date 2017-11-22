@@ -20,14 +20,14 @@
 #include "audio_server.hpp"
 
 void
-AudioServer (status_message* i_pStatusMessage, char* media_path){
+AudioServer (status_message* i_pStatusMessage, char* i_pMediaPath){
   // Initialization
   if (i_pStatusMessage == NULL){
     g_printerr("Got invalid message");
     return;
   }
 
-  MP3Handler l_handler(i_pStatusMessage, media_path);
+  MP3Handler l_handler(i_pStatusMessage, i_pMediaPath);
   l_handler.Setup();
   l_handler.Loop();
   l_handler.Deinit();

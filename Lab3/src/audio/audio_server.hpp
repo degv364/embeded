@@ -27,7 +27,7 @@
 #include "messages.hpp"
 #include "mp3_handler.hpp"
 
-void AudioServer(status_message* i_pStatusMessage, char* media_path);
+void AudioServer(status_message* i_pStatusMessage, char* i_pMediaPath);
 
 
 #endif
