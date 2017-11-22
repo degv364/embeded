@@ -40,7 +40,7 @@ class RadioWindow : public QWidget{
 public:
   explicit RadioWindow(QRect i_screenSize , char *media_path,QWidget *parent = 0);
 
-  QPushButton* returnButton(){return m_returnButton;};							      
+  QPushButton* ReturnButton(){return m_returnButton;};							      
 				      
 private slots:
   void goIncrease();

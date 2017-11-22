@@ -50,25 +50,25 @@ public:
   explicit ContainerWindow(status_message* i_pStatusMessage, char* media_path, QWidget *parent = 0);
 
 private slots:
-  void showRadio();
-  void returnFromRadio();
-  void showMp3();
-  void returnFromMp3();
-  void sendQuitMessage();
+  void ShowRadio();
+  void ReturnFromRadio();
+  void ShowMp3();
+  void ReturnFromMp3();
+  void SendQuitMessage();
 				      
 private:
 
-  QRect transformResolution(int x, int y, int width, int height);
-  void setUpAnimations();
-  WelcomeWindow  *welcome;
-  RadioWindow *radio;
-  Mp3Window *mp3;
+  QRect TransformResolution(int x, int y, int width, int height);
+  void SetUpAnimations();
+  WelcomeWindow  *Welcome;
+  RadioWindow *Radio;
+  Mp3Window *Mp3;
   
   //background
-  QLabel *m_mainLabel;
-  QImage *m_background;
+  QLabel *m_MainLabel;
+  QImage *m_Background;
   // This is QT5 specific. Can we use that with yocto?
-  QRect m_screenSize;
+  QRect m_ScreenSize;
   // FIXME: This button is for development
   QPushButton *m_Quit;
 

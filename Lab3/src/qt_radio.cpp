@@ -32,7 +32,7 @@
 #include "gui/container_window.hpp"
 
 int main(int argc, char **argv){
-  char* media_path;
+  char* l_cMediaPath;
   QApplication app(argc, argv);
   gst_init (&argc, &argv);
   
@@ -40,8 +40,8 @@ int main(int argc, char **argv){
     std::cout<<"Usage: ./main <path_to_media>"<<std::endl;
     return 1;
   }
-  media_path = argv[1];
-  std::cout<<"Media Path: "<<media_path<<std::endl;
+  l_cMediaPath = argv[1];
+  std::cout<<"Media Path: "<<l_cMediaPath<<std::endl;
   
   
   // Initialize intercommunication message
@@ -49,10 +49,10 @@ int main(int argc, char **argv){
   l_stStatusMessage.RequiredAction = PAUSE;
   l_stStatusMessage.Handled = true;
   
-  ContainerWindow container(&l_stStatusMessage, media_path);
-  container.showFullScreen();
+  ContainerWindow Container(&l_stStatusMessage, l_cMediaPath);
+  Container.showFullScreen();
   
-  std::thread l_AudioServer(AudioServer, &l_stStatusMessage, media_path);
+  std::thread l_AudioServer(AudioServer, &l_stStatusMessage, l_cMediaPath);
   
   app.exec();
   l_AudioServer.join();

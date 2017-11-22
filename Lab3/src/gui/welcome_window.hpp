@@ -40,8 +40,8 @@ class WelcomeWindow : public QWidget{
 public:
   explicit WelcomeWindow(QRect i_screenSize,char* media_path, QWidget *parent = 0);
 
-  QPushButton* radioButton(){return m_radioButton;};
-  QPushButton* mp3Button(){return m_mp3Button;};
+  QPushButton* RadioButton(){return m_radioButton;};
+  QPushButton* Mp3Button(){return m_mp3Button;};
 				      
   
 private:
