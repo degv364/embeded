@@ -21,7 +21,7 @@
 
 
 
-ContainerWindow::ContainerWindow(status_message* i_pStatusMessage, char* media_path,QWidget *parent):
+ContainerWindow::ContainerWindow(status_message* i_pStatusMessage, char* l_cMediaPath,QWidget *parent):
   QWidget(parent){
 
   m_pStatusMessage = i_pStatusMessage;
@@ -31,7 +31,7 @@ ContainerWindow::ContainerWindow(status_message* i_pStatusMessage, char* media_p
 
   m_MainLabel = new QLabel(this);
   char l_cPathToBackground[MAX_PATH_LENGTH];
-  strcpy(l_cPathToBackground, media_path);
+  strcpy(l_cPathToBackground, l_cMediaPath);
   strcat(l_cPathToBackground, "leather_metal.jpg");
   QPixmap BackgroundImage(l_cPathToBackground);
   BackgroundImage = BackgroundImage.scaled(m_ScreenSize.width(),m_ScreenSize.height());
@@ -40,7 +40,7 @@ ContainerWindow::ContainerWindow(status_message* i_pStatusMessage, char* media_p
   
   // QuitButton
   char l_cPathToQuitIcon[MAX_PATH_LENGTH];
-  strcpy(l_cPathToQuitIcon, media_path);
+  strcpy(l_cPathToQuitIcon, l_cMediaPath);
   strcat(l_cPathToQuitIcon, "icons/quit.png");
   QIcon l_quitIcon(l_cPathToQuitIcon);
   m_Quit = new QPushButton(this);
@@ -50,15 +50,15 @@ ContainerWindow::ContainerWindow(status_message* i_pStatusMessage, char* media_p
   m_Quit->setGeometry(TransformResolution(DEFAULT_SCREEN_WIDTH-30,1,30,30));
 
   // Welocme window
-  Welcome = new WelcomeWindow(m_ScreenSize, media_path, this);
+  Welcome = new WelcomeWindow(m_ScreenSize, l_cMediaPath, this);
   Welcome->setGeometry(TransformResolution(30,30,DEFAULT_SCREEN_WIDTH-60, DEFAULT_SCREEN_HEIGHT-60));
 
   // Radio Window
-  Radio = new RadioWindow(m_ScreenSize, media_path, this);
+  Radio = new RadioWindow(m_ScreenSize, l_cMediaPath, this);
   Radio->setGeometry(TransformResolution(30,1000,DEFAULT_SCREEN_WIDTH-60, DEFAULT_SCREEN_HEIGHT-60));
 
   // Mp3 Window
-  Mp3 = new Mp3Window(m_ScreenSize, m_pStatusMessage,  media_path, this);
+  Mp3 = new Mp3Window(m_ScreenSize, m_pStatusMessage,  l_cMediaPath, this);
   Mp3->setGeometry(TransformResolution(30,1000,DEFAULT_SCREEN_WIDTH-60, DEFAULT_SCREEN_HEIGHT-60));
 
   SetUpAnimations();

@@ -38,38 +38,38 @@
 class RadioWindow : public QWidget{
   Q_OBJECT  
 public:
-  explicit RadioWindow(QRect i_screenSize , char *media_path,QWidget *parent = 0);
+  explicit RadioWindow(QRect i_ScreenSize , char *i_pMediaPath,QWidget *parent = 0);
 
-  QPushButton* ReturnButton(){return m_returnButton;};							      
+  QPushButton* ReturnButton(){return m_ReturnButton;};							      
 				      
 private slots:
-  void goIncrease();
-  void goDecrease();
-  void toggleAMFM();
+  void GoIncrease();
+  void GoDecrease();
+  void ToggleAMFM();
   
 private:
 
-  QRect transformResolution(int x, int y, int width, int height);
-  int transformFontSize(int i_iSize);
-  void updateStationIndicator();
+  QRect TransformResolution(int x, int y, int width, int height);
+  int TransformFontSize(int i_iSize);
+  void UpdateStationIndicator();
 
   float m_fCurrentFM;
   float m_fCurrentAM;
   bool m_bIsFM;
   
 
-  QPushButton *m_returnButton;
-  QPushButton *m_increaseButton;
-  QPushButton *m_decreaseButton;
-  QPushButton *m_toggleAMFMButton;
+  QPushButton *m_ReturnButton;
+  QPushButton *m_IncreaseButton;
+  QPushButton *m_DecreaseButton;
+  QPushButton *m_ToggleAMFMButton;
 
   QIcon m_fmIcon;
   QIcon m_amIcon;
   
   // This is QT5 specific. Can we use that with yocto?
-  QRect m_screenSize;
+  QRect m_ScreenSize;
   // FIXME: This button is for development
-  QTextEdit *m_stationIndicator;
+  QTextEdit *m_StationIndicator;
 };
 
 #endif

@@ -21,159 +21,159 @@
 
 
 
-RadioWindow::RadioWindow(QRect i_screenSize , char * media_path, QWidget *parent):
+RadioWindow::RadioWindow(QRect i_ScreenSize , char * i_pMediaPath, QWidget *parent):
   QWidget(parent){
 
   m_bIsFM = true;
   m_fCurrentFM = 107.5;
   m_fCurrentAM = 97.5;
 
-  m_screenSize = i_screenSize;
+  m_ScreenSize = i_ScreenSize;
   char l_cPathToFile[MAX_PATH_LENGTH];
 
   // Return Button
-  strcpy(l_cPathToFile, media_path);
+  strcpy(l_cPathToFile, i_pMediaPath);
   strcat(l_cPathToFile, "icons/goUp.png");
   QIcon l_returnIcon(l_cPathToFile);
-  m_returnButton = new QPushButton(this);
-  m_returnButton->setIcon(l_returnIcon);
-  m_returnButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
-  m_returnButton->setFlat(true);
-  m_returnButton->setGeometry(transformResolution(2*DEFAULT_SCREEN_WIDTH/5,
+  m_ReturnButton = new QPushButton(this);
+  m_ReturnButton->setIcon(l_returnIcon);
+  m_ReturnButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
+  m_ReturnButton->setFlat(true);
+  m_ReturnButton->setGeometry(TransformResolution(2*DEFAULT_SCREEN_WIDTH/5,
 						  0,
 						  BIG_BUTTON_WIDTH,
 						  BIG_BUTTON_HEIGHT));
 
   // ForwardButton
-  strcpy(l_cPathToFile, media_path);
+  strcpy(l_cPathToFile, i_pMediaPath);
   strcat(l_cPathToFile, "icons/forward.png");
-  QIcon l_forwardIcon(l_cPathToFile);
-  m_increaseButton = new QPushButton(this);
-  m_increaseButton->setIcon(l_forwardIcon);
-  m_increaseButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
-  m_increaseButton->setFlat(true);
-  m_increaseButton->setGeometry(transformResolution(3*DEFAULT_SCREEN_WIDTH/5,
+  QIcon l_ForwardIcon(l_cPathToFile);
+  m_IncreaseButton = new QPushButton(this);
+  m_IncreaseButton->setIcon(l_ForwardIcon);
+  m_IncreaseButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
+  m_IncreaseButton->setFlat(true);
+  m_IncreaseButton->setGeometry(TransformResolution(3*DEFAULT_SCREEN_WIDTH/5,
 						   2*DEFAULT_SCREEN_HEIGHT/5,
 						   BIG_BUTTON_WIDTH,
 						   BIG_BUTTON_HEIGHT));
 
   // Backward Button
-  strcpy(l_cPathToFile, media_path);
+  strcpy(l_cPathToFile, i_pMediaPath);
   strcat(l_cPathToFile, "icons/back.png");
-  QIcon l_backwardIcon(l_cPathToFile);
-  m_decreaseButton = new QPushButton(this);
-  m_decreaseButton->setIcon(l_backwardIcon);
-  m_decreaseButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
-  m_decreaseButton->setFlat(true);
-  m_decreaseButton->setGeometry(transformResolution(DEFAULT_SCREEN_WIDTH/5,
+  QIcon l_BackwardIcon(l_cPathToFile);
+  m_DecreaseButton = new QPushButton(this);
+  m_DecreaseButton->setIcon(l_BackwardIcon);
+  m_DecreaseButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
+  m_DecreaseButton->setFlat(true);
+  m_DecreaseButton->setGeometry(TransformResolution(DEFAULT_SCREEN_WIDTH/5,
 						    2*DEFAULT_SCREEN_HEIGHT/5,
 						    BIG_BUTTON_WIDTH,
 						    BIG_BUTTON_HEIGHT));
   // Toggle Button
-  strcpy(l_cPathToFile, media_path);
+  strcpy(l_cPathToFile, i_pMediaPath);
   strcat(l_cPathToFile, "icons/fm.png");
   m_fmIcon = QIcon(l_cPathToFile);
-  strcpy(l_cPathToFile, media_path);
+  strcpy(l_cPathToFile, i_pMediaPath);
   strcat(l_cPathToFile, "icons/am.png");
   m_amIcon = QIcon(l_cPathToFile);
-  m_toggleAMFMButton = new QPushButton(this);
-  m_toggleAMFMButton->setIcon(m_fmIcon);
-  m_toggleAMFMButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5-100, DEFAULT_SCREEN_HEIGHT/5-100));
-  m_toggleAMFMButton->setCheckable(true);
-  m_toggleAMFMButton->setGeometry(transformResolution(2*DEFAULT_SCREEN_WIDTH/5,
+  m_ToggleAMFMButton = new QPushButton(this);
+  m_ToggleAMFMButton->setIcon(m_fmIcon);
+  m_ToggleAMFMButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5-100, DEFAULT_SCREEN_HEIGHT/5-100));
+  m_ToggleAMFMButton->setCheckable(true);
+  m_ToggleAMFMButton->setGeometry(TransformResolution(2*DEFAULT_SCREEN_WIDTH/5,
 						      3*DEFAULT_SCREEN_HEIGHT/5,
 						      DEFAULT_SCREEN_WIDTH/5,
 						      DEFAULT_SCREEN_HEIGHT/5));
 
 
   // Info
-  m_stationIndicator = new QTextEdit("107.5 FM", this);
-  m_stationIndicator->setGeometry(transformResolution(2*DEFAULT_SCREEN_WIDTH/5,
+  m_StationIndicator = new QTextEdit("107.5 FM", this);
+  m_StationIndicator->setGeometry(TransformResolution(2*DEFAULT_SCREEN_WIDTH/5,
 						      2*DEFAULT_SCREEN_HEIGHT/5,
 						      DEFAULT_SCREEN_WIDTH/5,
 						      DEFAULT_SCREEN_HEIGHT/5));
   
-  m_stationIndicator->setReadOnly(true);
-  m_stationIndicator->setFontPointSize(transformFontSize(60));
-  m_stationIndicator->setAlignment(Qt::AlignCenter);
-  m_stationIndicator->setText("107.5");
-  m_stationIndicator->setAlignment(Qt::AlignCenter);
+  m_StationIndicator->setReadOnly(true);
+  m_StationIndicator->setFontPointSize(TransformFontSize(60));
+  m_StationIndicator->setAlignment(Qt::AlignCenter);
+  m_StationIndicator->setText("107.5");
+  m_StationIndicator->setAlignment(Qt::AlignCenter);
   
 
   // Do the connection
   
-  connect(m_decreaseButton, SIGNAL(clicked()), this, SLOT(goDecrease()) );
+  connect(m_DecreaseButton, SIGNAL(clicked()), this, SLOT(GoDecrease()) );
 
-  connect(m_increaseButton, SIGNAL(clicked()), this, SLOT(goIncrease()) );
+  connect(m_IncreaseButton, SIGNAL(clicked()), this, SLOT(GoIncrease()) );
 
-  connect(m_toggleAMFMButton, SIGNAL(clicked()), this, SLOT(toggleAMFM()) );
+  connect(m_ToggleAMFMButton, SIGNAL(clicked()), this, SLOT(ToggleAMFM()) );
 }
 
 // To simplify the fact that this should work with many resolutions
 // Lets assume that we always use a 1366x768, and use thisfunction
 // to get the real values.
 QRect
-RadioWindow::transformResolution(int x, int y, int width, int height){
+RadioWindow::TransformResolution(int x, int y, int width, int height){
   // THis function should only be called once we have the resolution
-  float new_x = ((float) x)/DEFAULT_SCREEN_WIDTH*((float)m_screenSize.width());
-  float new_y = ((float) y)/DEFAULT_SCREEN_HEIGHT*((float)m_screenSize.height());
+  float new_x = ((float) x)/DEFAULT_SCREEN_WIDTH*((float)m_ScreenSize.width());
+  float new_y = ((float) y)/DEFAULT_SCREEN_HEIGHT*((float)m_ScreenSize.height());
 
-  float new_width = ((float) width)/DEFAULT_SCREEN_WIDTH*((float)m_screenSize.width());
-  float new_height = ((float) height)/DEFAULT_SCREEN_HEIGHT*((float)m_screenSize.height());
+  float new_width = ((float) width)/DEFAULT_SCREEN_WIDTH*((float)m_ScreenSize.width());
+  float new_height = ((float) height)/DEFAULT_SCREEN_HEIGHT*((float)m_ScreenSize.height());
 
   return QRect((int)new_x, (int)new_y, (int)new_width, (int)new_height);
 }
 
 int
-RadioWindow::transformFontSize(int i_iSize){
-  float l_fMean = m_screenSize.width()*0.5+m_screenSize.height()*0.5;
+RadioWindow::TransformFontSize(int i_iSize){
+  float l_fMean = m_ScreenSize.width()*0.5+m_ScreenSize.height()*0.5;
   return (int) i_iSize*2.0f/(DEFAULT_SCREEN_WIDTH+DEFAULT_SCREEN_HEIGHT)*l_fMean;
 }
 
 // Slots
 
-void RadioWindow::goIncrease(){
+void RadioWindow::GoIncrease(){
   if (m_bIsFM){
     m_fCurrentFM+=0.5;
   }
   else {
     m_fCurrentAM+=0.5;
   }
-  updateStationIndicator();
+  UpdateStationIndicator();
 }
 
-void RadioWindow::goDecrease(){
+void RadioWindow::GoDecrease(){
   if (m_bIsFM){
     m_fCurrentFM-=0.5;
   }
   else {
     m_fCurrentAM-=0.5;
   }
-    updateStationIndicator();
+    UpdateStationIndicator();
 }
 
-void RadioWindow::toggleAMFM(){
+void RadioWindow::ToggleAMFM(){
   m_bIsFM = !m_bIsFM;
-  updateStationIndicator();
+  UpdateStationIndicator();
 }
 
 
-void RadioWindow::updateStationIndicator(){
+void RadioWindow::UpdateStationIndicator(){
   QString newIndicator;
   if (m_bIsFM){
     newIndicator = QString("%1").arg(m_fCurrentFM);
-    m_toggleAMFMButton->setIcon(m_fmIcon);
-    m_toggleAMFMButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5-100, DEFAULT_SCREEN_HEIGHT/5-100));
+    m_ToggleAMFMButton->setIcon(m_fmIcon);
+    m_ToggleAMFMButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5-100, DEFAULT_SCREEN_HEIGHT/5-100));
   }
   else {
     newIndicator = QString("%1").arg(m_fCurrentAM);
-    m_toggleAMFMButton->setIcon(m_amIcon);
-    m_toggleAMFMButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5-100, DEFAULT_SCREEN_HEIGHT/5-100));
+    m_ToggleAMFMButton->setIcon(m_amIcon);
+    m_ToggleAMFMButton->setIconSize(QSize(DEFAULT_SCREEN_WIDTH/5-100, DEFAULT_SCREEN_HEIGHT/5-100));
 
   }
-  m_toggleAMFMButton->setGeometry(transformResolution(2*DEFAULT_SCREEN_WIDTH/5,
+  m_ToggleAMFMButton->setGeometry(TransformResolution(2*DEFAULT_SCREEN_WIDTH/5,
 						      3*DEFAULT_SCREEN_HEIGHT/5,
 						      DEFAULT_SCREEN_WIDTH/5,
 						      DEFAULT_SCREEN_HEIGHT/5));
-  m_stationIndicator->setText(newIndicator);
+  m_StationIndicator->setText(newIndicator);
 }
