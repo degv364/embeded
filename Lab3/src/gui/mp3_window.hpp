@@ -42,51 +42,48 @@
 class Mp3Window : public QWidget{
   Q_OBJECT  
 public:
-  explicit Mp3Window(QRect i_screenSize, status_message* i_pStatusMessage,
-		     char*  media_path, QWidget *parent = 0);
+  explicit Mp3Window(QRect i_ScreenSize, status_message* i_pStatusMessage,
+		     char*  i_pMediaPath, QWidget *parent = 0);
 
-  QPushButton* ReturnButton(){return m_returnButton;};
-  void stopSong(void){return stop();};						    
+  QPushButton* ReturnButton(){return m_ReturnButton;};
+  void StopSong(void){return Stop();};						    
 				      
 private slots:
-  void goNext();
-  void goPrev();
-  void play_pause();
-  void stop();
-  void updateProgress();
+  void GoNext();
+  void GoPrev();
+  void PlayPause();
+  void Stop();
+  void UpdateProgress();
   
 private:
 
   void InitializeFileNames(void);
   void InitializeFileTimes(void);
-  QRect transformResolution(int x, int y, int width, int height);
-  void updateSongIndicator();
+  QRect TransformResolution(int x, int y, int width, int height);
+  void UpdateSongIndicator();
 
-  bool playing;
+  bool m_bPlaying;
 
-  int currentSong;
+  int m_iCurrentSong;
   float m_fProgress;
   int m_iShownProgress;
 
-  QIcon m_playIcon;
-  QIcon m_pauseIcon;
-  //QIcon *m_likeIcon;
-  //QIcon *m_likedIcon;
+  QIcon m_PlayIcon;
+  QIcon m_PauseIcon;
 
-  QPushButton *m_returnButton;
-  QPushButton *m_nextButton;
-  QPushButton *m_prevButton;
-  QPushButton *m_playButton;
-  //QPushButton *m_pauseButton;
-  QPushButton *m_stopButton;
+  QPushButton *m_ReturnButton;
+  QPushButton *m_NextButton;
+  QPushButton *m_PrevButton;
+  QPushButton *m_PlayButton;
+  QPushButton *m_StopButton;
 
-  QTimer *m_timer;
-  QProgressBar* m_songProgressBar;
+  QTimer *m_Timer;
+  QProgressBar* m_SongProgressBar;
   
   // This is QT5 specific. Can we use that with yocto?
-  QRect m_screenSize;
+  QRect m_ScreenSize;
   
-  QTextEdit *m_songIndicator;
+  QTextEdit *m_SongIndicator;
 
   status_message* m_pStatusMessage;
 

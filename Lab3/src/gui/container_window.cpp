@@ -108,7 +108,7 @@ ContainerWindow::ShowMp3(){
 
 void
 ContainerWindow::ReturnFromMp3(){
-  Mp3->stopSong();
+  Mp3->StopSong();
   m_Mp3ToWelcome->start();
 }
 
