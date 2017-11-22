@@ -1,0 +1,86 @@
+\input{../../general/doc/preamble.tex}
+\begin{document}
+%Header-Make sure you update this information!!!!
+\noindent
+\large\textbf{Laboratorio III: reporte} \hfill Laboratorio de sistemas Incrustados \\
+\normalsize Esteban Zamora Alvarado \hfill Carné: B47769 \\
+Daniel Esteban García Vaglio \hfill Carné: B42781 \\
+Profesor: Esteban Ortiz  \hfill Fecha: 20-Setiembre-2017 \\
+
+\section{Problema a Resolver}
+\label{sec:Problem}
+Se debe diseñar e implementar un sistema de radio para automóviles. Esto implica realizar la
+interfaz gráfica, y una interfaz de audio. Para Poder realizar la prueba de concepto del sistema, es
+necesario generar una imagen de linux embebido para ARM, y ejecutarlo con QEMU. 
+
+\section{Contexto de Mercado}
+\label{sec:Context}
+
+\section{Solución Propuesta}
+\label{sec:solution}
+Para la interfaz gráfica se propone utilizar Qt. Esta tiene un conjunto de bibliotecas que permite
+el desarrollo rápido de interfaces gráficas de buen aspecto. Además ya existen recetas para YOCTO
+que facilitan el desarrollo para sistemas embebidos. Para la interfaz de audio se utiliza Gstreamer
+por razones parecidas.
+
+El sistema está diseñado para ser lo más modular posible. de manera que se puedan hacer cambios en
+los componentes sin que se afecte al sistema completo. De esta manera la interfaz gráfica y la
+interfaz de audio se ejecutan por aparte, cada uno con su propio thread principal. Se utilizan
+mensajes de coordinación entre ambos, que definen la interfaz de interconexión.
+
+La interfaz de audio es una máquina de estados (que utiliza los mismos estados definidos para el
+pipeline de GStreamer). Y se utiliza un pipeline simple para poder tomar archivos mp3 de memoria,
+decodificarlos, y reproducirlos.
+
+La interfaz gráfica se divide en clases. Una clase para cada pantalla: inicio, radio, mp3. De igual
+manera se implementaron de la manera más independiente posible. 
+
+%--------------------------------
+\section{Implementación}
+\label{sec:implementation}
+
+%-------------------------------
+\subsection{Interfaz Gráfica (Qt)}
+\label{sec:qt}
+
+\subsection{Interfaz de Audio (GStreamer)}
+\label{sec:gstramer}
+
+
+
+\subsection{Yocto}
+\label{sec:yocto}
+
+
+%-------------------------------
+\section{Problemas encontrados y posibles mejoras}
+\label{sec:possible_fixes}
+% -------------------------------
+
+
+
+%
+%\begin{figure}
+%  \centering
+%\scalebox{.75}{\input{data_flow.tex}}
+%\caption{Diagrama de Flujo de datos}
+%\label{fig:data_flow}
+%\end{figure}
+
+
+%----------------------
+\textbf{ Bibliografía}
+% ----------------------
+
+Technical Reference manual, MSP432P4XX Simple Link Microcontrollers. Texas Instruments. Marzo 2017.
+
+MSP432 Peripheral Driver Library. Users Guide. Texas Instruments. 2015.
+
+BOOSTXL-EDUMKII Educational BoosterPack, Module Mark II. Texas Instruments. Marzo 2017.
+
+Zazu kids voice activated night licht. Amazon.com Tomado 18 setiembre 2017.
+
+%\bibliographystyle{apacite}
+%\bibliography{../general/biblografia.bib}
+%---------------------------------------------------------------------------------------------------------------
+\end{document}
