@@ -27,8 +27,8 @@ AudioServer (status_message* i_pStatusMessage, char* i_pMediaPath){
     return;
   }
 
-  MP3Handler l_handler(i_pStatusMessage, i_pMediaPath);
-  l_handler.Setup();
-  l_handler.Loop();
-  l_handler.Deinit();
+  MP3Handler l_Handler(i_pStatusMessage, i_pMediaPath);
+  l_Handler.Setup();
+  l_Handler.Loop();
+  l_Handler.Deinit();
 }

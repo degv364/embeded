@@ -19,11 +19,11 @@
 
 #include "mp3_handler.hpp"
 
-MP3Handler::MP3Handler(status_message* i_pStatusMessage, char* media_path){
+MP3Handler::MP3Handler(status_message* i_pStatusMessage, char* i_pMediaPath){
   m_bTerminate = false;
   m_pStatusMessage = i_pStatusMessage;
   m_iCurrentSong = 0;
-  strcpy(m_MediaPath, media_path);
+  strcpy(m_MediaPath, i_pMediaPath);
   strcat(m_MediaPath, "music/");
 }
 
@@ -97,18 +97,18 @@ MP3Handler::HandleInternalMessage(void){
   m_InternalMsg = gst_bus_pop (m_Bus);
   /* Parse message */
   if (m_InternalMsg != NULL) {
-    GError *err;
-    gchar *debug_info;
+    GError *l_Err;
+    gchar *l_pDebugInfo;
     
     switch (GST_MESSAGE_TYPE (m_InternalMsg)) {
     case GST_MESSAGE_ERROR:
       g_printerr("***Error ocurred***\n");
       l_bHandledErrors = true;
-      gst_message_parse_error (m_InternalMsg, &err, &debug_info);
-      g_printerr ("Error received from element %s: %s\n", GST_OBJECT_NAME (m_InternalMsg->src), err->message);
-      g_printerr ("Debugging information: %s\n", debug_info ? debug_info : "none");
-      g_clear_error (&err);
-      g_free (debug_info);
+      gst_message_parse_error (m_InternalMsg, &l_Err, &l_pDebugInfo);
+      g_printerr ("Error received from element %s: %s\n", GST_OBJECT_NAME (m_InternalMsg->src), l_Err->message);
+      g_printerr ("Debugging information: %s\n", l_pDebugInfo ? l_pDebugInfo : "none");
+      g_clear_error (&l_Err);
+      g_free (l_pDebugInfo);
       m_bTerminate = true;
       break;
     case GST_MESSAGE_EOS:

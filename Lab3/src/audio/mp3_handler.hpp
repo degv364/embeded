@@ -58,7 +58,7 @@ private:
   void InitializeFilePaths(void);
 
 public:
-  MP3Handler(status_message* i_pStatusMessage, char* media_path);
+  MP3Handler(status_message* i_pStatusMessage, char* i_pMediaPath);
 
   bool Setup(void);
 
