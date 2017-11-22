@@ -38,14 +38,58 @@ manera se implementaron de la manera más independiente posible.
 %--------------------------------
 \section{Implementación}
 \label{sec:implementation}
-
 %-------------------------------
 \subsection{Interfaz Gráfica (Qt)}
 \label{sec:qt}
 
+A pesar que Qt proporciona herramientas para facilitar el desarrollo y configuración de interfaces
+gráficas como Qt creator, y QML, estas no se utilizaron. Esta medida se tomó para facilitar la parte
+de incorporar la aplicación a Yocto. Entonces la aplicación completa se puede compilar como un
+programa normal de C++ (linkeado a bibliotecas de Qt5). En general se evitan las palabras en los
+botones. La gran mayoría utilizan íconos, de esta manera la interfaz es más intuitiva para el
+usuario. Estos se consiguieron de una página que los ofrece de forma libre. %FIXME: add link
+
+Se definen 4 clases. La primera es un contenedor que se encarga de definir la interfaz entre las
+pantallas con las que interactúa el usuario. En esta se tiene los Slots que manejan la transición
+entre las distintas pantallas, a saber: bienvenida, radio, mp3.
+
+La pantalla de bienvenida es la más simple. Esta consta de dos botones. El primero despliega la
+pantalla de control de radio, y el otro despliega la pantalla de control de Mp3. La pantalla de
+radio es un poco más compleja. En esta se tiene el texto principal que despliega la emisora
+seleccionada, un selector de AM y FM, botones para seleccionar la emisora y un botón para devolverse
+a la pantalla de inicio. Se mantienen dos contadores, uno para FM y el otro para AM. Cuando se
+presiona los botones de búsqueda se incrementa o decrementa apropiadamente el contador, y se
+actualiza el valor desplegado en el texto principal.
+
+La pantalla de Mp3 es la más compleja. En esta se tiene también un texto principal, donde se
+despliega el nombre de la canción seleccionada. Se tienen los botones para seleccionar la canción y
+el botón de play-pausa, y el de stop. La lógica para seleccionar la canción es muy parecido al de
+selección de emisora, solo que en este caso el contador es el índice de un array con los nombres de
+las canciones. Los botones en esta pantalla además de actualizar la visualización de la interfaz
+también envían mensajes al thread de audio. En este mensaje se envía la acción que se debe realizar
+(play, pause, stop, cambiar de canción), de manera que el audio se sincronice con la interfaz
+gráfica. 
+
 \subsection{Interfaz de Audio (GStreamer)}
 \label{sec:gstramer}
+Las canciones para esta parte se tomaron de una fuente que ofrece música de licencia libre. %Fixme
+                                %add link
 
+
+Para la interfaz de Audio se tiene un thread por aparte. Este es un ciclo de control con una
+frecuencia determinada que se encarga estar escuchando constantemente los mensajes de la interfaz
+gráfica para modificar su estado apropiadamente. Cada uno de los botones de la pantalla de Mp3 envía
+el comando que corresponde a su acción. El de play hace que el pipeline comience a ejecutarse, el se
+pause provoca la pausa. El botón de stop provoca que se detenga la ejecución y que se retorne al
+inicio de la canción. Los botones de búsqueda, hacia adelante y hacia atrás, envían el comando de
+incrementar o decrementar el índice de la canción. Para lograrlo primero se hace Stop, y luego se
+carga el nuevo archivo en al fuente del pipeline. 
+
+El pipeline consta de 5 etapas. La primera el se source (filesrc), que toma el archivo y lo alista
+para el resto del Pipeline. Luego se tiene el parser (mpegaudioparse), que hace un preprocesamiento
+que se necesita por trabajar con MP3. La tercera etapa es el decodificador (mpg123audiodec), y este
+se conecta con el converidor (audioconvert). Para este punto el stream está listo para la interfaz
+de audio, entonces se utiliza pulsesink para conectarlo con pulseaudio. 
 
 
 \subsection{Yocto}
