@@ -10,7 +10,7 @@ Profesor: Esteban Ortiz  \hfill Fecha: 20-Setiembre-2017 \\
 \section{Problema a Resolver}
 \label{sec:Problem}
 Se debe diseñar e implementar un sistema de radio para automóviles. Esto implica realizar la
-interfaz gráfica, y una interfaz de audio. Para Poder realizar la prueba de concepto del sistema, es
+interfaz gráfica, y una interfaz de audio. Para poder realizar la prueba de concepto del sistema, es
 necesario generar una imagen de linux embebido para ARM, y ejecutarlo con QEMU. 
 
 \section{Contexto de Mercado}
@@ -18,7 +18,7 @@ necesario generar una imagen de linux embebido para ARM, y ejecutarlo con QEMU.
 
 \section{Solución Propuesta}
 \label{sec:solution}
-Para la interfaz gráfica se propone utilizar Qt. Esta tiene un conjunto de bibliotecas que permite
+Para la interfaz gráfica se propone utilizar Qt5. Esta tiene un conjunto de bibliotecas que permite
 el desarrollo rápido de interfaces gráficas de buen aspecto. Además ya existen recetas para YOCTO
 que facilitan el desarrollo para sistemas embebidos. Para la interfaz de audio se utiliza Gstreamer
 por razones parecidas.
@@ -34,6 +34,13 @@ decodificarlos, y reproducirlos.
 
 La interfaz gráfica se divide en clases. Una clase para cada pantalla: inicio, radio, mp3. De igual
 manera se implementaron de la manera más independiente posible. 
+
+Para la generación de la imagen de Linux embebido con Yocto se propone
+configurar la imagen para que sea lo más sencilla posible, de forma que solo
+cargue los módulos básicos del sistema operativo para poder ejecutar la
+aplicación gráfica de Qt del sistema de radio y ser capaz de reproducir el audio
+de las canciones .mp3.  
+
 
 %--------------------------------
 \section{Implementación}
@@ -75,7 +82,6 @@ gráfica.
 Las canciones para esta parte se tomaron de una fuente que ofrece música de licencia libre. %Fixme
                                 %add link
 
-
 Para la interfaz de Audio se tiene un thread por aparte. Este es un ciclo de control con una
 frecuencia determinada que se encarga estar escuchando constantemente los mensajes de la interfaz
 gráfica para modificar su estado apropiadamente. Cada uno de los botones de la pantalla de Mp3 envía
@@ -94,12 +100,76 @@ de audio, entonces se utiliza pulsesink para conectarlo con pulseaudio.
 
 \subsection{Yocto}
 \label{sec:yocto}
+Para la generación de la imagen de GNU/Linux con Yocto se optó por utilizar la
+arquitectura ARM de forma que el sistema implementado pueda llegar a ejecutarse
+fácilmente en las microcomputadoras más comunes del mercado para este tipo de
+aplicación.
+
+Para la configuración de la imagen de Linux y de la aplicación se utilizan
+recetas de Bitbake (.bb) ubicadas en un Layer de Yocto creado para este objetivo, el cual
+se denominó \texttt{meta-radio}. La imagen configurada se denomina
+\texttt{radio-car-image} y se encuentra basada en la clase \texttt{core-image}
+de forma que solo se partiera del sistema básico para así tener que especificar solo los demás
+componentes requerido por la aplicación, tales como el sistema básico de X11, el
+soporte para audio, Gstreamer y los paquetes de Qt5.
+
+Con respecto a la receta de la aplicación, esta se denomina \texttt{qt-radio} y
+hereda de las clases \texttt{qmake5} y \texttt{systemd}, lo cual le permite
+construir el binario de la aplicación de Qt5 en la imagen así como instalar el servicio de sistema
+correspondiente (para iniciar la aplicación de manera automática al bootear el sistema), respectivamente.
+
+Para el sistema de servicios de la imagen se optó por utilizar \texttt{systemd},
+el cual corresponde a la alternativa moderna de \texttt{sysvinit}, de forma que
+optimiza de mejor manera las dependencias entre los servicios y la ejecución de
+los mismos para lograr un menor tiempo de booteo.
+
+Para la aplicación del radio en cuestión, se optimizó el tiempo de booteo
+estableciendo como dependencia solo la carga del sistema de archivos, en lugar
+de las dependencias por defecto establecidas por systemd.
+
+Con respecto a esta aplicación, el servicio de \texttt{systemd} implementado
+ejecuta el servidor X mediante el comando \texttt{startx}, de manera que no se
+ocupa cargar el programa \texttt{xterm} para levantar el servidor gráfico si no
+que se puede cargar la aplicación implementada desde la terminal no gráfica.
+
+Para la ejecución del audio en el sistema, se optó por utilizar el servidor
+\texttt{Pulseaudio}, tal como es común en la mayor parte de distribuciones de
+Linux. Este servidor se comunica con el módulo de \texttt{alsa} para reproducir
+el audio en la tarjeta de sonido. Para lograr reproducir el audio en la
+computadora host de QEMU, la solución que se tuvo fue habilitar el módulo de la
+tarjeta de sonido y el driver AC97 en la configuración del kernel de la imagen,
+lo que permitió que se reconociera una tarjeta de sonido en el sistema emulado y
+así lograr redirigir el audio hacia el host.
+
+El layer de Yocto con las recetas correspondientes, se puede encontrar en el
+subdirectorio \texttt{Lab3/Yocto} del repositorio de Git.
 
 
 %-------------------------------
 \section{Problemas encontrados y posibles mejoras}
 \label{sec:possible_fixes}
 % -------------------------------
+Con respecto a la ejecución de la aplicación en la imagen de Linux generada, la
+principal dificultad que se tuvo fue lograr ejecutar el audio en el sistema
+emulado mediante QEMU. En primer lugar, fue necesario forzar la carga de los
+drivers de una tarjeta de sonido a la configuración del kernel. Además, para
+lograr la reproducción del mismo el host, se ocupó utilizar la versión de QEMU
+instalada en el sistema del host y no la brindada por Yocto, ya que de otra
+manera el audio no se escuchaba pero sin mostrar ningún error.
+
+A pesar de que se logró reproducir en la imagen el audio de las canciones .mp3 de la
+aplicación, al momento de la entrega del laboratorio no fue posible lograr que
+el mismo se activara automáticamente en el booteo, sino que era necesario
+cargar el daemon de Pulseaudio de manera manual para lograr percibir el
+sonido.
+
+Se observó que esto puede estar relacionado con el hecho de que el
+usuario root por defecto no carga este servidor al no se algo común en los
+sistemas que utilizan Pulseaudio (normalmente se tiene un usuario sin
+privilegios de superadministrador), por lo que luego se intentará configurar
+esta opción para el usuario root y que así se pueda tener la funcionalidad
+completa de la aplicación desde el booteo del sistema.
+
 
 
 
