@@ -31,6 +31,9 @@ RadioWindow::RadioWindow(QRect i_ScreenSize , char * i_pMediaPath, QWidget *pare
   m_ScreenSize = i_ScreenSize;
   char l_cPathToFile[MAX_PATH_LENGTH];
 
+  //QLabel *label = new QLabel(this);
+  //label->setText("first line\nsecond line");
+
   // Return Button
   strcpy(l_cPathToFile, i_pMediaPath);
   strcat(l_cPathToFile, "icons/goUp.png");
@@ -87,17 +90,19 @@ RadioWindow::RadioWindow(QRect i_ScreenSize , char * i_pMediaPath, QWidget *pare
 
 
   // Info
-  m_StationIndicator = new QTextEdit("107.5 FM", this);
+  m_StationIndicator = new QLabel( this);
   m_StationIndicator->setGeometry(TransformResolution(2*DEFAULT_SCREEN_WIDTH/5,
 						      2*DEFAULT_SCREEN_HEIGHT/5,
 						      DEFAULT_SCREEN_WIDTH/5,
 						      DEFAULT_SCREEN_HEIGHT/5));
-  
-  m_StationIndicator->setReadOnly(true);
-  m_StationIndicator->setFontPointSize(TransformFontSize(60));
+  QFont l_Font = m_StationIndicator->font();
+  l_Font.setPointSize(TransformFontSize(60));
+  l_Font.setBold(true);
+  m_StationIndicator->setFont(l_Font);
   m_StationIndicator->setAlignment(Qt::AlignCenter);
   m_StationIndicator->setText("107.5");
   m_StationIndicator->setAlignment(Qt::AlignCenter);
+  m_StationIndicator->setStyleSheet("color: white");
   
 
   // Do the connection

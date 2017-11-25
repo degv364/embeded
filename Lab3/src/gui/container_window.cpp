@@ -30,11 +30,18 @@ ContainerWindow::ContainerWindow(status_message* i_pStatusMessage, char* l_cMedi
   m_ScreenSize = l_Screen->geometry();
 
   m_MainLabel = new QLabel(this);
+  //Back gorund path
   char l_cPathToBackground[MAX_PATH_LENGTH];
   strcpy(l_cPathToBackground, l_cMediaPath);
   strcat(l_cPathToBackground, "leather_metal.jpg");
+  // Initialize backgorund
   QPixmap BackgroundImage(l_cPathToBackground);
   BackgroundImage = BackgroundImage.scaled(m_ScreenSize.width(),m_ScreenSize.height());
+  //Darken back ground to improve contrast with GUI
+  QPainter l_BackgroundPainter(&BackgroundImage);
+  QBrush l_BackgroundBrush(QColor(0,0,0,128)); //R,G,B,alpha 
+  l_BackgroundPainter.setBrush(l_BackgroundBrush);
+  l_BackgroundPainter.drawRect(0, 0, m_ScreenSize.width(),m_ScreenSize.height());
   m_MainLabel->setPixmap(BackgroundImage);
   m_MainLabel->setGeometry(TransformResolution(0,0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
   
