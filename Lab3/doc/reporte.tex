@@ -1,0 +1,209 @@
+\input{../../general/doc/preamble.tex}
+\begin{document}
+%Header-Make sure you update this information!!!!
+\noindent
+\large\textbf{Laboratorio III: reporte} \hfill Laboratorio de sistemas Incrustados \\
+\normalsize Esteban Zamora Alvarado \hfill Carné: B47769 \\
+Daniel Esteban García Vaglio \hfill Carné: B42781 \\
+Profesor: Esteban Ortiz  \hfill Fecha: 20-Setiembre-2017 \\
+
+\section{Problema a Resolver}
+\label{sec:Problem}
+Se debe diseñar e implementar un sistema de radio para automóviles. Esto implica realizar la
+interfaz gráfica, y una interfaz de audio. Para poder realizar la prueba de concepto del sistema, es
+necesario generar una imagen de linux embebido para ARM, y ejecutarlo con QEMU. 
+
+\section{Contexto de Mercado}
+\label{sec:Context}
+Existen varias opciones en el mercado para radios de autos, en particular destacan los que utilizan
+android. Estos utilizan un sistema operativo ya conocido para la mayoría de los usuarios como lo es
+Android y lo incorporan al radio del carro. Estos radios son fáciles de usar y utilizan un sistema
+muy robusto y probado. Los precios tiene mucha variación, van desde 8 mil hasta medio millón de
+colones.
+
+Otra alternativa, es utilizar un radio simple sin pantalla, pero con bluetooth. Ahora que los
+celulares son cada vez más comunes, se está apostando por quitar la interfaz gráfica del radio del
+carro y proporcionar una App para controlar el radio desde el celular.  
+
+
+\section{Solución Propuesta}
+\label{sec:solution}
+Para la interfaz gráfica se propone utilizar Qt5. Esta tiene un conjunto de bibliotecas que permite
+el desarrollo rápido de interfaces gráficas de buen aspecto. Además ya existen recetas para YOCTO
+que facilitan el desarrollo para sistemas embebidos. Para la interfaz de audio se utiliza Gstreamer
+por razones parecidas.
+
+El sistema está diseñado para ser lo más modular posible. de manera que se puedan hacer cambios en
+los componentes sin que se afecte al sistema completo. De esta manera la interfaz gráfica y la
+interfaz de audio se ejecutan por aparte, cada uno con su propio thread principal. Se utilizan
+mensajes de coordinación entre ambos, que definen la interfaz de interconexión.
+
+La interfaz de audio es una máquina de estados (que utiliza los mismos estados definidos para el
+pipeline de GStreamer). Y se utiliza un pipeline simple para poder tomar archivos mp3 de memoria,
+decodificarlos, y reproducirlos.
+
+La interfaz gráfica se divide en clases. Una clase para cada pantalla: inicio, radio, mp3. De igual
+manera se implementaron de la manera más independiente posible. 
+
+Para la generación de la imagen de Linux embebido con Yocto se propone
+configurar la imagen para que sea lo más sencilla posible, de forma que solo
+cargue los módulos básicos del sistema operativo para poder ejecutar la
+aplicación gráfica de Qt del sistema de radio y ser capaz de reproducir el audio
+de las canciones .mp3.  
+
+
+%--------------------------------
+\section{Implementación}
+\label{sec:implementation}
+%-------------------------------
+\subsection{Interfaz Gráfica (Qt)}
+\label{sec:qt}
+
+A pesar que Qt proporciona herramientas para facilitar el desarrollo y configuración de interfaces
+gráficas como Qt creator, y QML, estas no se utilizaron. Esta medida se tomó para facilitar la parte
+de incorporar la aplicación a Yocto. Entonces la aplicación completa se puede compilar como un
+programa normal de C++ (linkeado a bibliotecas de Qt5). En general se evitan las palabras en los
+botones. La gran mayoría utilizan íconos, de esta manera la interfaz es más intuitiva para el
+usuario. Estos se consiguieron de una página que los ofrece de forma libre. %FIXME: add link
+
+Se definen 4 clases. La primera es un contenedor que se encarga de definir la interfaz entre las
+pantallas con las que interactúa el usuario. En esta se tiene los Slots que manejan la transición
+entre las distintas pantallas, a saber: bienvenida, radio, mp3.
+
+La pantalla de bienvenida es la más simple. Esta consta de dos botones. El primero despliega la
+pantalla de control de radio, y el otro despliega la pantalla de control de Mp3. La pantalla de
+radio es un poco más compleja. En esta se tiene el texto principal que despliega la emisora
+seleccionada, un selector de AM y FM, botones para seleccionar la emisora y un botón para devolverse
+a la pantalla de inicio. Se mantienen dos contadores, uno para FM y el otro para AM. Cuando se
+presiona los botones de búsqueda se incrementa o decrementa apropiadamente el contador, y se
+actualiza el valor desplegado en el texto principal.
+
+La pantalla de Mp3 es la más compleja. En esta se tiene también un texto principal, donde se
+despliega el nombre de la canción seleccionada. Se tienen los botones para seleccionar la canción y
+el botón de play-pausa, y el de stop. La lógica para seleccionar la canción es muy parecido al de
+selección de emisora, solo que en este caso el contador es el índice de un array con los nombres de
+las canciones. Los botones en esta pantalla además de actualizar la visualización de la interfaz
+también envían mensajes al thread de audio. En este mensaje se envía la acción que se debe realizar
+(play, pause, stop, cambiar de canción), de manera que el audio se sincronice con la interfaz
+gráfica. 
+
+\subsection{Interfaz de Audio (GStreamer)}
+\label{sec:gstramer}
+Las canciones para esta parte se tomaron de una fuente que ofrece música de licencia libre. %Fixme
+                                %add link
+
+Para la interfaz de Audio se tiene un thread por aparte. Este es un ciclo de control con una
+frecuencia determinada que se encarga estar escuchando constantemente los mensajes de la interfaz
+gráfica para modificar su estado apropiadamente. Cada uno de los botones de la pantalla de Mp3 envía
+el comando que corresponde a su acción. El de play hace que el pipeline comience a ejecutarse, el se
+pause provoca la pausa. El botón de stop provoca que se detenga la ejecución y que se retorne al
+inicio de la canción. Los botones de búsqueda, hacia adelante y hacia atrás, envían el comando de
+incrementar o decrementar el índice de la canción. Para lograrlo primero se hace Stop, y luego se
+carga el nuevo archivo en al fuente del pipeline. 
+
+El pipeline consta de 5 etapas. La primera el se source (filesrc), que toma el archivo y lo alista
+para el resto del Pipeline. Luego se tiene el parser (mpegaudioparse), que hace un preprocesamiento
+que se necesita por trabajar con MP3. La tercera etapa es el decodificador (mpg123audiodec), y este
+se conecta con el converidor (audioconvert). Para este punto el stream está listo para la interfaz
+de audio, entonces se utiliza pulsesink para conectarlo con pulseaudio. 
+
+
+\subsection{Yocto}
+\label{sec:yocto}
+Para la generación de la imagen de GNU/Linux con Yocto se optó por utilizar la
+arquitectura ARM de forma que el sistema implementado pueda llegar a ejecutarse
+fácilmente en las microcomputadoras más comunes del mercado para este tipo de
+aplicación.
+
+Para la configuración de la imagen de Linux y de la aplicación se utilizan
+recetas de Bitbake (.bb) ubicadas en un Layer de Yocto creado para este objetivo, el cual
+se denominó \texttt{meta-radio}. La imagen configurada se denomina
+\texttt{radio-car-image} y se encuentra basada en la clase \texttt{core-image}
+de forma que solo se partiera del sistema básico para así tener que especificar solo los demás
+componentes requerido por la aplicación, tales como el sistema básico de X11, el
+soporte para audio, Gstreamer y los paquetes de Qt5.
+
+Con respecto a la receta de la aplicación, esta se denomina \texttt{qt-radio} y
+hereda de las clases \texttt{qmake5} y \texttt{systemd}, lo cual le permite
+construir el binario de la aplicación de Qt5 en la imagen así como instalar el servicio de sistema
+correspondiente (para iniciar la aplicación de manera automática al bootear el sistema), respectivamente.
+
+Para el sistema de servicios de la imagen se optó por utilizar \texttt{systemd},
+el cual corresponde a la alternativa moderna de \texttt{sysvinit}, de forma que
+optimiza de mejor manera las dependencias entre los servicios y la ejecución de
+los mismos para lograr un menor tiempo de booteo.
+
+Para la aplicación del radio en cuestión, se optimizó el tiempo de booteo
+estableciendo como dependencia solo la carga del sistema de archivos, en lugar
+de las dependencias por defecto establecidas por systemd.
+
+Con respecto a esta aplicación, el servicio de \texttt{systemd} implementado
+ejecuta el servidor X mediante el comando \texttt{startx}, de manera que no se
+ocupa cargar el programa \texttt{xterm} para levantar el servidor gráfico si no
+que se puede cargar la aplicación implementada desde la terminal no gráfica.
+
+Para la ejecución del audio en el sistema, se optó por utilizar el servidor
+\texttt{Pulseaudio}, tal como es común en la mayor parte de distribuciones de
+Linux. Este servidor se comunica con el módulo de \texttt{alsa} para reproducir
+el audio en la tarjeta de sonido. Para lograr reproducir el audio en la
+computadora host de QEMU, la solución que se tuvo fue habilitar el módulo de la
+tarjeta de sonido y el driver AC97 en la configuración del kernel de la imagen,
+lo que permitió que se reconociera una tarjeta de sonido en el sistema emulado y
+así lograr redirigir el audio hacia el host.
+
+El layer de Yocto con las recetas correspondientes, se puede encontrar en el
+subdirectorio \texttt{Lab3/Yocto} del repositorio de Git.
+
+
+%-------------------------------
+\section{Problemas encontrados y posibles mejoras}
+\label{sec:possible_fixes}
+% -------------------------------
+Con respecto a la ejecución de la aplicación en la imagen de Linux generada, la
+principal dificultad que se tuvo fue lograr ejecutar el audio en el sistema
+emulado mediante QEMU. En primer lugar, fue necesario forzar la carga de los
+drivers de una tarjeta de sonido a la configuración del kernel. Además, para
+lograr la reproducción del mismo el host, se ocupó utilizar la versión de QEMU
+instalada en el sistema del host y no la brindada por Yocto, ya que de otra
+manera el audio no se escuchaba pero sin mostrar ningún error.
+
+A pesar de que se logró reproducir en la imagen el audio de las canciones .mp3 de la
+aplicación, al momento de la entrega del laboratorio no fue posible lograr que
+el mismo se activara automáticamente en el booteo, sino que era necesario
+cargar el daemon de Pulseaudio de manera manual para lograr percibir el
+sonido.
+
+Se observó que esto puede estar relacionado con el hecho de que el
+usuario root por defecto no carga este servidor al no se algo común en los
+sistemas que utilizan Pulseaudio (normalmente se tiene un usuario sin
+privilegios de superadministrador), por lo que luego se intentará configurar
+esta opción para el usuario root y que así se pueda tener la funcionalidad
+completa de la aplicación desde el booteo del sistema.
+
+
+La interfaz gráfica puede mejorarse para ser más amigable con pantallas de poca resolución. Esto
+implica hacer los botones (y sus íconos) más grandes y mejorar el contraste de los mismos con el
+fondo de la aplicación. También es necesario mejorar el fondo de los textos. Actualmente tiene un
+fondo griz que corta con el tema metálico del resto de la aplicación. 
+
+
+%
+%\begin{figure}
+%  \centering
+%\scalebox{.75}{\input{data_flow.tex}}
+%\caption{Diagrama de Flujo de datos}
+%\label{fig:data_flow}
+%\end{figure}
+
+
+%----------------------
+\textbf{ Bibliografía}
+% ----------------------
+
+Free Icons. Icon8. https://icons8.com/
+
+Free Music Archive. http://freemusicarchive.org/
+%\bibliographystyle{apacite}
+%\bibliography{../general/biblografia.bib}
+%---------------------------------------------------------------------------------------------------------------
+\end{document}

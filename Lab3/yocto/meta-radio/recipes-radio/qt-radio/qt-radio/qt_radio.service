@@ -1,0 +1,22 @@
+[Unit]
+Description=Qt5 Car Radio Embedded Application Service
+
+DefaultDependencies=no
+
+After=sysinit.target local-fs.target
+Before=base.target network-pre.target
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=3
+
+Environment=DISPLAY=:0
+Environment=QT_QPA_FONTDIR=/usr/share/fonts/ttf/
+Environment=QT_RADIO_GUI=/usr/bin/qt_radio
+Environment=MEDIA_DIR=/opt/qt_radio/media/
+
+ExecStart=/usr/bin/startx $QT_RADIO_GUI $MEDIA_DIR
+
+[Install]
+WantedBy=multi-user.target
