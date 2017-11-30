@@ -44,29 +44,25 @@ ContainerWindow::ContainerWindow(status_message* i_pStatusMessage, char* l_cMedi
   l_BackgroundPainter.drawRect(0, 0, m_ScreenSize.width(),m_ScreenSize.height());
   m_MainLabel->setPixmap(BackgroundImage);
   m_MainLabel->setGeometry(TransformResolution(0,0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
-  
-  // QuitButton
-  char l_cPathToQuitIcon[MAX_PATH_LENGTH];
-  strcpy(l_cPathToQuitIcon, l_cMediaPath);
-  strcat(l_cPathToQuitIcon, "icons/quit.png");
-  QIcon l_quitIcon(l_cPathToQuitIcon);
-  m_Quit = new QPushButton(this);
-  m_Quit->setIcon(l_quitIcon);
-  m_Quit->setIconSize(QSize(30,30));
-  m_Quit->setFlat(true);
-  m_Quit->setGeometry(TransformResolution(DEFAULT_SCREEN_WIDTH-30,1,30,30));
 
   // Welocme window
   Welcome = new WelcomeWindow(m_ScreenSize, l_cMediaPath, this);
-  Welcome->setGeometry(TransformResolution(30,30,DEFAULT_SCREEN_WIDTH-60, DEFAULT_SCREEN_HEIGHT-60));
+  Welcome->setGeometry(TransformResolution(0,0,DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
 
   // Radio Window
   Radio = new RadioWindow(m_ScreenSize, l_cMediaPath, this);
-  Radio->setGeometry(TransformResolution(30,1000,DEFAULT_SCREEN_WIDTH-60, DEFAULT_SCREEN_HEIGHT-60));
+  Radio->setGeometry(TransformResolution(0,1000,DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
 
   // Mp3 Window
   Mp3 = new Mp3Window(m_ScreenSize, m_pStatusMessage,  l_cMediaPath, this);
-  Mp3->setGeometry(TransformResolution(30,1000,DEFAULT_SCREEN_WIDTH-60, DEFAULT_SCREEN_HEIGHT-60));
+  Mp3->setGeometry(TransformResolution(0,1000,DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+
+
+    // QuitButton
+  m_Quit = new QPushButton(this);
+  m_Quit->setFlat(true);
+  m_Quit->setGeometry(TransformResolution(DEFAULT_SCREEN_WIDTH-30,1,30,30));
+  
 
   SetUpAnimations();
   
@@ -134,58 +130,58 @@ ContainerWindow::SetUpAnimations(){
   // Radio In
   m_RadioIn = new QPropertyAnimation(Radio, "geometry");
   m_RadioIn->setDuration(DEFAULT_ANIMATION_DURATION);
-  m_RadioIn->setStartValue(TransformResolution(30, DEFAULT_SCREEN_HEIGHT,
+  m_RadioIn->setStartValue(TransformResolution(0, DEFAULT_SCREEN_HEIGHT,
 					      DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
-  m_RadioIn->setEndValue(TransformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+  m_RadioIn->setEndValue(TransformResolution(0,0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
 
   // Radio Out
   m_RadioOut = new QPropertyAnimation(Radio, "geometry");
   m_RadioOut->setDuration(DEFAULT_ANIMATION_DURATION);
-  m_RadioOut->setEndValue(TransformResolution(30, DEFAULT_SCREEN_HEIGHT,
+  m_RadioOut->setEndValue(TransformResolution(0, DEFAULT_SCREEN_HEIGHT,
 					      DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
-  m_RadioOut->setStartValue(TransformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+  m_RadioOut->setStartValue(TransformResolution(0,0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
 
   //Mp3 in
   m_Mp3In = new QPropertyAnimation(Mp3, "geometry");
   m_Mp3In->setDuration(DEFAULT_ANIMATION_DURATION);
-  m_Mp3In->setStartValue(TransformResolution(30, DEFAULT_SCREEN_HEIGHT,
+  m_Mp3In->setStartValue(TransformResolution(0, DEFAULT_SCREEN_HEIGHT,
 					      DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
-  m_Mp3In->setEndValue(TransformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+  m_Mp3In->setEndValue(TransformResolution(0,0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
 
   //Mp3 Out
   m_Mp3Out = new QPropertyAnimation(Mp3, "geometry");
   m_Mp3Out->setDuration(DEFAULT_ANIMATION_DURATION);
-  m_Mp3Out->setEndValue(TransformResolution(30, DEFAULT_SCREEN_HEIGHT,
+  m_Mp3Out->setEndValue(TransformResolution(0, DEFAULT_SCREEN_HEIGHT,
 					      DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
-  m_Mp3Out->setStartValue(TransformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+  m_Mp3Out->setStartValue(TransformResolution(0,0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
 
   // Welcome In for Radio
   m_WelcomeIn0 = new QPropertyAnimation(Welcome, "geometry");
   m_WelcomeIn0->setDuration(DEFAULT_ANIMATION_DURATION);
-  m_WelcomeIn0->setStartValue(TransformResolution(30, -DEFAULT_SCREEN_HEIGHT,
+  m_WelcomeIn0->setStartValue(TransformResolution(0, -DEFAULT_SCREEN_HEIGHT,
 					      DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
-  m_WelcomeIn0->setEndValue(TransformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+  m_WelcomeIn0->setEndValue(TransformResolution(0,0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
 
   // Welcome Out for Radio
   m_WelcomeOut0 = new QPropertyAnimation(Welcome, "geometry");
   m_WelcomeOut0->setDuration(DEFAULT_ANIMATION_DURATION);
-  m_WelcomeOut0->setEndValue(TransformResolution(30, -DEFAULT_SCREEN_HEIGHT,
+  m_WelcomeOut0->setEndValue(TransformResolution(0, -DEFAULT_SCREEN_HEIGHT,
 					      DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
-  m_WelcomeOut0->setStartValue(TransformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+  m_WelcomeOut0->setStartValue(TransformResolution(0,0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
 
   // Welcome In for Mp3
   m_WelcomeIn1 = new QPropertyAnimation(Welcome, "geometry");
   m_WelcomeIn1->setDuration(DEFAULT_ANIMATION_DURATION);
-  m_WelcomeIn1->setStartValue(TransformResolution(30, -DEFAULT_SCREEN_HEIGHT,
+  m_WelcomeIn1->setStartValue(TransformResolution(0, -DEFAULT_SCREEN_HEIGHT,
 					      DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
-  m_WelcomeIn1->setEndValue(TransformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+  m_WelcomeIn1->setEndValue(TransformResolution(0,0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
 
   // Welcome Out for Mp3
   m_WelcomeOut1 = new QPropertyAnimation(Welcome, "geometry");
   m_WelcomeOut1->setDuration(DEFAULT_ANIMATION_DURATION);
-  m_WelcomeOut1->setEndValue(TransformResolution(30, -DEFAULT_SCREEN_HEIGHT,
+  m_WelcomeOut1->setEndValue(TransformResolution(0, -DEFAULT_SCREEN_HEIGHT,
 					      DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
-  m_WelcomeOut1->setStartValue(TransformResolution(30,30, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
+  m_WelcomeOut1->setStartValue(TransformResolution(0,0, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT));
 
   //Transitions
   

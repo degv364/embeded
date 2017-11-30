@@ -60,6 +60,7 @@ private:
   void InitializeFileNames(void);
   void InitializeFileTimes(void);
   QRect TransformResolution(int x, int y, int width, int height);
+  int TransformFontSize(int i_iSize);
   void UpdateSongIndicator();
 
   bool m_bPlaying;
@@ -83,7 +84,7 @@ private:
   // This is QT5 specific. Can we use that with yocto?
   QRect m_ScreenSize;
   
-  QTextEdit *m_SongIndicator;
+  QLabel *m_SongIndicator;
 
   status_message* m_pStatusMessage;
 
