@@ -1,7 +1,7 @@
 TEMPLATE += app
   QT += widgets
 
-  INCLUDEPATH += -I=/usr/include/qt5/QtWidgets -I=/usr/include/qt5/QtGui -I=/usr/include/qt5/QtCore
+  INCLUDEPATH += =/usr/include/qt5/QtWidgets =/usr/include/qt5/QtGui =/usr/include/qt5/QtCore
 
   QMAKE_CXXFLAGS += -Wall -pedantic -pthread -I=/usr/include/gstreamer-1.0 -I=/usr/include/glib-2.0 -I=/usr/lib/glib-2.0/include
 
