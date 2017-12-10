@@ -5,8 +5,8 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 inherit qmake5
 inherit systemd
 
-DEPENDS = "qtbase qtdeclarative gstreamer1.0"
-RDEPENDS_${PN} = "qtbase qtdeclarative gstreamer1.0"
+DEPENDS = "qtbase gstreamer1.0"
+RDEPENDS_${PN} = "qtbase gstreamer1.0"
 
 SRC_URI = "git://github.com/degv364/embeded.git;branch=qt-dev"
 SRC_URI += "file://qt_radio.service"
