@@ -1,9 +1,9 @@
 TEMPLATE += app
   QT += widgets
 
-  INCLUDEPATH += =/usr/include/qt5/QtWidgets =/usr/include/qt5/QtGui =/usr/include/qt5/QtCore
+  INCLUDEPATH += =/usr/include/qt5 =/usr/include/qt5/QtWidgets =/usr/include/qt5/QtGui =/usr/include/qt5/QtCore
 
-  QMAKE_CXXFLAGS += -Wall -pedantic -pthread -I=/usr/include/gstreamer-1.0 -I=/usr/include/glib-2.0 -I=/usr/lib/glib-2.0/include
+  QMAKE_CXXFLAGS += -Wall -pedantic -pthread -std=c++11 -I=/usr/include/gstreamer-1.0 -I=/usr/include/glib-2.0 -I=/usr/lib/glib-2.0/include
 
   QMAKE_LIBS += -pthread -lgobject-2.0 -lgstreamer-1.0 -lglib-2.0
 
