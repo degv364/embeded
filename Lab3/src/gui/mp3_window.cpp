@@ -33,78 +33,71 @@ Mp3Window::Mp3Window(QRect i_ScreenSize,  status_message* i_pStatusMessage,
 
   // Return Button
    strcpy(l_cPathToFile, i_pMediaPath);
-  strcat(l_cPathToFile, "icons/goUp.png");
+  strcat(l_cPathToFile, "svg/goUp.svg");
   QIcon l_returnIcon(l_cPathToFile);
   m_ReturnButton = new QPushButton(this);
   m_ReturnButton->setIcon(l_returnIcon);
-  m_ReturnButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
+  m_ReturnButton->setIconSize(QSize(BIG_BUTTON_WIDTH-30, BIG_BUTTON_HEIGHT-30));
   m_ReturnButton->setFlat(true);
-  m_ReturnButton->setGeometry(TransformResolution(2*DEFAULT_SCREEN_WIDTH/5,
+  m_ReturnButton->setGeometry(TransformResolution(2*DEFAULT_SCREEN_WIDTH/5+15,
 						  0,
-						  BIG_BUTTON_WIDTH,
-						  BIG_BUTTON_HEIGHT-50));
+						  BIG_BUTTON_WIDTH-30,
+						  BIG_BUTTON_HEIGHT-30));
 
   // ForwardButton
   strcpy(l_cPathToFile, i_pMediaPath);
-  strcat(l_cPathToFile, "icons/forward.png");
+  strcat(l_cPathToFile, "svg/next.svg");
   QIcon l_ForwardIcon(l_cPathToFile);
   m_NextButton = new QPushButton(this);
   m_NextButton->setIcon(l_ForwardIcon);
-  m_NextButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
-  //m_nextButton->setFlat(true);
-  m_NextButton->setGeometry(TransformResolution(1040,
-						480,
-						LITTLE_BUTTON_WIDTH,
-						LITTLE_BUTTON_HEIGHT));
+  m_NextButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
+  m_NextButton->setFlat(true);
+  m_NextButton->setGeometry(TransformResolution(DEFAULT_SCREEN_WIDTH-BIG_BUTTON_WIDTH,
+						    2*DEFAULT_SCREEN_HEIGHT/5+50,
+						    BIG_BUTTON_WIDTH,
+						    BIG_BUTTON_HEIGHT));
 
   // Backward Button
   strcpy(l_cPathToFile, i_pMediaPath);
-  strcat(l_cPathToFile, "icons/back.png");
+  strcat(l_cPathToFile, "svg/previous.svg");
   QIcon l_BackwardIcon(l_cPathToFile);
   m_PrevButton = new QPushButton(this);
   m_PrevButton->setIcon(l_BackwardIcon);
-  m_PrevButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
-  //m_prevButton->setFlat(true);
-  m_PrevButton->setGeometry(TransformResolution(280,
-						480,
-						LITTLE_BUTTON_WIDTH,
-						LITTLE_BUTTON_HEIGHT));
+  m_PrevButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
+  m_PrevButton->setFlat(true);
+  m_PrevButton->setGeometry(TransformResolution(0,
+						    2*DEFAULT_SCREEN_HEIGHT/5+50,
+						    BIG_BUTTON_WIDTH,
+						    BIG_BUTTON_HEIGHT));
   // Play Button
   m_bPlaying = false;
   strcpy(l_cPathToFile, i_pMediaPath);
-  strcat(l_cPathToFile, "icons/play.png");
+  strcat(l_cPathToFile, "svg/play.svg");
   m_PlayIcon = QIcon(l_cPathToFile);
   strcpy(l_cPathToFile, i_pMediaPath);
-  strcat(l_cPathToFile, "icons/pause.png");
+  strcat(l_cPathToFile, "svg/pause.svg");
   m_PauseIcon = QIcon(l_cPathToFile);
   m_PlayButton = new QPushButton(this);
   m_PlayButton->setIcon(m_PlayIcon);
-  m_PlayButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
-  //m_playButton->setCheckable(true);
-  m_PlayButton->setGeometry(TransformResolution(640,
+  m_PlayButton->setIconSize(QSize(BIG_BUTTON_WIDTH, DEFAULT_SCREEN_HEIGHT));
+  m_PlayButton->setFlat(true);
+  m_PlayButton->setGeometry(TransformResolution(DEFAULT_SCREEN_WIDTH/2-BIG_BUTTON_WIDTH,
 						480,
-						LITTLE_BUTTON_WIDTH,
-						LITTLE_BUTTON_HEIGHT));
+						BIG_BUTTON_WIDTH,
+						BIG_BUTTON_HEIGHT));
 
   // Sop Button
   strcpy(l_cPathToFile, i_pMediaPath);
-  strcat(l_cPathToFile, "icons/stop.png");
+  strcat(l_cPathToFile, "svg/stop.svg");
   QIcon l_StopIcon(l_cPathToFile);
   m_StopButton = new QPushButton(this);
   m_StopButton->setIcon(l_StopIcon);
-  m_StopButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
-  //m_stopButton->setFlat(true);
+  m_StopButton->setIconSize(QSize(BIG_BUTTON_WIDTH, DEFAULT_SCREEN_HEIGHT));
+  m_StopButton->setFlat(true);
   m_StopButton->setGeometry(TransformResolution(680,
 						480,
-						LITTLE_BUTTON_WIDTH,
-						LITTLE_BUTTON_HEIGHT));
-
-
-  // Song progress
-  m_SongProgressBar = new QProgressBar(this);
-  m_SongProgressBar->setGeometry(TransformResolution(280,440,800,40));
-  m_SongProgressBar->setRange(0,100);
-  m_SongProgressBar->setValue(0);
+						BIG_BUTTON_WIDTH,
+						BIG_BUTTON_HEIGHT));
 
   // timer
   m_fProgress = 0;
@@ -114,17 +107,31 @@ Mp3Window::Mp3Window(QRect i_ScreenSize,  status_message* i_pStatusMessage,
 
   // Info
   m_iCurrentSong = 0;
-  m_SongIndicator = new QTextEdit("default", this);
-  m_SongIndicator->setGeometry(TransformResolution(280,
+  m_SongIndicator = new QLabel("default", this);
+  m_SongIndicator->setGeometry(TransformResolution(15,
 						   160,
-						   800,
+						   DEFAULT_SCREEN_WIDTH-30,
 						   280));
+
+  QFont l_Font = m_SongIndicator->font();
+  l_Font.setPointSize(TransformFontSize(40));
+  l_Font.setBold(true);
   
-  m_SongIndicator->setReadOnly(true);
-  m_SongIndicator->setFontPointSize(20);
+  m_SongIndicator->setFont(l_Font);
   m_SongIndicator->setAlignment(Qt::AlignCenter);
+  m_SongIndicator->setStyleSheet("color: white");
+
   // FIXME: show name of last played song
   m_SongIndicator->setText(m_MusicFileNames[0]);
+
+    // Song progress
+  m_SongProgressBar = new QProgressBar(this);
+  m_SongProgressBar->setGeometry(TransformResolution(280,440,800,40));
+  m_SongProgressBar->setRange(0,100);
+  m_SongProgressBar->setValue(0);
+  m_SongProgressBar->setTextVisible(false);
+  m_SongProgressBar->setStyleSheet("background-color: gray");
+  //m_SongProgressBar->setFontPointSize(20);
 
   
 
@@ -214,11 +221,11 @@ void Mp3Window::UpdateSongIndicator(){
   QString newIndicator;
   if (m_bPlaying){
     m_PlayButton->setIcon(m_PauseIcon);
-    m_PlayButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
+    m_PlayButton->setIconSize(QSize(BIG_BUTTON_WIDTH, BIG_BUTTON_HEIGHT));
   }
   else {
     m_PlayButton->setIcon(m_PlayIcon);
-    m_PlayButton->setIconSize(QSize(LITTLE_BUTTON_WIDTH, LITTLE_BUTTON_HEIGHT));
+    m_PlayButton->setIconSize(QSize(BIG_BUTTON_WIDTH, BIG_BUTTON_HEIGHT));
   }
   newIndicator = m_MusicFileNames[m_iCurrentSong];
   m_SongIndicator->setText(newIndicator);
@@ -284,4 +291,11 @@ void Mp3Window::InitializeFileTimes(void){
   m_MusicFileTimes[BEING_FINE ] = BEING_FINE_TIME*1000;
   m_MusicFileTimes[MOODY_BREAKFAST ] =MOODY_BREAKFAST_TIME*1000;
   m_MusicFileTimes[PIANO_ROLL ] = PIANO_ROLL_TIME*1000;
+}
+
+
+int
+Mp3Window::TransformFontSize(int i_iSize){
+  float l_fMean = m_ScreenSize.width()*0.5+m_ScreenSize.height()*0.5;
+  return (int) i_iSize*2.0f/(DEFAULT_SCREEN_WIDTH+DEFAULT_SCREEN_HEIGHT)*l_fMean;
 }

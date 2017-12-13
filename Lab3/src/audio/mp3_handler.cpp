@@ -38,7 +38,7 @@ MP3Handler::Setup(void){
   m_Parser   = gst_element_factory_make ("mpegaudioparse","parser");
   m_Decoder  = gst_element_factory_make ("mpg123audiodec","decoder");
   m_Converter= gst_element_factory_make ("audioconvert","converter");
-  m_Sink     = gst_element_factory_make ("pulsesink","audio-output");
+  m_Sink     = gst_element_factory_make ("alsasink","audio-output");
 
   if (!m_Pipeline || !m_Source || !m_Parser || !m_Decoder || !m_Converter ||!m_Sink) {
     g_printerr ("One element could not be created. Exiting.\n");

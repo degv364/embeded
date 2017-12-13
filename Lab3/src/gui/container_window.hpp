@@ -32,6 +32,9 @@
 #include <QIcon>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
+#include <QBrush>
+#include <QColor>
+#include <QPainter>
 // Included for debugging. Final product wont print to stdout
 #include <iostream>
 
