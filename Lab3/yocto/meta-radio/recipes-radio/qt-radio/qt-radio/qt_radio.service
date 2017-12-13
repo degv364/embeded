@@ -12,6 +12,7 @@ Restart=on-failure
 RestartSec=3
 
 Environment=DISPLAY=:0
+Environment=QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0
 Environment=QT_QPA_FONTDIR=/usr/share/fonts/ttf/
 Environment=QT_RADIO_GUI=/usr/bin/qt_radio
 Environment=MEDIA_DIR=/opt/qt_radio/media/
