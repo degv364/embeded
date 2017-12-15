@@ -16,12 +16,12 @@ necesario generar una imagen de linux embebido para ARM, y ejecutarlo con QEMU.
 \section{Contexto de Mercado}
 \label{sec:Context}
 Existen varias opciones en el mercado para radios de autos, en particular destacan los que utilizan
-android. Estos utilizan un sistema operativo ya conocido para la mayoría de los usuarios como lo es
+Android. Estos utilizan un sistema operativo ya conocido para la mayoría de los usuarios como lo es
 Android y lo incorporan al radio del carro. Estos radios son fáciles de usar y utilizan un sistema
 muy robusto y probado. Los precios tiene mucha variación, van desde 8 mil hasta medio millón de
 colones.
 
-Otra alternativa, es utilizar un radio simple sin pantalla, pero con bluetooth. Ahora que los
+Otra alternativa, es utilizar un radio simple sin pantalla, pero con Bluetooth. Ahora que los
 celulares son cada vez más comunes, se está apostando por quitar la interfaz gráfica del radio del
 carro y proporcionar una App para controlar el radio desde el celular.  
 
@@ -31,7 +31,7 @@ carro y proporcionar una App para controlar el radio desde el celular.
 Para la interfaz gráfica se propone utilizar Qt5. Esta tiene un conjunto de bibliotecas que permite
 el desarrollo rápido de interfaces gráficas de buen aspecto. Además ya existen recetas para YOCTO
 que facilitan el desarrollo para sistemas embebidos. Para la interfaz de audio se utiliza Gstreamer
-por razones parecidas.
+por razones similares.
 
 El sistema está diseñado para ser lo más modular posible. de manera que se puedan hacer cambios en
 los componentes sin que se afecte al sistema completo. De esta manera la interfaz gráfica y la
@@ -64,7 +64,7 @@ gráficas como Qt creator, y QML, estas no se utilizaron. Esta medida se tomó p
 de incorporar la aplicación a Yocto. Entonces la aplicación completa se puede compilar como un
 programa normal de C++ (linkeado a bibliotecas de Qt5). En general se evitan las palabras en los
 botones. La gran mayoría utilizan íconos, de esta manera la interfaz es más intuitiva para el
-usuario. Estos se consiguieron de una página que los ofrece de forma libre. %FIXME: add link
+usuario. Estos se consiguieron de una página que los ofrece de forma libre.
 
 Se definen 4 clases. La primera es un contenedor que se encarga de definir la interfaz entre las
 pantallas con las que interactúa el usuario. En esta se tiene los Slots que manejan la transición
@@ -89,8 +89,7 @@ gráfica.
 
 \subsection{Interfaz de Audio (GStreamer)}
 \label{sec:gstramer}
-Las canciones para esta parte se tomaron de una fuente que ofrece música de licencia libre. %Fixme
-                                %add link
+Las canciones para esta parte se tomaron de una fuente que ofrece música de licencia libre.
 
 Para la interfaz de Audio se tiene un thread por aparte. Este es un ciclo de control con una
 frecuencia determinada que se encarga estar escuchando constantemente los mensajes de la interfaz
@@ -105,7 +104,7 @@ El pipeline consta de 5 etapas. La primera el se source (filesrc), que toma el a
 para el resto del Pipeline. Luego se tiene el parser (mpegaudioparse), que hace un preprocesamiento
 que se necesita por trabajar con MP3. La tercera etapa es el decodificador (mpg123audiodec), y este
 se conecta con el converidor (audioconvert). Para este punto el stream está listo para la interfaz
-de audio, entonces se utiliza pulsesink para conectarlo con pulseaudio. 
+de audio, entonces se utiliza pulsesink para conectarlo con Pulseaudio. 
 
 
 \subsection{Yocto}
