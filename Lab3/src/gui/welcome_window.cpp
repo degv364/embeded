@@ -28,29 +28,29 @@ WelcomeWindow::WelcomeWindow(QRect i_screenSize, char* media_path, QWidget *pare
 
   // radioButton
   strcpy(l_cPathToFile, media_path);
-  strcat(l_cPathToFile, "icons/radio.png");
+  strcat(l_cPathToFile, "svg/radio.svg");
   QIcon l_radioIcon(l_cPathToFile);
   m_radioButton = new QPushButton(this);
   m_radioButton->setIcon(l_radioIcon);
   m_radioButton->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
   m_radioButton->setFlat(true);
-  m_radioButton->setGeometry(transformResolution(DEFAULT_SCREEN_WIDTH/5,
-						 2*DEFAULT_SCREEN_HEIGHT/5,
-						 BIG_BUTTON_WIDTH,
-						 BIG_BUTTON_HEIGHT));
+  m_radioButton->setGeometry(transformResolution(30,
+						 30,
+						 DEFAULT_SCREEN_WIDTH/2-45,
+						 DEFAULT_SCREEN_HEIGHT-60));
 
   // mp3 Button
   strcpy(l_cPathToFile, media_path);
-  strcat(l_cPathToFile, "icons/playList.png");
+  strcat(l_cPathToFile, "svg/mp3.svg");
   QIcon l_mp3Icon(l_cPathToFile);
   m_mp3Button = new QPushButton(this);
   m_mp3Button->setIcon(l_mp3Icon);
   m_mp3Button->setIconSize(QSize(BIG_ICON_SIZE, BIG_ICON_SIZE));
   m_mp3Button->setFlat(true);
-  m_mp3Button->setGeometry(transformResolution(3*DEFAULT_SCREEN_WIDTH/5,
-					       2*DEFAULT_SCREEN_HEIGHT/5,
-					       BIG_BUTTON_WIDTH,
-					       BIG_BUTTON_HEIGHT));
+  m_mp3Button->setGeometry(transformResolution(DEFAULT_SCREEN_WIDTH/2+15,
+					       30,
+					       DEFAULT_SCREEN_WIDTH/2-45,
+					       DEFAULT_SCREEN_HEIGHT-60));
 
  
 }

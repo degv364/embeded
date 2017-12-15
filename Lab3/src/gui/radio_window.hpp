@@ -30,6 +30,7 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QIcon>
+#include <QPalette>
 // Included for debugging. Final product wont print to stdout
 #include <iostream>
 
@@ -69,7 +70,7 @@ private:
   // This is QT5 specific. Can we use that with yocto?
   QRect m_ScreenSize;
   // FIXME: This button is for development
-  QTextEdit *m_StationIndicator;
+  QLabel *m_StationIndicator;
 };
 
 #endif
